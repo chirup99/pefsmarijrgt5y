@@ -3,6 +3,9 @@ import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
+import bcrypt from "bcrypt";
+
+const SALT_ROUNDS = 12;
 
 export async function registerRoutes(
   httpServer: Server,
@@ -14,11 +17,17 @@ export async function registerRoutes(
       const input = api.auth.login.input.parse(req.body);
       const user = await storage.getUserByEmail(input.email);
       
-      if (!user || user.password !== input.password) {
+      if (!user) {
         return res.status(401).json({ message: "Invalid email or password" });
       }
-      
-      res.status(200).json(user);
+
+      const passwordMatch = await bcrypt.compare(input.password, user.password);
+      if (!passwordMatch) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+
+      const { password: _, ...safeUser } = user;
+      res.status(200).json(safeUser);
     } catch (err) {
       if (err instanceof z.ZodError) {
         return res.status(400).json({
@@ -39,8 +48,10 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Email already exists" });
       }
 
-      const user = await storage.createUser(input);
-      res.status(201).json(user);
+      const hashedPassword = await bcrypt.hash(input.password, SALT_ROUNDS);
+      const user = await storage.createUser({ ...input, password: hashedPassword });
+      const { password: _, ...safeUser } = user;
+      res.status(201).json(safeUser);
     } catch (err) {
       if (err instanceof z.ZodError) {
         return res.status(400).json({
