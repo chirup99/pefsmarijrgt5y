@@ -389,7 +389,7 @@ export default function AuthPage() {
                     </div>
                   </div>
 
-                  <div className="pt-2">
+                  <div className="pt-2 mt-[0px] mb-[0px]">
                     <button
                       type="submit"
                       disabled={isPending}
