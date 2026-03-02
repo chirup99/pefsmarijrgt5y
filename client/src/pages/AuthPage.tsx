@@ -133,58 +133,78 @@ export default function AuthPage() {
               transition={{ duration: 0.2 }}
               className="space-y-4"
             >
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-white/80 pl-1">Email</label>
-                <input
-                  {...form.register("email")}
-                  type="email"
-                  placeholder="Enter your email"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all"
-                  disabled={isPending}
-                />
-                {form.formState.errors.email && (
-                  <p className="text-red-400 text-xs pl-1 mt-1">{form.formState.errors.email.message}</p>
-                )}
-              </div>
+              {mode === "login" ? (
+                <>
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-white/80 pl-1">Email</label>
+                    <input
+                      {...form.register("email")}
+                      type="email"
+                      placeholder="Enter your email"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all"
+                      disabled={isPending}
+                    />
+                    {form.formState.errors.email && (
+                      <p className="text-red-400 text-xs pl-1 mt-1">{form.formState.errors.email.message}</p>
+                    )}
+                  </div>
 
-              <div className="space-y-1.5 relative">
-                <div className="flex justify-between items-center pl-1 pr-1">
-                  <label className="text-sm font-medium text-white/80">Password</label>
+                  <div className="space-y-1.5 relative">
+                    <div className="flex justify-between items-center pl-1 pr-1">
+                      <label className="text-sm font-medium text-white/80">Password</label>
+                    </div>
+                    <div className="relative">
+                      <input
+                        {...form.register("password")}
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Enter your password"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl pl-4 pr-12 py-3.5 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all"
+                        disabled={isPending}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors"
+                      >
+                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
+                    {form.formState.errors.password && (
+                      <p className="text-red-400 text-xs pl-1 mt-1">{form.formState.errors.password.message}</p>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-4 space-y-4">
+                  <div className="bg-white p-5 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] transform hover:scale-[1.02] transition-transform duration-300 group cursor-pointer relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <QrCode className="w-32 h-32 text-black relative z-10" strokeWidth={1.5} />
+                    
+                    <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-black/20"></div>
+                    <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-black/20"></div>
+                    <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-black/20"></div>
+                    <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-black/20"></div>
+                  </div>
+                  <div className="text-center space-y-1">
+                    <p className="text-sm font-semibold text-white">Scan to setup via App</p>
+                    <p className="text-xs text-white/40">QR code is valid for 10 minutes</p>
+                  </div>
                 </div>
-                <div className="relative">
-                  <input
-                    {...form.register("password")}
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-4 pr-12 py-3.5 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all"
-                    disabled={isPending}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors"
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-                {form.formState.errors.password && (
-                  <p className="text-red-400 text-xs pl-1 mt-1">{form.formState.errors.password.message}</p>
-                )}
-              </div>
+              )}
             </motion.div>
           </AnimatePresence>
 
           <div className="pt-2">
             <button
               type="submit"
-              disabled={isPending}
+              disabled={isPending || mode === "register"}
               className="w-full bg-primary hover:bg-purple-500 active:bg-purple-700 text-white rounded-xl py-3.5 font-semibold text-[15px] flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-purple-600/20 disabled:opacity-50 disabled:cursor-not-allowed group"
             >
               {isPending ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
                 <>
-                  {mode === "login" ? "Persona" : "Create Account"} 
+                  {mode === "login" ? "Persona" : "Scan to Create"} 
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </>
               )}
@@ -200,28 +220,31 @@ export default function AuthPage() {
           )}
         </form>
 
-        <div className="mt-8 mb-6 relative flex items-center">
-          <div className="flex-grow border-t border-white/10"></div>
-          <span className="flex-shrink-0 mx-4 text-xs font-semibold tracking-wider text-white/30 uppercase">
-            OR CREATE YOUR FREE PERSONA
-          </span>
-          <div className="flex-grow border-t border-white/10"></div>
-        </div>
+        {mode === "login" && (
+          <>
+            <div className="mt-8 mb-6 relative flex items-center">
+              <div className="flex-grow border-t border-white/10"></div>
+              <span className="flex-shrink-0 mx-4 text-xs font-semibold tracking-wider text-white/30 uppercase">
+                OR CREATE YOUR FREE PERSONA
+              </span>
+              <div className="flex-grow border-t border-white/10"></div>
+            </div>
 
-        {/* QR Code Section */}
-        <div className="flex flex-col items-center justify-center pt-2">
-          <div className="bg-white p-5 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] transform hover:scale-[1.02] transition-transform duration-300 group cursor-pointer relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <QrCode className="w-24 h-24 text-black relative z-10" strokeWidth={1.5} />
-            
-            {/* Aesthetic corner markers to simulate scanning */}
-            <div className="absolute top-3 left-3 w-3 h-3 border-t-2 border-l-2 border-black/20"></div>
-            <div className="absolute top-3 right-3 w-3 h-3 border-t-2 border-r-2 border-black/20"></div>
-            <div className="absolute bottom-3 left-3 w-3 h-3 border-b-2 border-l-2 border-black/20"></div>
-            <div className="absolute bottom-3 right-3 w-3 h-3 border-b-2 border-r-2 border-black/20"></div>
-          </div>
-          <p className="mt-4 text-sm font-medium text-white/50">Scan to setup via App</p>
-        </div>
+            {/* QR Code Section - Only show for login mode bottom as alternative */}
+            <div className="flex flex-col items-center justify-center pt-2">
+              <div className="bg-white p-5 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] transform hover:scale-[1.02] transition-transform duration-300 group cursor-pointer relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <QrCode className="w-24 h-24 text-black relative z-10" strokeWidth={1.5} />
+                
+                <div className="absolute top-3 left-3 w-3 h-3 border-t-2 border-l-2 border-black/20"></div>
+                <div className="absolute top-3 right-3 w-3 h-3 border-t-2 border-r-2 border-black/20"></div>
+                <div className="absolute bottom-3 left-3 w-3 h-3 border-b-2 border-l-2 border-black/20"></div>
+                <div className="absolute bottom-3 right-3 w-3 h-3 border-b-2 border-r-2 border-black/20"></div>
+              </div>
+              <p className="mt-4 text-sm font-medium text-white/50">Scan to setup via App</p>
+            </div>
+          </>
+        )}
       </motion.div>
 
       {/* Bottom Features */}
