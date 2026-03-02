@@ -255,7 +255,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a26a0] overflow-hidden relative">
+    <div className="min-h-screen bg-[#050505] overflow-hidden relative">
       {/* Menu Background Layer */}
       <div className="absolute inset-0 flex items-center justify-end pr-12">
         <div className="text-right space-y-8">
@@ -266,7 +266,7 @@ export default function AuthPage() {
             }}
             className="block w-full text-right"
           >
-            <span className="bg-white text-[#0a26a0] px-10 py-4 rounded-2xl font-bold text-2xl shadow-2xl hover:bg-white/90 transition-all inline-block">
+            <span className="bg-white text-[#050505] px-10 py-4 rounded-2xl font-bold text-2xl shadow-2xl hover:bg-white/90 transition-all inline-block">
               Login
             </span>
           </button>
