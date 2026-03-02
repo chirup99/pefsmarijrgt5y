@@ -211,53 +211,15 @@ export default function AuthPage() {
             </button>
           </div>
           
-          {mode === "login" && (
-            <div className="flex justify-end">
-              <a href="#" className="text-sm text-white/40 hover:text-white transition-colors">
-                Forgot password?
-              </a>
-            </div>
-          )}
-        </form>
-
         {mode === "login" && (
-          <>
-            <div className="mt-8 mb-6 relative flex items-center">
-              <div className="flex-grow border-t border-white/10"></div>
-              <span className="flex-shrink-0 mx-4 text-xs font-semibold tracking-wider text-white/30 uppercase">
-                OR CREATE YOUR FREE PERSONA
-              </span>
-              <div className="flex-grow border-t border-white/10"></div>
-            </div>
-
-            {/* QR Code Section - Only show for login mode bottom as alternative */}
-            <div className="flex flex-col items-center justify-center pt-2">
-              <div className="bg-white p-5 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] transform hover:scale-[1.02] transition-transform duration-300 group cursor-pointer relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <QrCode className="w-24 h-24 text-black relative z-10" strokeWidth={1.5} />
-                
-                <div className="absolute top-3 left-3 w-3 h-3 border-t-2 border-l-2 border-black/20"></div>
-                <div className="absolute top-3 right-3 w-3 h-3 border-t-2 border-r-2 border-black/20"></div>
-                <div className="absolute bottom-3 left-3 w-3 h-3 border-b-2 border-l-2 border-black/20"></div>
-                <div className="absolute bottom-3 right-3 w-3 h-3 border-b-2 border-r-2 border-black/20"></div>
-              </div>
-              <p className="mt-4 text-sm font-medium text-white/50">Scan to setup via App</p>
-            </div>
-          </>
+          <div className="mt-4 flex justify-end">
+            <a href="#" className="text-sm text-white/40 hover:text-white transition-colors">
+              Forgot password?
+            </a>
+          </div>
         )}
-      </motion.div>
-
-      {/* Bottom Features */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.5 }}
-        className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-sm font-medium text-green-500/80 z-10"
-      >
-        <span className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-green-500"></span> Improve Your Workflow</span>
-        <span className="hidden sm:inline text-white/20">|</span>
-        <span className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-green-500"></span> Data-Driven Patterns</span>
-      </motion.div>
-    </div>
-  );
+      </form>
+    </motion.div>
+  </div>
+);
 }
