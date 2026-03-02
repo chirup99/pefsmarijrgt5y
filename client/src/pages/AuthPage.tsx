@@ -66,42 +66,67 @@ const CARDS = [
   },
 ];
 
-const SwipeCard = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+interface SwipeCardProps {
+  card: {
+    title: string;
+    name: string;
+    subname: string;
+    color: string;
+    bgStack1: string;
+    bgStack2: string;
+  };
+  currentIndex: number;
+  totalCards: number;
+  onSwipeLeft: () => void;
+  onSwipeRight: () => void;
+}
+
+const SwipeCardContent = ({ card, currentIndex, onSwipeLeft, onSwipeRight }: SwipeCardProps) => {
   const x = useMotionValue(0);
-  const rotate = useTransform(x, [-200, 200], [-25, 25]);
+  const rotate = useTransform(x, [-200, 200], [-30, 30]);
   const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
-
-  const card = CARDS[currentIndex];
-
-  const onSwipeLeft = () => {
-    setCurrentIndex((prev) => (prev + 1) % CARDS.length);
-  };
-
-  const onSwipeRight = () => {
-    setCurrentIndex((prev) => (prev - 1 + CARDS.length) % CARDS.length);
-  };
 
   return (
     <div className="relative w-full max-w-[280px] aspect-[3/4] mx-auto perspective-1000">
       {/* Background stack effect */}
-      <div className={clsx("absolute inset-0 translate-y-4 translate-x-2 rounded-[32px] -z-10 transition-colors duration-500", card.bgStack2)} />
-      <div className={clsx("absolute inset-0 translate-y-2 translate-x-1 rounded-[32px] -z-10 transition-colors duration-500", card.bgStack1)} />
+      <div 
+        className={clsx(
+          "absolute inset-0 translate-y-6 translate-x-3 rounded-[32px] -z-20 transition-all duration-500 opacity-40 scale-95", 
+          card.bgStack2
+        )} 
+      />
+      <div 
+        className={clsx(
+          "absolute inset-0 translate-y-3 translate-x-1.5 rounded-[32px] -z-10 transition-all duration-500 opacity-70 scale-[0.98]", 
+          card.bgStack1
+        )} 
+      />
       
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="popLayout">
         <motion.div
           key={currentIndex}
           style={{ x, rotate, opacity }}
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.7}
           onDragEnd={(_, info) => {
-            if (info.offset.x < -100) onSwipeLeft();
-            else if (info.offset.x > 100) onSwipeRight();
+            if (info.offset.x < -80) onSwipeLeft();
+            else if (info.offset.x > 80) onSwipeRight();
           }}
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.9, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          initial={{ scale: 0.9, opacity: 0, y: 10 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ 
+            x: x.get() < 0 ? -300 : 300, 
+            opacity: 0, 
+            scale: 0.8,
+            transition: { duration: 0.3 } 
+          }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 400, 
+            damping: 25,
+            mass: 0.8
+          }}
           className={clsx(
             "relative w-full h-full bg-gradient-to-b rounded-[32px] p-6 shadow-2xl cursor-grab active:cursor-grabbing overflow-hidden group transition-colors duration-500",
             card.color
@@ -135,6 +160,30 @@ const SwipeCard = () => {
         </motion.div>
       </AnimatePresence>
     </div>
+  );
+};
+
+const SwipeCard = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const onSwipeLeft = () => {
+    setCurrentIndex((prev) => (prev + 1) % CARDS.length);
+  };
+
+  const onSwipeRight = () => {
+    setCurrentIndex((prev) => (prev - 1 + CARDS.length) % CARDS.length);
+  };
+
+  const card = CARDS[currentIndex];
+
+  return (
+    <SwipeCardContent 
+      card={card} 
+      currentIndex={currentIndex}
+      totalCards={CARDS.length}
+      onSwipeLeft={onSwipeLeft}
+      onSwipeRight={onSwipeRight}
+    />
   );
 };
 
