@@ -26,48 +26,48 @@ type AuthMode = "login" | "register";
 const CARDS = [
   {
     id: 1,
-    title: "Audio Minicast",
-    name: "perala",
-    subname: "chiranjeevi",
+    title: "Networking",
+    name: "Collaborate",
+    subname: "Connect",
     color: "from-blue-500 to-blue-600",
     bgStack1: "bg-blue-900/40",
     bgStack2: "bg-indigo-900/40",
   },
   {
     id: 2,
-    title: "Daily Analysis",
-    name: "Deep",
-    subname: "Focus",
+    title: "Startup Expo",
+    name: "Pitch",
+    subname: "Growth",
     color: "from-purple-500 to-purple-600",
     bgStack1: "bg-purple-900/40",
     bgStack2: "bg-fuchsia-900/40",
   },
   {
     id: 3,
-    title: "Performance Hub",
-    name: "Growth",
-    subname: "Metrics",
+    title: "Marketing",
+    name: "Exposure",
+    subname: "Reach",
     color: "from-emerald-500 to-emerald-600",
     bgStack1: "bg-emerald-900/40",
     bgStack2: "bg-teal-900/40",
   },
   {
     id: 4,
-    title: "AI Insights",
-    name: "Smart",
-    subname: "Tracking",
+    title: "AI Analysis",
+    name: "Insights",
+    subname: "Strategy",
     color: "from-orange-500 to-orange-600",
     bgStack1: "bg-orange-900/40",
     bgStack2: "bg-amber-900/40",
   },
   {
     id: 5,
-    title: "Persona Pro",
-    name: "Elite",
-    subname: "Access",
+    title: "Persona Hub",
+    name: "Digital",
+    subname: "Identity",
     color: "from-rose-500 to-rose-600",
     bgStack1: "bg-rose-900/40",
-    bgStack2: "bg-red-900/40",
+    bgStack2: "bg-rose-900/40",
   },
 ];
 
@@ -268,24 +268,24 @@ export default function AuthPage() {
           <InfinityIcon className="w-8 h-8 text-purple-500" strokeWidth={2.5} />
         </div>
         <p className="text-xs tracking-[0.3em] text-white/50 font-medium mb-12">
-          RETHINK . REINVEST . ∞
+          CONNECT . COLLABORATE . EXPOSE
         </p>
 
         <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
-          Get Early Access
+          Networking & Exposure
         </h2>
         <p className="text-white/70 text-lg mb-6 max-w-sm mx-auto">
-          Persona: Your Advanced Tracking & Performance Hub.
+          Persona: Your Digital Identity & Collaboration Hub.
         </p>
 
         <div className="flex items-center justify-center gap-6 text-sm font-medium text-green-500/90">
           <span className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>{" "}
-            Daily Tracking
+            Smart Networking
           </span>
           <span className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>{" "}
-            AI Analysis
+            Startup Exposure
           </span>
         </div>
       </motion.div>
@@ -359,10 +359,10 @@ export default function AuthPage() {
                         R
                       </div>
                       <h3 className="text-2xl font-bold text-white tracking-tight">
-                        Ram
+                        Networking Profile
                       </h3>
                       <p className="text-white/40 text-sm">
-                        Product Designer & Developer
+                        Collaborate & Grow your Startup
                       </p>
                     </div>
 
@@ -371,18 +371,21 @@ export default function AuthPage() {
                       <button
                         type="button"
                         className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white/70 hover:text-white transition-all duration-200 group"
+                        title="LinkedIn"
                       >
                         <SiLinkedin className="w-5 h-5" />
                       </button>
                       <button
                         type="button"
                         className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white/70 hover:text-white transition-all duration-200"
+                        title="Instagram"
                       >
                         <SiInstagram className="w-5 h-5" />
                       </button>
                       <button
                         type="button"
                         className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white/70 hover:text-white transition-all duration-200"
+                        title="WhatsApp"
                       >
                         <SiWhatsapp className="w-5 h-5" />
                       </button>
@@ -399,7 +402,7 @@ export default function AuthPage() {
                         <Loader2 className="w-5 h-5 animate-spin" />
                       ) : (
                         <>
-                          Check personal portal
+                          View Collaboration Portal
                           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </>
                       )}
