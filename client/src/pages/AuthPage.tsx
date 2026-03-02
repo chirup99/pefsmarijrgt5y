@@ -215,6 +215,8 @@ export default function AuthPage() {
   const { toast } = useToast();
   const [mode, setMode] = useState<AuthMode>("login");
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const loginMutation = useLogin();
   const registerMutation = useRegister();
   const isPending = loginMutation.isPending || registerMutation.isPending;
@@ -253,8 +255,56 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-mesh flex flex-col items-center justify-center p-4 overflow-hidden relative selection:bg-purple-500/30">
-      {/* Top Branding Section */}
+    <div className="min-h-screen bg-[#0a26a0] overflow-hidden relative">
+      {/* Menu Background Layer */}
+      <div className="absolute inset-0 flex items-center justify-end pr-12">
+        <div className="text-right space-y-8">
+          <button 
+            onClick={() => {
+              setMode("login");
+              setIsMenuOpen(false);
+            }}
+            className="block w-full text-right"
+          >
+            <span className="bg-white text-[#0a26a0] px-10 py-4 rounded-2xl font-bold text-2xl shadow-2xl hover:bg-white/90 transition-all inline-block">
+              Login
+            </span>
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content Layer */}
+      <motion.div
+        animate={{ 
+          x: isMenuOpen ? "-80%" : "0%",
+          scale: isMenuOpen ? 0.9 : 1,
+          borderRadius: isMenuOpen ? "40px" : "0px"
+        }}
+        transition={{ type: "spring", damping: 20, stiffness: 100 }}
+        className="min-h-screen bg-mesh flex flex-col items-center justify-center p-4 shadow-2xl relative z-20"
+      >
+        <div className="absolute inset-0 bg-black/20 pointer-events-none opacity-0 transition-opacity duration-500" style={{ opacity: isMenuOpen ? 1 : 0 }}></div>
+        {/* Menu Toggle Button */}
+        <button
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="absolute top-8 right-8 z-50 p-2 group"
+        >
+          {isMenuOpen ? (
+            <div className="text-white/80 hover:text-white transition-colors">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-1.5 items-end">
+              <div className="w-8 h-1 bg-white rounded-full transition-all group-hover:w-6"></div>
+              <div className="w-5 h-1 bg-white rounded-full transition-all group-hover:w-8"></div>
+            </div>
+          )}
+        </button>
+
+        {/* Top Branding Section */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -443,6 +493,7 @@ export default function AuthPage() {
             Create your persona
           </button>
         </div>
+      </motion.div>
       </motion.div>
     </div>
   );
