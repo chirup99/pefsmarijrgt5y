@@ -265,9 +265,7 @@ export default function AuthPage() {
           animate={{ opacity: isMenuOpen ? 1 : 0, y: isMenuOpen ? 0 : 20 }}
           className="text-right space-y-4 max-w-[240px] pointer-events-auto"
         >
-          <p className="text-white/40 text-[10px] leading-relaxed uppercase tracking-widest">
-            copyright : persona ui is inspired from <span className="font-bold text-white/60">perala</span>
-          </p>
+          <p className="text-white/40 text-[10px] leading-relaxed uppercase tracking-widest text-center">copyright : persona UI/UX is inspired from</p>
           
           <div className="space-y-3">
             <a 
@@ -283,19 +281,10 @@ export default function AuthPage() {
               />
             </a>
             
-            <div className="space-y-2">
-              <p className="text-[10px] text-white/50 leading-relaxed font-medium">
-                Perala: Your Advanced Trading Journal & Performance Analysis Hub.
-              </p>
-              <ul className="text-[9px] text-white/30 space-y-1 font-bold uppercase tracking-tighter">
-                <li>• Daily Trade Tracking</li>
-                <li>• AI Performance Analysis</li>
-              </ul>
-            </div>
+  
           </div>
         </motion.div>
       </div>
-
       {/* Main Content Layer */}
       <motion.div
         animate={{
