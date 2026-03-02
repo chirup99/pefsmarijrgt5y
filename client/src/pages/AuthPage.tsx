@@ -50,7 +50,6 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen bg-mesh flex flex-col items-center justify-center p-4 md:p-6 overflow-hidden relative selection:bg-purple-500/30">
-      
       {/* Top Branding Section */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
@@ -78,7 +77,6 @@ export default function AuthPage() {
           <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span> AI Analysis</span>
         </div>
       </motion.div>
-
       {/* Main Card */}
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
@@ -216,7 +214,7 @@ export default function AuthPage() {
               <span className="w-full border-t border-white/10"></span>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-white/40">Or continue with</span>
+              <span className="bg-card px-2 text-white/40 font-bold">Or continue with</span>
             </div>
           </div>
 
@@ -255,6 +253,6 @@ export default function AuthPage() {
         )}
       </form>
     </motion.div>
-  </div>
-);
+    </div>
+  );
 }
