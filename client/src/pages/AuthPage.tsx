@@ -87,103 +87,110 @@ const SwipeCardContent = ({ card, currentIndex, onSwipeLeft, onSwipeRight }: Swi
   const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
 
   return (
-    <div className="relative w-full max-w-[280px] aspect-[3/4] mx-auto perspective-1000">
-      {/* Background stack effect */}
-      <div 
-        className={clsx(
-          "absolute inset-0 translate-y-6 translate-x-3 rounded-[32px] -z-20 transition-all duration-500 opacity-40 scale-95", 
-          card.bgStack2
-        )} 
-      />
-      <div 
-        className={clsx(
-          "absolute inset-0 translate-y-3 translate-x-1.5 rounded-[32px] -z-10 transition-all duration-500 opacity-70 scale-[0.98]", 
-          card.bgStack1
-        )} 
-      />
-      
-      <AnimatePresence mode="popLayout">
-        <motion.div
-          key={currentIndex}
-          style={{ x, rotate, opacity }}
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.7}
-          onDragEnd={(_, info) => {
-            if (info.offset.x < -80) onSwipeLeft();
-            else if (info.offset.x > 80) onSwipeRight();
-          }}
-          initial={{ scale: 0.9, opacity: 0, y: 10 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ 
-            x: x.get() < 0 ? -300 : 300, 
-            opacity: 0, 
-            scale: 0.8,
-            transition: { duration: 0.3 } 
-          }}
-          transition={{ 
-            type: "spring", 
-            stiffness: 400, 
-            damping: 25,
-            mass: 0.8
-          }}
-          className={clsx(
-            "relative w-full h-full bg-gradient-to-b rounded-[32px] p-6 shadow-2xl cursor-grab active:cursor-grabbing overflow-hidden group transition-colors duration-500",
-            card.color
-          )}
-        >
-          {/* Card Content mimicking the image */}
-          <div className="flex flex-col h-full items-center justify-between relative z-10">
-            <div className="flex items-center gap-2">
-              <span className="text-white/90 text-[10px] font-bold tracking-[0.2em] uppercase">{card.title}</span>
-              <Mic className="w-4 h-4 text-white/90" />
-            </div>
+    <motion.div
+      key={currentIndex}
+      style={{ x, rotate, opacity }}
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.9}
+      onDragEnd={(_, info) => {
+        if (info.offset.x < -80) onSwipeLeft();
+        else if (info.offset.x > 80) onSwipeRight();
+      }}
+      initial={{ scale: 0.9, opacity: 0, y: 10 }}
+      animate={{ scale: 1, opacity: 1, y: 0 }}
+      exit={{ 
+        x: x.get() < 0 ? -400 : 400, 
+        opacity: 0, 
+        scale: 0.5,
+        rotate: x.get() < 0 ? -45 : 45,
+        transition: { duration: 0.4, ease: "easeIn" } 
+      }}
+      transition={{ 
+        type: "spring", 
+        stiffness: 500, 
+        damping: 30,
+        mass: 0.8
+      }}
+      className={clsx(
+        "absolute inset-0 bg-gradient-to-b rounded-[32px] p-6 shadow-2xl cursor-grab active:cursor-grabbing overflow-hidden group transition-colors duration-500",
+        card.color
+      )}
+    >
+      {/* Card Content mimicking the image */}
+      <div className="flex flex-col h-full items-center justify-between relative z-10">
+        <div className="flex items-center gap-2">
+          <span className="text-white/90 text-[10px] font-bold tracking-[0.2em] uppercase">{card.title}</span>
+          <Mic className="w-4 h-4 text-white/90" />
+        </div>
 
-            <div className="text-center space-y-1">
-              <h3 className="text-white text-3xl font-bold leading-tight">{card.name}</h3>
-              <h3 className="text-white text-3xl font-bold leading-tight">{card.subname}</h3>
-            </div>
+        <div className="text-center space-y-1">
+          <h3 className="text-white text-3xl font-bold leading-tight">{card.name}</h3>
+          <h3 className="text-white text-3xl font-bold leading-tight">{card.subname}</h3>
+        </div>
 
-            <div className="w-full">
-              <button 
-                type="button"
-                className="w-full bg-white text-black rounded-full py-4 flex items-center justify-center gap-2 font-bold shadow-xl hover:scale-105 transition-transform"
-              >
-                <Play className="w-4 h-4 fill-current" />
-                Play Now
-              </button>
-            </div>
-          </div>
+        <div className="w-full">
+          <button 
+            type="button"
+            className="w-full bg-white text-black rounded-full py-4 flex items-center justify-center gap-2 font-bold shadow-xl hover:scale-105 transition-transform"
+          >
+            <Play className="w-4 h-4 fill-current" />
+            Play Now
+          </button>
+        </div>
+      </div>
 
-          {/* Decorative circle from image */}
-          <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
-        </motion.div>
-      </AnimatePresence>
-    </div>
+      {/* Decorative circle from image */}
+      <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+    </motion.div>
   );
 };
 
 const SwipeCard = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  const onSwipeLeft = () => {
+  
+  const handleSwipeLeft = () => {
     setCurrentIndex((prev) => (prev + 1) % CARDS.length);
   };
 
-  const onSwipeRight = () => {
+  const handleSwipeRight = () => {
     setCurrentIndex((prev) => (prev - 1 + CARDS.length) % CARDS.length);
   };
 
-  const card = CARDS[currentIndex];
+  // Get the cards for the stack: current, next, and next-next
+  const currentCard = CARDS[currentIndex];
+  const nextCard = CARDS[(currentIndex + 1) % CARDS.length];
+  const nextNextCard = CARDS[(currentIndex + 2) % CARDS.length];
 
   return (
-    <SwipeCardContent 
-      card={card} 
-      currentIndex={currentIndex}
-      totalCards={CARDS.length}
-      onSwipeLeft={onSwipeLeft}
-      onSwipeRight={onSwipeRight}
-    />
+    <div className="relative w-full max-w-[280px] aspect-[3/4] mx-auto perspective-1000">
+      {/* Background stack effect - fixed positions */}
+      <div 
+        key={`stack2-${(currentIndex + 2) % CARDS.length}`}
+        className={clsx(
+          "absolute inset-0 translate-y-6 translate-x-3 rounded-[32px] -z-20 transition-all duration-700 opacity-40 scale-95", 
+          nextNextCard.bgStack2
+        )} 
+      />
+      <div 
+        key={`stack1-${(currentIndex + 1) % CARDS.length}`}
+        className={clsx(
+          "absolute inset-0 translate-y-3 translate-x-1.5 rounded-[32px] -z-10 transition-all duration-700 opacity-70 scale-[0.98]", 
+          nextCard.bgStack1
+        )} 
+      />
+      
+      <AnimatePresence mode="popLayout" initial={false}>
+        <SwipeCardContent 
+          key={currentIndex}
+          card={currentCard} 
+          currentIndex={currentIndex}
+          totalCards={CARDS.length}
+          onSwipeLeft={handleSwipeLeft}
+          onSwipeRight={handleSwipeRight}
+        />
+      </AnimatePresence>
+    </div>
   );
 };
 
