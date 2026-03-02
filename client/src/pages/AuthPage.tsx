@@ -350,16 +350,17 @@ export default function AuthPage() {
           className="w-full max-w-md text-center mb-6 z-10"
         >
           <div className="flex items-center justify-center gap-2 mb-1 text-white">
-            <h1 className="text-2xl font-display font-bold tracking-widest uppercase">
-              PERSONA
-            </h1>
             <InfinityIcon
               className="w-6 h-6 text-purple-500"
               strokeWidth={2.5}
             />
+            <h1 className="text-2xl font-display font-bold tracking-widest uppercase">
+              PERSONA
+            </h1>
           </div>
-          <p className="text-[10px] tracking-[0.3em] text-white/50 font-medium mb-6">
+          <p className="text-[10px] tracking-[0.3em] text-white/50 font-medium mb-6 flex items-center justify-center gap-2">
             CONNECT . COLLABORATE . EXPOSE
+            <InfinityIcon className="w-3.5 h-3.5 text-purple-500/50" strokeWidth={2.5} />
           </p>
 
           <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-2">
