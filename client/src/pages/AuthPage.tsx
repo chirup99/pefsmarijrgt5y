@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { Infinity as InfinityIcon, Eye, EyeOff, QrCode, ArrowRight, Loader2 } from "lucide-react";
+import {
+  Infinity as InfinityIcon,
+  Eye,
+  EyeOff,
+  QrCode,
+  ArrowRight,
+  Loader2,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,10 +40,16 @@ export default function AuthPage() {
     try {
       if (mode === "login") {
         await loginMutation.mutateAsync(data);
-        toast({ title: "Welcome back", description: "Successfully logged into Persona." });
+        toast({
+          title: "Welcome back",
+          description: "Successfully logged into Persona.",
+        });
       } else {
         await registerMutation.mutateAsync(data);
-        toast({ title: "Welcome to Persona", description: "Your account has been created." });
+        toast({
+          title: "Welcome to Persona",
+          description: "Your account has been created.",
+        });
       }
       setLocation("/dashboard");
     } catch (error: any) {
@@ -51,14 +64,16 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen bg-mesh flex flex-col items-center justify-center p-4 md:p-6 overflow-hidden relative selection:bg-purple-500/30">
       {/* Top Branding Section */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="w-full max-w-md text-center mb-8 z-10"
       >
         <div className="flex items-center justify-center gap-2 mb-2 text-white">
-          <h1 className="text-3xl font-display font-bold tracking-widest uppercase">PERSONA</h1>
+          <h1 className="text-3xl font-display font-bold tracking-widest uppercase">
+            PERSONA
+          </h1>
           <InfinityIcon className="w-8 h-8 text-purple-500" strokeWidth={2.5} />
         </div>
         <p className="text-xs tracking-[0.3em] text-white/50 font-medium mb-12">
@@ -71,14 +86,20 @@ export default function AuthPage() {
         <p className="text-white/70 text-lg mb-6 max-w-sm mx-auto">
           Persona: Your Advanced Tracking & Performance Hub.
         </p>
-        
+
         <div className="flex items-center justify-center gap-6 text-sm font-medium text-green-500/90">
-          <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span> Daily Tracking</span>
-          <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span> AI Analysis</span>
+          <span className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>{" "}
+            Daily Tracking
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>{" "}
+            AI Analysis
+          </span>
         </div>
       </motion.div>
       {/* Main Card */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
@@ -94,7 +115,9 @@ export default function AuthPage() {
             onClick={() => setMode("login")}
             className={clsx(
               "flex-1 py-2.5 text-sm font-semibold rounded-lg z-10 transition-colors duration-200",
-              mode === "login" ? "text-white" : "text-white/50 hover:text-white/80"
+              mode === "login"
+                ? "text-white"
+                : "text-white/50 hover:text-white/80",
             )}
           >
             Persona
@@ -104,7 +127,9 @@ export default function AuthPage() {
             onClick={() => setMode("register")}
             className={clsx(
               "flex-1 py-2.5 text-sm font-semibold rounded-lg z-10 transition-colors duration-200",
-              mode === "register" ? "text-white" : "text-white/50 hover:text-white/80"
+              mode === "register"
+                ? "text-white"
+                : "text-white/50 hover:text-white/80",
             )}
           >
             Sign Up
@@ -134,7 +159,9 @@ export default function AuthPage() {
               {mode === "login" ? (
                 <>
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-white/80 pl-1">Email</label>
+                    <label className="text-sm font-medium text-white/80 pl-1">
+                      Email
+                    </label>
                     <input
                       {...form.register("email")}
                       type="email"
@@ -143,13 +170,17 @@ export default function AuthPage() {
                       disabled={isPending}
                     />
                     {form.formState.errors.email && (
-                      <p className="text-red-400 text-xs pl-1 mt-1">{form.formState.errors.email.message}</p>
+                      <p className="text-red-400 text-xs pl-1 mt-1">
+                        {form.formState.errors.email.message}
+                      </p>
                     )}
                   </div>
 
                   <div className="space-y-1.5 relative">
                     <div className="flex justify-between items-center pl-1 pr-1">
-                      <label className="text-sm font-medium text-white/80">Password</label>
+                      <label className="text-sm font-medium text-white/80">
+                        Password
+                      </label>
                     </div>
                     <div className="relative">
                       <input
@@ -164,11 +195,17 @@ export default function AuthPage() {
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors"
                       >
-                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        {showPassword ? (
+                          <EyeOff className="w-5 h-5" />
+                        ) : (
+                          <Eye className="w-5 h-5" />
+                        )}
                       </button>
                     </div>
                     {form.formState.errors.password && (
-                      <p className="text-red-400 text-xs pl-1 mt-1">{form.formState.errors.password.message}</p>
+                      <p className="text-red-400 text-xs pl-1 mt-1">
+                        {form.formState.errors.password.message}
+                      </p>
                     )}
                   </div>
                 </>
@@ -176,16 +213,23 @@ export default function AuthPage() {
                 <div className="flex flex-col items-center justify-center py-4 space-y-4">
                   <div className="bg-white p-5 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] transform hover:scale-[1.02] transition-transform duration-300 group cursor-pointer relative overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <QrCode className="w-32 h-32 text-black relative z-10" strokeWidth={1.5} />
-                    
+                    <QrCode
+                      className="w-32 h-32 text-black relative z-10"
+                      strokeWidth={1.5}
+                    />
+
                     <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-black/20"></div>
                     <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-black/20"></div>
                     <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-black/20"></div>
                     <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-black/20"></div>
                   </div>
                   <div className="text-center space-y-1">
-                    <p className="text-sm font-semibold text-white">Scan to setup via App</p>
-                    <p className="text-xs text-white/40">QR code is valid for 10 minutes</p>
+                    <p className="text-sm font-semibold text-white">
+                      Scan to setup via App
+                    </p>
+                    <p className="text-xs text-white/40">
+                      QR code is valid for 10 minutes
+                    </p>
                   </div>
                 </div>
               )}
@@ -202,19 +246,19 @@ export default function AuthPage() {
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
                 <>
-                  {mode === "login" ? "Create our persona" : "Scan to Create"} 
+                  {mode === "login" ? "Create our persona" : "Scan to Create"}
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </>
               )}
             </button>
           </div>
-          
+
           <div className="relative py-4">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-white/10"></span>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-white/40 font-bold">Or continue with</span>
+              <span className="bg-card px-2 text-white/40 font-bold">FREE</span>
             </div>
           </div>
 
@@ -240,19 +284,10 @@ export default function AuthPage() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            Sign in with Google
+            Create your persona
           </button>
-          
-        {mode === "login" && (
-          <div className="mt-4 flex justify-between items-center px-1">
-            <span className="text-sm text-green-500 font-medium">Free</span>
-            <a href="#" className="text-sm text-white/40 hover:text-white transition-colors">
-              Forgot password?
-            </a>
-          </div>
-        )}
-      </form>
-    </motion.div>
+        </form>
+      </motion.div>
     </div>
   );
 }
