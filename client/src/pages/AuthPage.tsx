@@ -21,6 +21,7 @@ import { useLogin, useRegister } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
 import { SiLinkedin, SiInstagram, SiWhatsapp } from "react-icons/si";
+import peralaLogo from "@assets/image_1772463268628.png";
 
 type AuthMode = "login" | "register";
 
@@ -258,10 +259,41 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen bg-[#050505] overflow-hidden relative">
       {/* Menu Background Layer */}
-      <div className="absolute inset-0 flex items-center justify-end pr-12">
-        <div className="text-right space-y-8">
-          {/* Login button removed */}
-        </div>
+      <div className="absolute inset-0 flex flex-col justify-end items-end p-12 pb-20 pointer-events-none">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: isMenuOpen ? 1 : 0, y: isMenuOpen ? 0 : 20 }}
+          className="text-right space-y-4 max-w-[240px] pointer-events-auto"
+        >
+          <p className="text-white/40 text-[10px] leading-relaxed uppercase tracking-widest">
+            copyright : persona ui is inspired from <span className="font-bold text-white/60">perala</span>
+          </p>
+          
+          <div className="space-y-3">
+            <a 
+              href="https://perala.in" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block group"
+            >
+              <img 
+                src={peralaLogo} 
+                alt="Perala" 
+                className="w-full h-auto opacity-80 group-hover:opacity-100 transition-opacity rounded-lg"
+              />
+            </a>
+            
+            <div className="space-y-2">
+              <p className="text-[10px] text-white/50 leading-relaxed font-medium">
+                Perala: Your Advanced Trading Journal & Performance Analysis Hub.
+              </p>
+              <ul className="text-[9px] text-white/30 space-y-1 font-bold uppercase tracking-tighter">
+                <li>• Daily Trade Tracking</li>
+                <li>• AI Performance Analysis</li>
+              </ul>
+            </div>
+          </div>
+        </motion.div>
       </div>
 
       {/* Main Content Layer */}
@@ -393,7 +425,7 @@ export default function AuthPage() {
                   : "text-white/50 hover:text-white/80",
               )}
             >
-              Sign Up
+              Mini-Cards
             </button>
             <motion.div
               layoutId="activeTab"
