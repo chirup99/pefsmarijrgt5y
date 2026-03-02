@@ -123,24 +123,24 @@ const SwipeCardContent = ({
         mass: 0.8,
       }}
       className={clsx(
-        "absolute inset-0 bg-gradient-to-b rounded-[32px] p-6 shadow-2xl cursor-grab active:cursor-grabbing overflow-hidden group transition-colors duration-500",
+        "absolute inset-0 bg-gradient-to-b rounded-[24px] p-4 shadow-2xl cursor-grab active:cursor-grabbing overflow-hidden group transition-colors duration-500",
         card.color,
       )}
     >
       {/* Card Content mimicking the image */}
       <div className="flex flex-col h-full items-center justify-between relative z-10">
-        <div className="flex items-center gap-2">
-          <span className="text-white/90 text-[10px] font-bold tracking-[0.2em] uppercase">
+        <div className="flex items-center gap-1.5">
+          <span className="text-white/90 text-[9px] font-bold tracking-[0.2em] uppercase">
             {card.title}
           </span>
-          <Mic className="w-4 h-4 text-white/90" />
+          <Mic className="w-3.5 h-3.5 text-white/90" />
         </div>
 
-        <div className="text-center space-y-1">
-          <h3 className="text-white text-3xl font-bold leading-tight">
+        <div className="text-center space-y-0.5">
+          <h3 className="text-white text-2xl font-bold leading-tight">
             {card.name}
           </h3>
-          <h3 className="text-white text-3xl font-bold leading-tight">
+          <h3 className="text-white text-2xl font-bold leading-tight">
             {card.subname}
           </h3>
         </div>
@@ -148,9 +148,9 @@ const SwipeCardContent = ({
         <div className="w-full">
           <button
             type="button"
-            className="w-full bg-white text-black rounded-full py-4 flex items-center justify-center gap-2 font-bold shadow-xl hover:scale-105 transition-transform"
+            className="w-full bg-white text-black rounded-full py-3 flex items-center justify-center gap-2 font-bold shadow-xl hover:scale-105 transition-transform text-sm"
           >
-            <Play className="w-4 h-4 fill-current" />
+            <Play className="w-3.5 h-3.5 fill-current" />
             Play Now
           </button>
         </div>
@@ -179,19 +179,19 @@ const SwipeCard = () => {
   const nextNextCard = CARDS[(currentIndex + 2) % CARDS.length];
 
   return (
-    <div className="relative w-full max-w-[280px] aspect-[3/4] mx-auto perspective-1000">
+    <div className="relative w-full max-w-[240px] aspect-[3/4] mx-auto perspective-1000">
       {/* Background stack effect - fixed positions */}
       <div
         key={`stack2-${(currentIndex + 2) % CARDS.length}`}
         className={clsx(
-          "absolute inset-0 translate-y-6 translate-x-3 rounded-[32px] -z-20 transition-all duration-700 opacity-40 scale-95",
+          "absolute inset-0 translate-y-4 translate-x-2 rounded-[24px] -z-20 transition-all duration-700 opacity-40 scale-95",
           nextNextCard.bgStack2,
         )}
       />
       <div
         key={`stack1-${(currentIndex + 1) % CARDS.length}`}
         className={clsx(
-          "absolute inset-0 translate-y-3 translate-x-1.5 rounded-[32px] -z-10 transition-all duration-700 opacity-70 scale-[0.98]",
+          "absolute inset-0 translate-y-2 translate-x-1 rounded-[24px] -z-10 transition-all duration-700 opacity-70 scale-[0.98]",
           nextCard.bgStack1,
         )}
       />
