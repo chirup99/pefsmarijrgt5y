@@ -281,7 +281,11 @@ export default function AuthPage() {
           borderRadius: isMenuOpen ? "40px" : "0px"
         }}
         transition={{ type: "spring", damping: 20, stiffness: 100 }}
-        className="min-h-screen bg-mesh flex flex-col items-center justify-center p-4 shadow-2xl relative z-20"
+        onClick={() => isMenuOpen && setIsMenuOpen(false)}
+        className={clsx(
+          "min-h-screen bg-mesh flex flex-col items-center justify-center p-4 shadow-2xl relative z-20 transition-all duration-500",
+          isMenuOpen ? "cursor-pointer select-none" : ""
+        )}
       >
         <div className="absolute inset-0 bg-black/20 pointer-events-none opacity-0 transition-opacity duration-500" style={{ opacity: isMenuOpen ? 1 : 0 }}></div>
         {/* Menu Toggle Button */}
