@@ -7,7 +7,12 @@ import {
   Play,
   Mic,
 } from "lucide-react";
-import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useTransform,
+} from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertUserSchema, type InsertUser } from "@shared/schema";
@@ -81,7 +86,12 @@ interface SwipeCardProps {
   onSwipeRight: () => void;
 }
 
-const SwipeCardContent = ({ card, currentIndex, onSwipeLeft, onSwipeRight }: SwipeCardProps) => {
+const SwipeCardContent = ({
+  card,
+  currentIndex,
+  onSwipeLeft,
+  onSwipeRight,
+}: SwipeCardProps) => {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-30, 30]);
   const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
@@ -99,38 +109,44 @@ const SwipeCardContent = ({ card, currentIndex, onSwipeLeft, onSwipeRight }: Swi
       }}
       initial={{ scale: 0.9, opacity: 0, y: 10 }}
       animate={{ scale: 1, opacity: 1, y: 0 }}
-      exit={{ 
-        x: x.get() < 0 ? -400 : 400, 
-        opacity: 0, 
+      exit={{
+        x: x.get() < 0 ? -400 : 400,
+        opacity: 0,
         scale: 0.5,
         rotate: x.get() < 0 ? -45 : 45,
-        transition: { duration: 0.4, ease: "easeIn" } 
+        transition: { duration: 0.4, ease: "easeIn" },
       }}
-      transition={{ 
-        type: "spring", 
-        stiffness: 500, 
+      transition={{
+        type: "spring",
+        stiffness: 500,
         damping: 30,
-        mass: 0.8
+        mass: 0.8,
       }}
       className={clsx(
         "absolute inset-0 bg-gradient-to-b rounded-[32px] p-6 shadow-2xl cursor-grab active:cursor-grabbing overflow-hidden group transition-colors duration-500",
-        card.color
+        card.color,
       )}
     >
       {/* Card Content mimicking the image */}
       <div className="flex flex-col h-full items-center justify-between relative z-10">
         <div className="flex items-center gap-2">
-          <span className="text-white/90 text-[10px] font-bold tracking-[0.2em] uppercase">{card.title}</span>
+          <span className="text-white/90 text-[10px] font-bold tracking-[0.2em] uppercase">
+            {card.title}
+          </span>
           <Mic className="w-4 h-4 text-white/90" />
         </div>
 
         <div className="text-center space-y-1">
-          <h3 className="text-white text-3xl font-bold leading-tight">{card.name}</h3>
-          <h3 className="text-white text-3xl font-bold leading-tight">{card.subname}</h3>
+          <h3 className="text-white text-3xl font-bold leading-tight">
+            {card.name}
+          </h3>
+          <h3 className="text-white text-3xl font-bold leading-tight">
+            {card.subname}
+          </h3>
         </div>
 
         <div className="w-full">
-          <button 
+          <button
             type="button"
             className="w-full bg-white text-black rounded-full py-4 flex items-center justify-center gap-2 font-bold shadow-xl hover:scale-105 transition-transform"
           >
@@ -148,7 +164,7 @@ const SwipeCardContent = ({ card, currentIndex, onSwipeLeft, onSwipeRight }: Swi
 
 const SwipeCard = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+
   const handleSwipeLeft = () => {
     setCurrentIndex((prev) => (prev + 1) % CARDS.length);
   };
@@ -165,25 +181,25 @@ const SwipeCard = () => {
   return (
     <div className="relative w-full max-w-[280px] aspect-[3/4] mx-auto perspective-1000">
       {/* Background stack effect - fixed positions */}
-      <div 
+      <div
         key={`stack2-${(currentIndex + 2) % CARDS.length}`}
         className={clsx(
-          "absolute inset-0 translate-y-6 translate-x-3 rounded-[32px] -z-20 transition-all duration-700 opacity-40 scale-95", 
-          nextNextCard.bgStack2
-        )} 
+          "absolute inset-0 translate-y-6 translate-x-3 rounded-[32px] -z-20 transition-all duration-700 opacity-40 scale-95",
+          nextNextCard.bgStack2,
+        )}
       />
-      <div 
+      <div
         key={`stack1-${(currentIndex + 1) % CARDS.length}`}
         className={clsx(
-          "absolute inset-0 translate-y-3 translate-x-1.5 rounded-[32px] -z-10 transition-all duration-700 opacity-70 scale-[0.98]", 
-          nextCard.bgStack1
-        )} 
+          "absolute inset-0 translate-y-3 translate-x-1.5 rounded-[32px] -z-10 transition-all duration-700 opacity-70 scale-[0.98]",
+          nextCard.bgStack1,
+        )}
       />
-      
+
       <AnimatePresence mode="popLayout" initial={false}>
-        <SwipeCardContent 
+        <SwipeCardContent
           key={currentIndex}
-          card={currentCard} 
+          card={currentCard}
           currentIndex={currentIndex}
           totalCards={CARDS.length}
           onSwipeLeft={handleSwipeLeft}
@@ -332,7 +348,10 @@ export default function AuthPage() {
               className="space-y-4"
             >
               {mode === "login" ? (
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
                   <div className="flex flex-col items-center text-center space-y-6 py-4">
                     {/* Persona Identity Section */}
                     <div className="space-y-2">
@@ -399,16 +418,6 @@ export default function AuthPage() {
                         Left to back • Right to next
                       </p>
                     </div>
-                  </div>
-
-                  <div className="pt-2">
-                    <button
-                      type="button"
-                      className="w-full bg-primary hover:bg-purple-500 active:bg-purple-700 text-white rounded-xl py-3.5 font-semibold text-[15px] flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-purple-600/20 group"
-                    >
-                      Create Account
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </button>
                   </div>
                 </div>
               )}
