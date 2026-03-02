@@ -6,6 +6,7 @@ import {
   Loader2,
   Play,
   Mic,
+  QrCode,
 } from "lucide-react";
 import {
   motion,
@@ -259,35 +260,28 @@ export default function AuthPage() {
       {/* Menu Background Layer */}
       <div className="absolute inset-0 flex items-center justify-end pr-12">
         <div className="text-right space-y-8">
-          <button 
-            onClick={() => {
-              setMode("login");
-              setIsMenuOpen(false);
-            }}
-            className="block w-full text-right"
-          >
-            <span className="bg-white text-[#050505] px-10 py-4 rounded-2xl font-bold text-2xl shadow-2xl hover:bg-white/90 transition-all inline-block">
-              Login
-            </span>
-          </button>
+          {/* Login button removed */}
         </div>
       </div>
 
       {/* Main Content Layer */}
       <motion.div
-        animate={{ 
+        animate={{
           x: isMenuOpen ? "-80%" : "0%",
           scale: isMenuOpen ? 0.9 : 1,
-          borderRadius: isMenuOpen ? "40px" : "0px"
+          borderRadius: isMenuOpen ? "40px" : "0px",
         }}
         transition={{ type: "spring", damping: 20, stiffness: 100 }}
         onClick={() => isMenuOpen && setIsMenuOpen(false)}
         className={clsx(
-          "min-h-screen bg-mesh flex flex-col items-center justify-center p-4 shadow-2xl relative z-20 transition-all duration-500",
-          isMenuOpen ? "cursor-pointer select-none" : ""
+          "min-h-screen bg-mesh flex flex-col items-center justify-center p-4 shadow-2xl relative z-20",
+          isMenuOpen ? "cursor-pointer select-none" : "",
         )}
       >
-        <div className="absolute inset-0 bg-black/20 pointer-events-none opacity-0 transition-opacity duration-500" style={{ opacity: isMenuOpen ? 1 : 0 }}></div>
+        <div
+          className="absolute inset-0 bg-black/20 pointer-events-none opacity-0 transition-opacity duration-500"
+          style={{ opacity: isMenuOpen ? 1 : 0 }}
+        ></div>
         {/* Menu Toggle Button */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -295,7 +289,15 @@ export default function AuthPage() {
         >
           {isMenuOpen ? (
             <div className="text-white/80 hover:text-white transition-colors">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              >
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
@@ -308,196 +310,212 @@ export default function AuthPage() {
           )}
         </button>
 
+        {/* Floating Action Button */}
+        <motion.button
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="fixed bottom-8 right-8 z-50 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/20 transition-all hover:shadow-[0_8px_30px_rgb(255,255,255,0.2)]"
+        >
+          <QrCode className="w-6 h-6 text-black" strokeWidth={2.5} />
+        </motion.button>
+
         {/* Top Branding Section */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="w-full max-w-md text-center mb-6 z-10"
-      >
-        <div className="flex items-center justify-center gap-2 mb-1 text-white">
-          <h1 className="text-2xl font-display font-bold tracking-widest uppercase">
-            PERSONA
-          </h1>
-          <InfinityIcon className="w-6 h-6 text-purple-500" strokeWidth={2.5} />
-        </div>
-        <p className="text-[10px] tracking-[0.3em] text-white/50 font-medium mb-6">
-          CONNECT . COLLABORATE . EXPOSE
-        </p>
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="w-full max-w-md text-center mb-6 z-10"
+        >
+          <div className="flex items-center justify-center gap-2 mb-1 text-white">
+            <h1 className="text-2xl font-display font-bold tracking-widest uppercase">
+              PERSONA
+            </h1>
+            <InfinityIcon
+              className="w-6 h-6 text-purple-500"
+              strokeWidth={2.5}
+            />
+          </div>
+          <p className="text-[10px] tracking-[0.3em] text-white/50 font-medium mb-6">
+            CONNECT . COLLABORATE . EXPOSE
+          </p>
 
-        <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-2">
-          Networking & Exposure
-        </h2>
-        <p className="text-white/70 text-base mb-4 max-w-sm mx-auto">
-          Persona: Your Digital Identity & Collaboration Hub.
-        </p>
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-2">
+            Networking & Exposure
+          </h2>
+          <p className="text-white/70 text-base mb-4 max-w-sm mx-auto">
+            Persona: Your Digital Identity & Collaboration Hub.
+          </p>
 
-        <div className="flex items-center justify-center gap-4 text-xs font-medium text-green-500/90">
-          <span className="flex items-center gap-1.5">
-            <span className="w-1 h-1 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>{" "}
-            Smart Networking
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="w-1 h-1 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>{" "}
-            Startup Exposure
-          </span>
-        </div>
-      </motion.div>
-      {/* Main Card */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl shadow-purple-900/10 p-5 sm:p-6 z-10 relative overflow-hidden"
-      >
-        {/* Subtle inner glow */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
+          <div className="flex items-center justify-center gap-4 text-xs font-medium text-green-500/90">
+            <span className="flex items-center gap-1.5">
+              <span className="w-1 h-1 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>{" "}
+              Smart Networking
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-1 h-1 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>{" "}
+              Startup Exposure
+            </span>
+          </div>
+        </motion.div>
+        {/* Main Card */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl shadow-purple-900/10 p-5 sm:p-6 z-10 relative overflow-hidden"
+        >
+          {/* Subtle inner glow */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
 
-        {/* Tab Switcher */}
-        <div className="flex p-1 bg-white/10 rounded-lg mb-6 relative">
-          <button
-            type="button"
-            onClick={() => setMode("login")}
-            className={clsx(
-              "flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors duration-200",
-              mode === "login"
-                ? "text-white"
-                : "text-white/50 hover:text-white/80",
-            )}
-          >
-            Persona
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode("register")}
-            className={clsx(
-              "flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors duration-200",
-              mode === "register"
-                ? "text-white"
-                : "text-white/50 hover:text-white/80",
-            )}
-          >
-            Sign Up
-          </button>
-          <motion.div
-            layoutId="activeTab"
-            className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white/20 rounded-md shadow-sm"
-            initial={false}
-            animate={{
-              left: mode === "login" ? "4px" : "calc(50%)",
-            }}
-            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-          />
-        </div>
-
-        {/* Form */}
-        <div className="space-y-4">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={mode}
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-3"
-            >
-              {mode === "login" ? (
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-4"
-                >
-                  <div className="flex flex-col items-center text-center space-y-4 py-2">
-                    {/* Persona Identity Section */}
-                    <div className="space-y-1">
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-blue-400 mx-auto flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-purple-500/20">
-                        R
-                      </div>
-                      <h3 className="text-xl font-bold text-white tracking-tight">
-                        Networking Profile
-                      </h3>
-                      <p className="text-white/40 text-xs">
-                        Collaborate & Grow your Startup
-                      </p>
-                    </div>
-
-                    {/* Social/Business Links Row */}
-                    <div className="flex items-center justify-center gap-3 w-full pt-1">
-                      <button
-                        type="button"
-                        className="p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white/70 hover:text-white transition-all duration-200 group"
-                        title="LinkedIn"
-                      >
-                        <SiLinkedin className="w-4 h-4" />
-                      </button>
-                      <button
-                        type="button"
-                        className="p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white/70 hover:text-white transition-all duration-200"
-                        title="Instagram"
-                      >
-                        <SiInstagram className="w-4 h-4" />
-                      </button>
-                      <button
-                        type="button"
-                        className="p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white/70 hover:text-white transition-all duration-200"
-                        title="WhatsApp"
-                      >
-                        <SiWhatsapp className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="pt-1">
-                    <button
-                      type="submit"
-                      disabled={isPending}
-                      className="w-full bg-primary hover:bg-purple-500 active:bg-purple-700 text-white rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-purple-600/20 disabled:opacity-50 disabled:cursor-not-allowed group"
-                    >
-                      {isPending ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <>
-                          View Collaboration Portal
-                          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </form>
-              ) : (
-                <div className="space-y-4">
-                  <div className="py-2">
-                    <SwipeCard />
-                    <div className="text-center mt-4 space-y-0.5">
-                      <p className="text-xs font-semibold text-white">
-                        Swipe to explore
-                      </p>
-                      <p className="text-[10px] text-white/40">
-                        Left to back • Right to next
-                      </p>
-                    </div>
-                  </div>
-                </div>
+          {/* Tab Switcher */}
+          <div className="flex p-1 bg-white/10 rounded-lg mb-6 relative">
+            <button
+              type="button"
+              onClick={() => setMode("login")}
+              className={clsx(
+                "flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors duration-200",
+                mode === "login"
+                  ? "text-white"
+                  : "text-white/50 hover:text-white/80",
               )}
-            </motion.div>
-          </AnimatePresence>
-
-          <div className="relative py-2">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-white/10"></span>
-            </div>
-            <div className="relative flex justify-center text-[10px] uppercase">
-              <span className="bg-card px-2 text-white/40 font-bold">FREE</span>
-            </div>
+            >
+              Persona
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("register")}
+              className={clsx(
+                "flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors duration-200",
+                mode === "register"
+                  ? "text-white"
+                  : "text-white/50 hover:text-white/80",
+              )}
+            >
+              Sign Up
+            </button>
+            <motion.div
+              layoutId="activeTab"
+              className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white/20 rounded-md shadow-sm"
+              initial={false}
+              animate={{
+                left: mode === "login" ? "4px" : "calc(50%)",
+              }}
+              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+            />
           </div>
 
-          <button
-            type="button"
-            className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-lg"
-          >
-            Create your persona
-          </button>
-        </div>
-      </motion.div>
+          {/* Form */}
+          <div className="space-y-4">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={mode}
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-3"
+              >
+                {mode === "login" ? (
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-4"
+                  >
+                    <div className="flex flex-col items-center text-center space-y-4 py-2">
+                      {/* Persona Identity Section */}
+                      <div className="space-y-1">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-blue-400 mx-auto flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-purple-500/20">
+                          R
+                        </div>
+                        <h3 className="text-xl font-bold text-white tracking-tight">
+                          Networking Profile
+                        </h3>
+                        <p className="text-white/40 text-xs">
+                          Collaborate & Grow your Startup
+                        </p>
+                      </div>
+
+                      {/* Social/Business Links Row */}
+                      <div className="flex items-center justify-center gap-3 w-full pt-1">
+                        <button
+                          type="button"
+                          className="p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white/70 hover:text-white transition-all duration-200 group"
+                          title="LinkedIn"
+                        >
+                          <SiLinkedin className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          className="p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white/70 hover:text-white transition-all duration-200"
+                          title="Instagram"
+                        >
+                          <SiInstagram className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          className="p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white/70 hover:text-white transition-all duration-200"
+                          title="WhatsApp"
+                        >
+                          <SiWhatsapp className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="pt-1">
+                      <button
+                        type="submit"
+                        disabled={isPending}
+                        className="w-full bg-primary hover:bg-purple-500 active:bg-purple-700 text-white rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-purple-600/20 disabled:opacity-50 disabled:cursor-not-allowed group"
+                      >
+                        {isPending ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <>
+                            View Collaboration Portal
+                            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="py-2">
+                      <SwipeCard />
+                      <div className="text-center mt-4 space-y-0.5">
+                        <p className="text-xs font-semibold text-white">
+                          Swipe to explore
+                        </p>
+                        <p className="text-[10px] text-white/40">
+                          Left to back • Right to next
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+
+            <div className="relative py-2">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-white/10"></span>
+              </div>
+              <div className="relative flex justify-center text-[10px] uppercase">
+                <span className="bg-card px-2 text-white/40 font-bold">
+                  FREE
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-lg"
+            >
+              Create your persona
+            </button>
+          </div>
+        </motion.div>
       </motion.div>
     </div>
   );
