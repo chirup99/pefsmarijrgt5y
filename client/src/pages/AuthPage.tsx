@@ -196,7 +196,7 @@ export default function AuthPage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        <div className="space-y-5">
           <AnimatePresence mode="wait">
             <motion.div
               key={mode}
@@ -207,79 +207,91 @@ export default function AuthPage() {
               className="space-y-4"
             >
               {mode === "login" ? (
-                <div className="flex flex-col items-center text-center space-y-6 py-4">
-                  {/* Persona Identity Section */}
-                  <div className="space-y-2">
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-600 to-blue-400 mx-auto flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-purple-500/20">
-                      R
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <div className="flex flex-col items-center text-center space-y-6 py-4">
+                    {/* Persona Identity Section */}
+                    <div className="space-y-2">
+                      <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-600 to-blue-400 mx-auto flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-purple-500/20">
+                        R
+                      </div>
+                      <h3 className="text-2xl font-bold text-white tracking-tight">
+                        Ram
+                      </h3>
+                      <p className="text-white/40 text-sm">
+                        Product Designer & Developer
+                      </p>
                     </div>
-                    <h3 className="text-2xl font-bold text-white tracking-tight">
-                      Ram
-                    </h3>
-                    <p className="text-white/40 text-sm">
-                      Product Designer & Developer
-                    </p>
+
+                    {/* Social/Business Links Row */}
+                    <div className="flex items-center justify-center gap-4 w-full pt-2">
+                      <button
+                        type="button"
+                        className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white/70 hover:text-white transition-all duration-200 group"
+                      >
+                        <SiLinkedin className="w-5 h-5" />
+                      </button>
+                      <button
+                        type="button"
+                        className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white/70 hover:text-white transition-all duration-200"
+                      >
+                        <SiInstagram className="w-5 h-5" />
+                      </button>
+                      <button
+                        type="button"
+                        className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white/70 hover:text-white transition-all duration-200"
+                      >
+                        <SiWhatsapp className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
 
-                  {/* Social/Business Links Row */}
-                  <div className="flex items-center justify-center gap-4 w-full pt-2">
+                  <div className="pt-2">
                     <button
-                      type="button"
-                      className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white/70 hover:text-white transition-all duration-200 group"
+                      type="submit"
+                      disabled={isPending}
+                      className="w-full bg-primary hover:bg-purple-500 active:bg-purple-700 text-white rounded-xl py-3.5 font-semibold text-[15px] flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-purple-600/20 disabled:opacity-50 disabled:cursor-not-allowed group"
                     >
-                      <SiLinkedin className="w-5 h-5" />
-                    </button>
-                    <button
-                      type="button"
-                      className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white/70 hover:text-white transition-all duration-200"
-                    >
-                      <SiInstagram className="w-5 h-5" />
-                    </button>
-                    <button
-                      type="button"
-                      className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white/70 hover:text-white transition-all duration-200"
-                    >
-                      <SiWhatsapp className="w-5 h-5" />
+                      {isPending ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <>
+                          Check personal portal
+                          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </>
+                      )}
                     </button>
                   </div>
-                </div>
+                </form>
               ) : (
-                <div className="py-4">
-                  <SwipeCard 
-                    onSwipeLeft={() => setMode("login")}
-                    onSwipeRight={() => setMode("login")}
-                  />
-                  <div className="text-center mt-6 space-y-1">
-                    <p className="text-sm font-semibold text-white">
-                      Swipe to explore
-                    </p>
-                    <p className="text-xs text-white/40">
-                      Left to back • Right to next
-                    </p>
+                <div className="space-y-5">
+                  <div className="py-4">
+                    <SwipeCard 
+                      onSwipeLeft={() => setMode("login")}
+                      onSwipeRight={() => setMode("login")}
+                    />
+                    <div className="text-center mt-6 space-y-1">
+                      <p className="text-sm font-semibold text-white">
+                        Swipe to explore
+                      </p>
+                      <p className="text-xs text-white/40">
+                        Left to back • Right to next
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      className="w-full bg-primary hover:bg-purple-500 active:bg-purple-700 text-white rounded-xl py-3.5 font-semibold text-[15px] flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-purple-600/20 group"
+                    >
+                      Create Account
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </button>
                   </div>
                 </div>
               )}
             </motion.div>
           </AnimatePresence>
-
-          <div className="pt-2">
-            <button
-              type="submit"
-              disabled={isPending || mode === "register"}
-              className="w-full bg-primary hover:bg-purple-500 active:bg-purple-700 text-white rounded-xl py-3.5 font-semibold text-[15px] flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-purple-600/20 disabled:opacity-50 disabled:cursor-not-allowed group"
-            >
-              {isPending ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <>
-                  {mode === "login"
-                    ? "Check personal portal"
-                    : "Create Account"}
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </>
-              )}
-            </button>
-          </div>
 
           <div className="relative py-4">
             <div className="absolute inset-0 flex items-center">
@@ -296,7 +308,7 @@ export default function AuthPage() {
           >
             Create your persona
           </button>
-        </form>
+        </div>
       </motion.div>
     </div>
   );
