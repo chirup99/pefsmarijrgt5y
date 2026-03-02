@@ -344,13 +344,13 @@ export default function AuthPage() {
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="w-full max-w-md bg-card/80 backdrop-blur-xl border border-white/10 rounded-[20px] shadow-2xl shadow-purple-900/10 p-5 sm:p-6 z-10 relative overflow-hidden"
+        className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl shadow-purple-900/10 p-5 sm:p-6 z-10 relative overflow-hidden"
       >
         {/* Subtle inner glow */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
 
         {/* Tab Switcher */}
-        <div className="flex p-1 bg-white/5 rounded-lg mb-6 relative">
+        <div className="flex p-1 bg-white/10 rounded-lg mb-6 relative">
           <button
             type="button"
             onClick={() => setMode("login")}
@@ -377,7 +377,7 @@ export default function AuthPage() {
           </button>
           <motion.div
             layoutId="activeTab"
-            className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white/10 rounded-md shadow-sm"
+            className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white/20 rounded-md shadow-sm"
             initial={false}
             animate={{
               left: mode === "login" ? "4px" : "calc(50%)",
