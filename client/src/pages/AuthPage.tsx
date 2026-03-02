@@ -18,53 +18,122 @@ import { SiLinkedin, SiInstagram, SiWhatsapp } from "react-icons/si";
 
 type AuthMode = "login" | "register";
 
-const SwipeCard = ({ onSwipeLeft, onSwipeRight }: { onSwipeLeft: () => void, onSwipeRight: () => void }) => {
+const CARDS = [
+  {
+    id: 1,
+    title: "Audio Minicast",
+    name: "perala",
+    subname: "chiranjeevi",
+    color: "from-blue-500 to-blue-600",
+    bgStack1: "bg-blue-900/40",
+    bgStack2: "bg-indigo-900/40",
+  },
+  {
+    id: 2,
+    title: "Daily Analysis",
+    name: "Deep",
+    subname: "Focus",
+    color: "from-purple-500 to-purple-600",
+    bgStack1: "bg-purple-900/40",
+    bgStack2: "bg-fuchsia-900/40",
+  },
+  {
+    id: 3,
+    title: "Performance Hub",
+    name: "Growth",
+    subname: "Metrics",
+    color: "from-emerald-500 to-emerald-600",
+    bgStack1: "bg-emerald-900/40",
+    bgStack2: "bg-teal-900/40",
+  },
+  {
+    id: 4,
+    title: "AI Insights",
+    name: "Smart",
+    subname: "Tracking",
+    color: "from-orange-500 to-orange-600",
+    bgStack1: "bg-orange-900/40",
+    bgStack2: "bg-amber-900/40",
+  },
+  {
+    id: 5,
+    title: "Persona Pro",
+    name: "Elite",
+    subname: "Access",
+    color: "from-rose-500 to-rose-600",
+    bgStack1: "bg-rose-900/40",
+    bgStack2: "bg-red-900/40",
+  },
+];
+
+const SwipeCard = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-25, 25]);
   const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
 
+  const card = CARDS[currentIndex];
+
+  const onSwipeLeft = () => {
+    setCurrentIndex((prev) => (prev + 1) % CARDS.length);
+  };
+
+  const onSwipeRight = () => {
+    setCurrentIndex((prev) => (prev - 1 + CARDS.length) % CARDS.length);
+  };
+
   return (
     <div className="relative w-full max-w-[280px] aspect-[3/4] mx-auto perspective-1000">
       {/* Background stack effect */}
-      <div className="absolute inset-0 translate-y-4 translate-x-2 bg-purple-900/40 rounded-[32px] -z-10" />
-      <div className="absolute inset-0 translate-y-2 translate-x-1 bg-fuchsia-900/40 rounded-[32px] -z-10" />
+      <div className={clsx("absolute inset-0 translate-y-4 translate-x-2 rounded-[32px] -z-10 transition-colors duration-500", card.bgStack2)} />
+      <div className={clsx("absolute inset-0 translate-y-2 translate-x-1 rounded-[32px] -z-10 transition-colors duration-500", card.bgStack1)} />
       
-      <motion.div
-        style={{ x, rotate, opacity }}
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        onDragEnd={(_, info) => {
-          if (info.offset.x < -100) onSwipeLeft();
-          else if (info.offset.x > 100) onSwipeRight();
-        }}
-        className="relative w-full h-full bg-gradient-to-b from-blue-500 to-blue-600 rounded-[32px] p-6 shadow-2xl cursor-grab active:cursor-grabbing overflow-hidden group"
-      >
-        {/* Card Content mimicking the image */}
-        <div className="flex flex-col h-full items-center justify-between relative z-10">
-          <div className="flex items-center gap-2">
-            <span className="text-white/90 text-[10px] font-bold tracking-[0.2em] uppercase">Audio Minicast</span>
-            <Mic className="w-4 h-4 text-white/90" />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentIndex}
+          style={{ x, rotate, opacity }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          onDragEnd={(_, info) => {
+            if (info.offset.x < -100) onSwipeLeft();
+            else if (info.offset.x > 100) onSwipeRight();
+          }}
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className={clsx(
+            "relative w-full h-full bg-gradient-to-b rounded-[32px] p-6 shadow-2xl cursor-grab active:cursor-grabbing overflow-hidden group transition-colors duration-500",
+            card.color
+          )}
+        >
+          {/* Card Content mimicking the image */}
+          <div className="flex flex-col h-full items-center justify-between relative z-10">
+            <div className="flex items-center gap-2">
+              <span className="text-white/90 text-[10px] font-bold tracking-[0.2em] uppercase">{card.title}</span>
+              <Mic className="w-4 h-4 text-white/90" />
+            </div>
+
+            <div className="text-center space-y-1">
+              <h3 className="text-white text-3xl font-bold leading-tight">{card.name}</h3>
+              <h3 className="text-white text-3xl font-bold leading-tight">{card.subname}</h3>
+            </div>
+
+            <div className="w-full">
+              <button 
+                type="button"
+                className="w-full bg-white text-black rounded-full py-4 flex items-center justify-center gap-2 font-bold shadow-xl hover:scale-105 transition-transform"
+              >
+                <Play className="w-4 h-4 fill-current" />
+                Play Now
+              </button>
+            </div>
           </div>
 
-          <div className="text-center space-y-1">
-            <h3 className="text-white text-3xl font-bold leading-tight">perala</h3>
-            <h3 className="text-white text-3xl font-bold leading-tight">chiranjeevi</h3>
-          </div>
-
-          <div className="w-full">
-            <button 
-              type="button"
-              className="w-full bg-white text-black rounded-full py-4 flex items-center justify-center gap-2 font-bold shadow-xl hover:scale-105 transition-transform"
-            >
-              <Play className="w-4 h-4 fill-current" />
-              Play Now
-            </button>
-          </div>
-        </div>
-
-        {/* Decorative circle from image */}
-        <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
-      </motion.div>
+          {/* Decorative circle from image */}
+          <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 };
@@ -265,10 +334,7 @@ export default function AuthPage() {
               ) : (
                 <div className="space-y-5">
                   <div className="py-4">
-                    <SwipeCard 
-                      onSwipeLeft={() => setMode("login")}
-                      onSwipeRight={() => setMode("login")}
-                    />
+                    <SwipeCard />
                     <div className="text-center mt-6 space-y-1">
                       <p className="text-sm font-semibold text-white">
                         Swipe to explore
