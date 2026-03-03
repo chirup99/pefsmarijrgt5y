@@ -290,7 +290,7 @@ export default function AuthPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({ title: "Profile updated", description: "Your persona has been saved." });
-      setMode("login");
+      setLocation("/");
     },
   });
 
@@ -468,10 +468,9 @@ export default function AuthPage() {
           <div className="flex p-1 bg-white/10 rounded-lg mb-6 relative">
             <button
               type="button"
-              onClick={() => setMode("login")}
               className={clsx(
                 "flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors duration-200",
-                mode === "login"
+                mode === "customize" || mode === "register"
                   ? "text-white"
                   : "text-white/50 hover:text-white/80",
               )}
@@ -480,7 +479,6 @@ export default function AuthPage() {
             </button>
             <button
               type="button"
-              onClick={() => setMode("register")}
               className={clsx(
                 "flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors duration-200",
                 mode === "register"
@@ -495,7 +493,7 @@ export default function AuthPage() {
               className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white/20 rounded-md shadow-sm"
               initial={false}
               animate={{
-                left: mode === "login" ? "4px" : "calc(50%)",
+                left: mode === "register" ? "calc(50%)" : "4px",
               }}
               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
             />
@@ -582,84 +580,69 @@ export default function AuthPage() {
                   </form>
                 ) : mode === "register" ? (
                   <div className="space-y-4">
-                    {/* Check if we are in customize flow */}
-                    {form.watch("name") || user ? (
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-xs font-bold text-white uppercase tracking-wider">Your Mini-Cards ({form.watch("cards")?.length || 0}/5)</h4>
-                          {(!form.watch("cards") || form.watch("cards").length < 5) && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-bold text-white uppercase tracking-wider">Your Mini-Cards ({form.watch("cards")?.length || 0}/5)</h4>
+                        {(!form.watch("cards") || form.watch("cards").length < 5) && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const currentCards = form.getValues("cards") || [];
+                              form.setValue("cards", [...currentCards, "New Activity"]);
+                            }}
+                            className="p-1 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                      
+                      <div className="space-y-2 max-h-[250px] overflow-y-auto pr-1 custom-scrollbar">
+                        {form.watch("cards")?.map((card, idx) => (
+                          <div key={idx} className="flex items-center gap-2 bg-white/5 border border-white/10 p-2 rounded-lg group relative">
+                            <input
+                              value={card}
+                              onChange={(e) => {
+                                const currentCards = [...(form.getValues("cards") || [])];
+                                currentCards[idx] = e.target.value;
+                                form.setValue("cards", currentCards);
+                              }}
+                              className="flex-1 bg-transparent border-none text-white text-sm focus:outline-none"
+                              placeholder="Activity Name"
+                            />
                             <button
                               type="button"
                               onClick={() => {
-                                const currentCards = form.getValues("cards") || [];
-                                form.setValue("cards", [...currentCards, "New Activity"]);
+                                const currentCards = form.getValues("cards").filter((_, i) => i !== idx);
+                                form.setValue("cards", currentCards);
                               }}
-                              className="p-1 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors"
+                              className="absolute top-1 right-1 p-1 text-white/40 hover:text-red-400 transition-all"
                             >
-                              <Plus className="w-4 h-4" />
+                              <X className="w-3 h-3" />
                             </button>
-                          )}
-                        </div>
+                          </div>
+                        ))}
                         
-                        <div className="space-y-2 max-h-[250px] overflow-y-auto pr-1 custom-scrollbar">
-                          {form.watch("cards")?.map((card, idx) => (
-                            <div key={idx} className="flex items-center gap-2 bg-white/5 border border-white/10 p-2 rounded-lg group">
-                              <input
-                                value={card}
-                                onChange={(e) => {
-                                  const currentCards = [...(form.getValues("cards") || [])];
-                                  currentCards[idx] = e.target.value;
-                                  form.setValue("cards", currentCards);
-                                }}
-                                className="flex-1 bg-transparent border-none text-white text-sm focus:outline-none"
-                                placeholder="Activity Name"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const currentCards = form.getValues("cards").filter((_, i) => i !== idx);
-                                  form.setValue("cards", currentCards);
-                                }}
-                                className="opacity-0 group-hover:opacity-100 p-1 text-white/40 hover:text-red-400 transition-all"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          ))}
-                          
-                          {(!form.watch("cards") || form.watch("cards").length === 0) && (
-                            <div 
-                              onClick={() => form.setValue("cards", ["New Activity"])}
-                              className="border-2 border-dashed border-white/10 rounded-xl aspect-[3/4] flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors group"
-                            >
-                              <Plus className="w-8 h-8 text-white/20 group-hover:text-white/40 transition-colors" />
-                              <p className="text-[10px] text-white/20 mt-2 uppercase tracking-widest group-hover:text-white/40">Add your first card</p>
-                            </div>
-                          )}
-                        </div>
+                        {(!form.watch("cards") || form.watch("cards").length === 0) && (
+                          <div 
+                            onClick={() => form.setValue("cards", ["New Activity"])}
+                            className="border-2 border-dashed border-white/10 rounded-xl aspect-[3/4] flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors group"
+                          >
+                            <Plus className="w-8 h-8 text-white/20 group-hover:text-white/40 transition-colors" />
+                            <p className="text-[10px] text-white/20 mt-2 uppercase tracking-widest group-hover:text-white/40">Add your first card</p>
+                          </div>
+                        )}
+                      </div>
 
-                        <button
-                          type="button"
-                          disabled={updateProfileMutation.isPending}
-                          onClick={() => form.handleSubmit(onSubmit)()}
-                          className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all mt-4"
-                        >
-                          {updateProfileMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" /> Save All</>}
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="py-2">
-                        <SwipeCard />
-                        <div className="text-center mt-4 space-y-0.5">
-                          <p className="text-xs font-semibold text-white">
-                            Swipe to explore
-                          </p>
-                          <p className="text-[10px] text-white/40">
-                            Left to back • Right to next
-                          </p>
-                        </div>
-                      </div>
-                    )}
+                      <button
+                        type="button"
+                        disabled={updateProfileMutation.isPending}
+                        onClick={() => form.handleSubmit(onSubmit)()}
+                        className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all mt-4"
+                      >
+                        {updateProfileMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save All"}
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <form
@@ -759,10 +742,16 @@ export default function AuthPage() {
 
             <button
               type="button"
-              onClick={() => setMode(mode === "customize" ? "login" : "customize")}
+              onClick={() => {
+                if (mode === "login") {
+                  setMode("customize");
+                } else {
+                  setMode("login");
+                }
+              }}
               className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-lg"
             >
-              {mode === "customize" ? "Back to Persona" : "Create your persona"}
+              {mode === "login" ? "Create your persona" : "Back to Persona"}
             </button>
           </div>
         </motion.div>
