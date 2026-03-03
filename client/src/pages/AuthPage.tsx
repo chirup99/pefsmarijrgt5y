@@ -692,30 +692,36 @@ export default function AuthPage() {
   const [selectedCards, setSelectedCards] = useState<string[]>(user?.cards || []);
 
   useEffect(() => {
-    if (user?.cards) {
+    if (user?.cards && selectedCards.length === 0) {
       setSelectedCards(user.cards);
     }
   }, [user]);
 
+  useEffect(() => {
+    if (user) {
+      form.reset({
+        ...user,
+        password: "",
+        cards: user.cards || []
+      });
+    }
+  }, [user, form]);
+
   const onSubmit = async (data: InsertUser) => {
     try {
+      const submitData = {
+        ...data,
+        email: data.email || user?.email || `${Date.now()}@persona.local`,
+        cards: selectedCards,
+      };
+
       if (mode === "customize" || (mode === "register" && user)) {
-        const submitData = {
-          ...data,
-          email: data.email || user?.email || `${Date.now()}@persona.local`,
-          cards: selectedCards,
-        };
         await updateProfileMutation.mutateAsync(submitData);
         setMode("login");
         return;
       }
       if (mode === "register") {
-        const registerData = {
-          ...data,
-          email: data.email || user?.email || `${Date.now()}@persona.local`,
-          cards: selectedCards,
-        };
-        await registerMutation.mutateAsync(registerData);
+        await registerMutation.mutateAsync(submitData);
         setMode("login");
       } else if (mode === "login") {
         await loginMutation.mutateAsync(data);
@@ -948,7 +954,7 @@ export default function AuthPage() {
                   </form>
                 ) : mode === "register" ? (
                   <div className="space-y-4">
-                    {(mode === "register" || mode === "customize") && selectedCards.length > 0 && user ? (
+                    {(mode === "register" || mode === "customize") && selectedCards.length > 0 && (mode !== "customize" || user) ? (
                       <div className="py-2">
                         <CustomSwipeCard cards={selectedCards} />
                         <div className="text-center mt-4 space-y-0.5">
