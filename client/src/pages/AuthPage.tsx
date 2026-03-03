@@ -710,11 +710,17 @@ export default function AuthPage() {
   const downloadQR = async () => {
     if (qrRef.current === null) return;
     try {
-      const dataUrl = await htmlToImage.toPng(qrRef.current, {
+      // Create a temporary container for the download to ensure clean background
+      const element = qrRef.current;
+      const dataUrl = await htmlToImage.toPng(element, {
         backgroundColor: "#000000",
         style: {
           borderRadius: "40px",
-        }
+          margin: "0",
+          padding: "40px",
+        },
+        width: 400,
+        height: 400,
       });
       const link = document.createElement("a");
       link.download = `persona-qr-${user?.id || "profile"}.png`;
@@ -1238,51 +1244,78 @@ export default function AuthPage() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setShowQRDialog(false)}
-                className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                className="absolute inset-0 bg-black/90 backdrop-blur-md"
               />
               <motion.div
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="relative w-full max-w-sm bg-[#0A0A0A] border border-white/10 rounded-[32px] p-8 shadow-2xl text-center"
+                className="relative w-full max-w-[320px] mx-auto"
               >
-                <button
-                  onClick={() => setShowQRDialog(false)}
-                  className="absolute top-6 right-6 p-2 text-white/40 hover:text-white transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <h3 className="text-2xl font-bold text-white tracking-tight">Your Persona QR</h3>
-                    <p className="text-white/40 text-xs">Scan to view digital identity</p>
+                {/* iPhone Frame */}
+                <div className="relative aspect-[9/19.5] bg-[#1a1a1a] rounded-[55px] p-3 shadow-[0_0_0_2px_#333,0_0_0_6px_#000,0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden border-[1px] border-white/10">
+                  {/* Dynamic Island */}
+                  <div className="absolute top-4 left-1/2 -translate-x-1/2 w-24 h-7 bg-black rounded-full z-50 flex items-center justify-end px-4">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500/20 shadow-[0_0_5px_#3b82f6]" />
                   </div>
 
-                  <div 
-                    ref={qrRef}
-                    className="aspect-square bg-white rounded-[40px] p-8 mx-auto flex items-center justify-center shadow-2xl"
+                  {/* iPhone Screen Content */}
+                  <div className="w-full h-full bg-mesh rounded-[44px] relative overflow-hidden flex flex-col items-center justify-between p-8 pt-20 pb-12">
+                    {/* Time/Date Mockup */}
+                    <div className="text-center space-y-1">
+                      <p className="text-white/80 text-sm font-medium">Tuesday, March 3</p>
+                      <h4 className="text-white text-6xl font-bold tracking-tighter">13:11</h4>
+                    </div>
+
+                    {/* QR Code Area */}
+                    <div className="flex flex-col items-center gap-6 w-full">
+                      <div 
+                        ref={qrRef}
+                        className="aspect-square bg-white rounded-[40px] p-6 flex items-center justify-center shadow-2xl relative group"
+                      >
+                        <QRCodeSVG 
+                          value={window.location.origin + "/?user=" + user?.id}
+                          size={160}
+                          level="H"
+                          includeMargin={false}
+                        />
+                      </div>
+                      <div className="text-center space-y-1">
+                        <p className="text-white font-bold text-sm tracking-widest uppercase">Your Persona</p>
+                        <p className="text-white/40 text-[10px] uppercase tracking-[0.2em]">Scan to connect</p>
+                      </div>
+                    </div>
+
+                    {/* Bottom Controls */}
+                    <div className="w-full flex justify-between items-center px-4">
+                      <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">
+                        <Save className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">
+                        <QrCode className="w-4 h-4 text-white" />
+                      </div>
+                    </div>
+
+                    {/* Home Indicator */}
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/30 rounded-full" />
+                  </div>
+                </div>
+
+                {/* Action Buttons Below iPhone */}
+                <div className="mt-8 space-y-3 px-4">
+                  <button
+                    onClick={downloadQR}
+                    className="w-full bg-white text-black rounded-2xl py-4 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all shadow-xl active:scale-95"
                   >
-                    <QRCodeSVG 
-                      value={window.location.origin + "/?user=" + user?.id}
-                      size={200}
-                      level="H"
-                      includeMargin={false}
-                    />
-                  </div>
-
-                  <div className="space-y-3">
-                    <button
-                      onClick={downloadQR}
-                      className="w-full bg-white text-black rounded-xl py-4 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all shadow-lg"
-                    >
-                      <Save className="w-4 h-4" />
-                      Save to Wallpaper
-                    </button>
-                    <p className="text-[10px] text-white/20 uppercase tracking-[0.2em]">
-                      Set as lockscreen for instant sharing
-                    </p>
-                  </div>
+                    <Save className="w-4 h-4" />
+                    Download Wallpaper
+                  </button>
+                  <button
+                    onClick={() => setShowQRDialog(false)}
+                    className="w-full bg-white/5 text-white/60 rounded-2xl py-4 font-bold text-sm hover:text-white transition-all"
+                  >
+                    Close Preview
+                  </button>
                 </div>
               </motion.div>
             </div>
