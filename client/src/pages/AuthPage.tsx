@@ -428,7 +428,7 @@ const MiniCard = ({
             </button>
           </div>
         ) : card.type === "pitch" ? (
-          <div className="w-full h-full flex flex-col items-center justify-center p-4">
+          <div className="w-full h-full flex flex-col items-center justify-center p-2 overflow-hidden">
             {isEditing ? (
                <textarea
                 className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white h-full resize-none"
@@ -441,12 +441,14 @@ const MiniCard = ({
                 }}
               />
             ) : (
-              <p 
-                onClick={() => setIsEditing(true)}
-                className="text-white/90 text-sm text-center line-clamp-6 italic leading-relaxed cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-colors w-full h-full flex items-center justify-center"
-              >
-                "{(card as any).content || "No pitch content yet..."}"
-              </p>
+              <div className="w-full h-full overflow-y-auto custom-scrollbar flex items-center">
+                <p 
+                  onClick={() => setIsEditing(true)}
+                  className="text-white/90 text-sm text-center italic leading-relaxed cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-colors w-full"
+                >
+                  "{(card as any).content || "No pitch content yet..."}"
+                </p>
+              </div>
             )}
           </div>
         ) : card.type === "revenue" && isPlaying ? (
