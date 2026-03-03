@@ -652,6 +652,7 @@ export default function AuthPage() {
   const [mode, setMode] = useState<AuthMode>("login");
   const { user } = useAuth();
 
+  const [selectedCards, setSelectedCards] = useState<string[]>([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const loginMutation = useLogin();
@@ -689,14 +690,6 @@ export default function AuthPage() {
     },
   });
 
-  const [selectedCards, setSelectedCards] = useState<string[]>(user?.cards || []);
-
-  useEffect(() => {
-    if (user?.cards && selectedCards.length === 0) {
-      setSelectedCards(user.cards);
-    }
-  }, [user]);
-
   useEffect(() => {
     if (user) {
       form.reset({
@@ -704,6 +697,7 @@ export default function AuthPage() {
         password: "",
         cards: user.cards || []
       });
+      setSelectedCards(user.cards || []);
     }
   }, [user, form]);
 
