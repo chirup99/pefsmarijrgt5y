@@ -672,7 +672,7 @@ export default function AuthPage() {
 
         <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl p-5 sm:p-6 z-10 relative overflow-hidden">
           <div className="flex p-1 bg-white/10 rounded-lg mb-6 relative">
-            <button onClick={() => setMode("customize")} className={clsx("flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors", (mode === "customize" || mode === "register") ? "text-white" : "text-white/50")}>Persona</button>
+            <button onClick={() => setMode("login")} className={clsx("flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors", (mode === "login" || mode === "customize") ? "text-white" : "text-white/50")}>Persona</button>
             <button onClick={() => setMode("register")} className={clsx("flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors", mode === "register" ? "text-white" : "text-white/50")}>Mini-Cards</button>
             <motion.div layoutId="activeTab" className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white/20 rounded-md shadow-sm" animate={{ left: mode === "register" ? "calc(50%)" : "4px" }} />
           </div>
@@ -793,11 +793,11 @@ export default function AuthPage() {
 
             <div className="relative py-2">
               <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-white/10"></span></div>
-              <div className="relative flex justify-center text-[10px] uppercase"><span className="bg-card px-2 text-white/40 font-bold">{mode === "customize" ? "EDITING" : "FREE"}</span></div>
+              <div className="relative flex justify-center text-[10px] uppercase"><span className="bg-card px-2 text-white/40 font-bold">{mode === "customize" ? "EDITING" : (mode === "login" ? "VIEWING" : "FREE")}</span></div>
             </div>
 
             <button type="button" onClick={() => mode === "login" ? setMode("customize") : setMode("login")} className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg">
-              {mode === "login" ? "Create your persona" : "Back to Persona"}
+              {mode === "login" ? "Edit your persona" : (mode === "register" ? "Back to Persona" : "View Profile")}
             </button>
           </div>
         </motion.div>
