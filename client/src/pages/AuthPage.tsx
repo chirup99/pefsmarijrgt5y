@@ -594,7 +594,7 @@ export default function AuthPage() {
   const form = useForm<InsertUser>({
     resolver: zodResolver(insertUserSchema),
     defaultValues: {
-      password: "password123",
+      password: "",
       name: user?.name || "",
       role: user?.role || "founder",
       bio: user?.bio || "Collaborate & Grow your Startup",

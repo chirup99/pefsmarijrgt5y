@@ -97,8 +97,10 @@ export async function registerRoutes(
       if (!user) {
         return res.status(404).json({ message: "User not found with this email" });
       }
-      const updatedUser = await storage.updateUser(user.id, data);
-      res.json(updatedUser);
+      const { password: _, ...updateData } = data as any;
+      const updatedUser = await storage.updateUser(user.id, updateData);
+      const { password: __, ...safeUser } = updatedUser;
+      res.json(safeUser);
     } catch (err) {
       res.status(400).json({ message: "Invalid data" });
     }
