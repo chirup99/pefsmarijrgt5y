@@ -43,7 +43,7 @@ import peralaLogo from "@/assets/logo.png";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
 
-type AuthMode = "login" | "register" | "customize";
+type AuthMode = "login" | "register" | "customize" | "swipe";
 
 const CARD_TYPES = [
   {
@@ -319,10 +319,8 @@ const MiniCard = ({
 
     if (!text) return;
 
-    // Use a more natural voice if available
     const utterance = new SpeechSynthesisUtterance(text);
     const voices = window.speechSynthesis.getVoices();
-    // Try to find a better English voice
     const preferredVoice =
       voices.find(
         (v) => v.name.includes("Google") && v.lang.startsWith("en"),
@@ -335,7 +333,7 @@ const MiniCard = ({
     }
 
     utterance.pitch = 1;
-    utterance.rate = 0.9; // Slightly slower for better clarity
+    utterance.rate = 0.9;
 
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
@@ -462,29 +460,14 @@ const MiniCard = ({
           </div>
         ) : card.type === "pitch" ? (
           <div className="w-full h-full flex flex-col items-center justify-center p-2 overflow-hidden">
-            {isEditing ? (
-              <textarea
-                className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white h-full resize-none"
-                placeholder="Pitch content"
-                defaultValue={(card as any).content}
-                autoFocus
-                onBlur={(e) => {
-                  onUpdate(
-                    JSON.stringify({ ...card, content: e.target.value }),
-                  );
-                  setIsEditing(false);
-                }}
-              />
-            ) : (
-              <div className="w-full h-full overflow-y-auto custom-scrollbar flex items-center">
-                <p
-                  onClick={() => setIsEditing(true)}
-                  className="text-white/90 text-sm text-center italic leading-relaxed cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-colors w-full"
-                >
-                  "{(card as any).content || "No pitch content yet..."}"
-                </p>
-              </div>
-            )}
+            <div className="w-full h-full overflow-y-auto custom-scrollbar flex items-center">
+              <p
+                onClick={() => setIsEditing(true)}
+                className="text-white/90 text-sm text-center italic leading-relaxed cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-colors w-full"
+              >
+                "{(card as any).content || "No pitch content yet..."}"
+              </p>
+            </div>
           </div>
         ) : card.type === "revenue" && isPlaying ? (
           <div className="w-full h-full flex flex-col items-center justify-center p-2">
@@ -683,56 +666,47 @@ export default function AuthPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
-        title: "Profile updated",
-        description: "Your persona has been saved.",
+        title: "Success",
+        description: "Profile updated successfully",
       });
-      setLocation("/");
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     },
   });
 
-  useEffect(() => {
-    if (user) {
-      form.reset({
-        ...user,
-        password: "",
-        cards: user.cards || []
-      });
-      setSelectedCards(user.cards || []);
-    }
-  }, [user, form]);
-
-  const onSubmit = async (data: InsertUser) => {
+  const onSubmit = async (values: InsertUser) => {
     try {
-      const submitData = {
-        ...data,
-        email: data.email || user?.email || `${Date.now()}@persona.local`,
-        cards: selectedCards,
-      };
-
-      // If we have a user (logged in), update them. 
-      // If we are in "register" mode (card selection), this is the final save.
-      if (user?.id) {
-        await updateProfileMutation.mutateAsync(submitData);
-      } else {
-        await registerMutation.mutateAsync(submitData);
-        setMode("login");
+      if (mode === "login") {
+        await loginMutation.mutateAsync(values);
+      } else if (mode === "register" || mode === "customize") {
+        if (user?.id) {
+          await updateProfileMutation.mutateAsync({
+            ...values,
+            cards: selectedCards,
+          });
+        } else {
+          await registerMutation.mutateAsync({
+            ...values,
+            cards: selectedCards,
+          });
+        }
       }
-      
+    } catch (err: any) {
       toast({
-        title: "Success",
-        description: "Your persona and cards have been saved.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Action Failed",
-        description: error.message || "An unexpected error occurred.",
+        title: "Error",
+        description: err.message,
         variant: "destructive",
       });
     }
   };
 
   const onNext = () => {
-    setMode("register");
+    setMode("customize");
   };
 
   return (
@@ -851,18 +825,16 @@ export default function AuthPage() {
               onClick={() => setMode("login")}
               className={clsx(
                 "flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors",
-                mode === "login" || mode === "customize"
-                  ? "text-white"
-                  : "text-white/50",
+                mode === "login" || mode === "register" || mode === "customize" ? "text-white" : "text-white/50",
               )}
             >
               Persona
             </button>
             <button
-              onClick={() => setMode("register")}
+              onClick={() => setMode("swipe")}
               className={clsx(
                 "flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors",
-                mode === "register" ? "text-white" : "text-white/50",
+                mode === "swipe" ? "text-white" : "text-white/50",
               )}
             >
               Mini-Cards
@@ -870,7 +842,7 @@ export default function AuthPage() {
             <motion.div
               layoutId="activeTab"
               className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white/20 rounded-md shadow-sm"
-              animate={{ left: mode === "register" ? "calc(50%)" : "4px" }}
+              animate={{ left: mode === "swipe" ? "calc(50%)" : "4px" }}
             />
           </div>
 
@@ -1177,14 +1149,13 @@ export default function AuthPage() {
             >
               {mode === "login"
                 ? "create your persona"
-                : mode === "register" || mode === "customize"
+                : mode === "register" || mode === "customize" || mode === "swipe"
                   ? "Back to Persona"
                   : "View Profile"}
             </button>
           </div>
         </motion.div>
       </motion.div>
-      <AnimatePresence></AnimatePresence>
     </div>
   );
 }
