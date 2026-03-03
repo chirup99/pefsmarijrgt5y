@@ -30,7 +30,11 @@ import {
 } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertUserSchema, type InsertUser, type CardData } from "@shared/schema";
+import {
+  insertUserSchema,
+  type InsertUser,
+  type CardData,
+} from "@shared/schema";
 import { useLogin, useRegister, useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
@@ -42,10 +46,30 @@ import { useMutation } from "@tanstack/react-query";
 type AuthMode = "login" | "register" | "customize";
 
 const CARD_TYPES = [
-  { type: "pitch", label: "Elevated Pitch", icon: FileText, color: "from-blue-500 to-blue-600" },
-  { type: "reel", label: "Reel / Short", icon: Video, color: "from-purple-500 to-purple-600" },
-  { type: "revenue", label: "Revenue / Sales", icon: TrendingUp, color: "from-emerald-500 to-emerald-600" },
-  { type: "product", label: "Product Show", icon: Package, color: "from-orange-500 to-orange-600" },
+  {
+    type: "pitch",
+    label: "Elevated Pitch",
+    icon: FileText,
+    color: "from-blue-500 to-blue-600",
+  },
+  {
+    type: "reel",
+    label: "Reel / Short",
+    icon: Video,
+    color: "from-purple-500 to-purple-600",
+  },
+  {
+    type: "revenue",
+    label: "Revenue / Sales",
+    icon: TrendingUp,
+    color: "from-emerald-500 to-emerald-600",
+  },
+  {
+    type: "product",
+    label: "Product Show",
+    icon: Package,
+    color: "from-orange-500 to-orange-600",
+  },
 ];
 
 const ROLES = [
@@ -261,16 +285,16 @@ const SwipeCard = () => {
   );
 };
 
-const MiniCard = ({ 
-  idx, 
-  cardJson, 
-  onUpdate, 
-  onDelete 
-}: { 
-  idx: number; 
-  cardJson?: string; 
-  onUpdate: (json: string) => void; 
-  onDelete: () => void; 
+const MiniCard = ({
+  idx,
+  cardJson,
+  onUpdate,
+  onDelete,
+}: {
+  idx: number;
+  cardJson?: string;
+  onUpdate: (json: string) => void;
+  onDelete: () => void;
 }) => {
   const card: CardData | null = useMemo(() => {
     try {
@@ -279,7 +303,7 @@ const MiniCard = ({
       return null;
     }
   }, [cardJson]);
-  
+
   const [isEditing, setIsEditing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -299,32 +323,35 @@ const MiniCard = ({
     const utterance = new SpeechSynthesisUtterance(text);
     const voices = window.speechSynthesis.getVoices();
     // Try to find a better English voice
-    const preferredVoice = voices.find(v => v.name.includes("Google") && v.lang.startsWith("en")) || 
-                          voices.find(v => v.lang.startsWith("en-GB")) ||
-                          voices.find(v => v.lang.startsWith("en-US"));
-    
+    const preferredVoice =
+      voices.find(
+        (v) => v.name.includes("Google") && v.lang.startsWith("en"),
+      ) ||
+      voices.find((v) => v.lang.startsWith("en-GB")) ||
+      voices.find((v) => v.lang.startsWith("en-US"));
+
     if (preferredVoice) {
       utterance.voice = preferredVoice;
     }
-    
+
     utterance.pitch = 1;
     utterance.rate = 0.9; // Slightly slower for better clarity
-    
+
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
-    
+
     setIsSpeaking(true);
     window.speechSynthesis.speak(utterance);
   };
 
-  const cardTypeInfo = CARD_TYPES.find(t => t.type === card.type);
+  const cardTypeInfo = CARD_TYPES.find((t) => t.type === card.type);
 
   return (
     <motion.div
       layoutId={`card-${idx}`}
       className={clsx(
         "h-full rounded-2xl p-4 relative overflow-hidden flex flex-col justify-between shadow-xl bg-gradient-to-b",
-        cardTypeInfo?.color || "from-gray-700 to-gray-800"
+        cardTypeInfo?.color || "from-gray-700 to-gray-800",
       )}
     >
       <button
@@ -361,7 +388,9 @@ const MiniCard = ({
                 placeholder="Pitch content"
                 defaultValue={(card as any).content}
                 onBlur={(e) => {
-                  onUpdate(JSON.stringify({ ...card, content: e.target.value }));
+                  onUpdate(
+                    JSON.stringify({ ...card, content: e.target.value }),
+                  );
                 }}
               />
             )}
@@ -382,7 +411,9 @@ const MiniCard = ({
                   placeholder="Value (e.g. $10k)"
                   defaultValue={(card as any).value}
                   onBlur={(e) => {
-                    onUpdate(JSON.stringify({ ...card, value: e.target.value }));
+                    onUpdate(
+                      JSON.stringify({ ...card, value: e.target.value }),
+                    );
                   }}
                 />
                 <input
@@ -390,7 +421,9 @@ const MiniCard = ({
                   placeholder="Image URL"
                   defaultValue={(card as any).imageUrl}
                   onBlur={(e) => {
-                    onUpdate(JSON.stringify({ ...card, imageUrl: e.target.value }));
+                    onUpdate(
+                      JSON.stringify({ ...card, imageUrl: e.target.value }),
+                    );
                   }}
                 />
               </div>
@@ -430,19 +463,21 @@ const MiniCard = ({
         ) : card.type === "pitch" ? (
           <div className="w-full h-full flex flex-col items-center justify-center p-2 overflow-hidden">
             {isEditing ? (
-               <textarea
+              <textarea
                 className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white h-full resize-none"
                 placeholder="Pitch content"
                 defaultValue={(card as any).content}
                 autoFocus
                 onBlur={(e) => {
-                  onUpdate(JSON.stringify({ ...card, content: e.target.value }));
+                  onUpdate(
+                    JSON.stringify({ ...card, content: e.target.value }),
+                  );
                   setIsEditing(false);
                 }}
               />
             ) : (
               <div className="w-full h-full overflow-y-auto custom-scrollbar flex items-center">
-                <p 
+                <p
                   onClick={() => setIsEditing(true)}
                   className="text-white/90 text-sm text-center italic leading-relaxed cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-colors w-full"
                 >
@@ -454,7 +489,11 @@ const MiniCard = ({
         ) : card.type === "revenue" && isPlaying ? (
           <div className="w-full h-full flex flex-col items-center justify-center p-2">
             <div className="w-full h-24 relative overflow-visible">
-              <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <svg
+                className="w-full h-full"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+              >
                 <motion.path
                   d="M 10 90 L 90 10"
                   fill="none"
@@ -475,7 +514,7 @@ const MiniCard = ({
                   transition={{ delay: 1.5, duration: 0.3 }}
                 />
               </svg>
-              <motion.div 
+              <motion.div
                 className="absolute -top-2 right-0 text-white font-bold text-xl"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -502,11 +541,11 @@ const MiniCard = ({
             <Play className="w-3 h-3 fill-current" /> Play Now
           </button>
         ) : card.type === "pitch" ? (
-          <button 
+          <button
             onClick={() => handleSpeak((card as any).content || "")}
             className={clsx(
               "w-full rounded-full py-2 text-xs font-bold flex items-center justify-center gap-2 transition-colors",
-              isSpeaking ? "bg-red-500 text-white" : "bg-white text-black"
+              isSpeaking ? "bg-red-500 text-white" : "bg-white text-black",
             )}
           >
             {isSpeaking ? (
@@ -521,12 +560,17 @@ const MiniCard = ({
           </button>
         ) : card.type === "revenue" ? (
           <div className="space-y-2">
-            {!isPlaying && <div className="text-white font-bold text-xl">{(card as any).value}</div>}
-            <button 
+            {!isPlaying && (
+              <div className="text-white font-bold text-xl">
+                {(card as any).value}
+              </div>
+            )}
+            <button
               onClick={() => setIsPlaying(!isPlaying)}
               className="w-full bg-white text-black rounded-full py-2 text-xs font-bold flex items-center justify-center gap-2"
             >
-              <Play className="w-3 h-3 fill-current" /> {isPlaying ? "Reset" : "Play Projection"}
+              <Play className="w-3 h-3 fill-current" />{" "}
+              {isPlaying ? "Reset" : "Play Projection"}
             </button>
           </div>
         ) : null}
@@ -569,27 +613,36 @@ export default function AuthPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      toast({ title: "Profile updated", description: "Your persona has been saved." });
+      toast({
+        title: "Profile updated",
+        description: "Your persona has been saved.",
+      });
       setLocation("/");
     },
   });
 
   const onSubmit = async (data: InsertUser) => {
     try {
-      if (mode === "customize") {
+      if (mode === "customize" || (mode === "register" && user)) {
         const submitData = {
           ...data,
-          email: data.email || `${Date.now()}@persona.local`
+          email: data.email || user?.email || `${Date.now()}@persona.local`,
         };
         await updateProfileMutation.mutateAsync(submitData);
         return;
       }
       if (mode === "login") {
         await loginMutation.mutateAsync(data);
-        toast({ title: "Welcome back", description: "Successfully logged into Persona." });
+        toast({
+          title: "Welcome back",
+          description: "Successfully logged into Persona.",
+        });
       } else {
         await registerMutation.mutateAsync(data);
-        toast({ title: "Welcome to Persona", description: "Your account has been created." });
+        toast({
+          title: "Welcome to Persona",
+          description: "Your account has been created.",
+        });
       }
       setLocation("/dashboard");
     } catch (error: any) {
@@ -613,8 +666,17 @@ export default function AuthPage() {
             copyright : persona UI/UX is inspired by
           </p>
           <div className="space-y-3">
-            <a href="https://perala.in" target="_blank" rel="noopener noreferrer" className="block group">
-              <img src={peralaLogo} alt="Perala" className="w-full h-auto opacity-80 group-hover:opacity-100 transition-opacity rounded-lg" />
+            <a
+              href="https://perala.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block group"
+            >
+              <img
+                src={peralaLogo}
+                alt="Perala"
+                className="w-full h-auto opacity-80 group-hover:opacity-100 transition-opacity rounded-lg"
+              />
             </a>
           </div>
         </motion.div>
@@ -633,12 +695,26 @@ export default function AuthPage() {
           isMenuOpen ? "cursor-pointer select-none" : "",
         )}
       >
-        <div className="absolute inset-0 bg-black/20 pointer-events-none opacity-0 transition-opacity duration-500" style={{ opacity: isMenuOpen ? 1 : 0 }}></div>
-        
-        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="absolute top-8 right-8 z-50 p-2 group">
+        <div
+          className="absolute inset-0 bg-black/20 pointer-events-none opacity-0 transition-opacity duration-500"
+          style={{ opacity: isMenuOpen ? 1 : 0 }}
+        ></div>
+
+        <button
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="absolute top-8 right-8 z-50 p-2 group"
+        >
           {isMenuOpen ? (
             <div className="text-white/80 hover:text-white transition-colors">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              >
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
@@ -661,42 +737,125 @@ export default function AuthPage() {
           <QrCode className="w-6 h-6 text-black" strokeWidth={2.5} />
         </motion.button>
 
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md text-center mb-6 z-10">
-          <h1 className="text-2xl font-display font-bold tracking-widest uppercase text-white">PERSONA</h1>
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md text-center mb-6 z-10"
+        >
+          <h1 className="text-2xl font-display font-bold tracking-widest uppercase text-white">
+            PERSONA
+          </h1>
           <p className="text-[10px] tracking-[0.3em] text-white/50 font-medium mb-6 flex items-center justify-center gap-2">
-            CONNECT . COLLABORATE . EXPOSE <InfinityIcon className="w-3.5 h-3.5 text-purple-500/50" strokeWidth={2.5} />
+            CONNECT . COLLABORATE . EXPOSE{" "}
+            <InfinityIcon
+              className="w-3.5 h-3.5 text-purple-500/50"
+              strokeWidth={2.5}
+            />
           </p>
-          <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-2">Networking & Exposure</h2>
-          <p className="text-white/70 text-base mb-4 max-w-sm mx-auto">Persona: Your Digital Identity & Collaboration Hub.</p>
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-2">
+            Networking & Exposure
+          </h2>
+          <p className="text-white/70 text-base mb-4 max-w-sm mx-auto">
+            Persona: Your Digital Identity & Collaboration Hub.
+          </p>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl p-5 sm:p-6 z-10 relative overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl p-5 sm:p-6 z-10 relative overflow-hidden"
+        >
           <div className="flex p-1 bg-white/10 rounded-lg mb-6 relative">
-            <button onClick={() => setMode("login")} className={clsx("flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors", (mode === "login" || mode === "customize") ? "text-white" : "text-white/50")}>Persona</button>
-            <button onClick={() => setMode("register")} className={clsx("flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors", mode === "register" ? "text-white" : "text-white/50")}>Mini-Cards</button>
-            <motion.div layoutId="activeTab" className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white/20 rounded-md shadow-sm" animate={{ left: mode === "register" ? "calc(50%)" : "4px" }} />
+            <button
+              onClick={() => setMode("login")}
+              className={clsx(
+                "flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors",
+                mode === "login" || mode === "customize"
+                  ? "text-white"
+                  : "text-white/50",
+              )}
+            >
+              Persona
+            </button>
+            <button
+              onClick={() => setMode("register")}
+              className={clsx(
+                "flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors",
+                mode === "register" ? "text-white" : "text-white/50",
+              )}
+            >
+              Mini-Cards
+            </button>
+            <motion.div
+              layoutId="activeTab"
+              className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white/20 rounded-md shadow-sm"
+              animate={{ left: mode === "register" ? "calc(50%)" : "4px" }}
+            />
           </div>
 
           <div className="space-y-4">
             <AnimatePresence mode="wait">
-              <motion.div key={mode} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="space-y-3">
+              <motion.div
+                key={mode}
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                className="space-y-3"
+              >
                 {mode === "login" ? (
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-4"
+                  >
                     <div className="flex flex-col items-center text-center space-y-4 py-2">
                       <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-blue-400 mx-auto flex items-center justify-center text-white text-2xl font-bold shadow-lg">
                         {form.watch("name")?.[0] || "P"}
                       </div>
-                      <h3 className="text-xl font-bold text-white tracking-tight">{form.watch("name") || "Networking Profile"}</h3>
-                      <p className="text-white/40 text-xs">{ROLES.find(r => r.value === form.watch("role"))?.label || "Founder"}</p>
-                      <p className="text-white/40 text-[10px] italic">{form.watch("bio")}</p>
+                      <h3 className="text-xl font-bold text-white tracking-tight">
+                        {form.watch("name") || "Networking Profile"}
+                      </h3>
+                      <p className="text-white/40 text-xs">
+                        {ROLES.find((r) => r.value === form.watch("role"))
+                          ?.label || "Founder"}
+                      </p>
+                      <p className="text-white/40 text-[10px] italic">
+                        {form.watch("bio")}
+                      </p>
                       <div className="flex items-center justify-center gap-3 w-full pt-1">
-                        <a href={form.watch("linkedin") || "#"} target="_blank" rel="noreferrer" className="p-2.5 bg-white/5 rounded-lg text-white/70 hover:text-white"><SiLinkedin className="w-4 h-4" /></a>
-                        <a href={form.watch("instagram") || "#"} target="_blank" rel="noreferrer" className="p-2.5 bg-white/5 rounded-lg text-white/70 hover:text-white"><SiInstagram className="w-4 h-4" /></a>
-                        <a href={form.watch("whatsapp") || "#"} target="_blank" rel="noreferrer" className="p-2.5 bg-white/5 rounded-lg text-white/70 hover:text-white"><SiWhatsapp className="w-4 h-4" /></a>
+                        <a
+                          href={form.watch("linkedin") || "#"}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="p-2.5 bg-white/5 rounded-lg text-white/70 hover:text-white"
+                        >
+                          <SiLinkedin className="w-4 h-4" />
+                        </a>
+                        <a
+                          href={form.watch("instagram") || "#"}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="p-2.5 bg-white/5 rounded-lg text-white/70 hover:text-white"
+                        >
+                          <SiInstagram className="w-4 h-4" />
+                        </a>
+                        <a
+                          href={form.watch("whatsapp") || "#"}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="p-2.5 bg-white/5 rounded-lg text-white/70 hover:text-white"
+                        >
+                          <SiWhatsapp className="w-4 h-4" />
+                        </a>
                       </div>
                     </div>
-                    <a href={form.watch("website") || "#"} target="_blank" rel="noreferrer" className="w-full bg-primary text-white rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 group no-underline">
-                      View Collaboration Portal <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    <a
+                      href={form.watch("website") || "#"}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full bg-primary text-white rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 group no-underline"
+                    >
+                      View Collaboration Portal{" "}
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                     </a>
                   </form>
                 ) : mode === "register" ? (
@@ -704,21 +863,31 @@ export default function AuthPage() {
                     {form.watch("name") || user ? (
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                          <h4 className="text-xs font-bold text-white uppercase tracking-wider">Your Mini-Cards ({form.watch("cards")?.length || 0}/5)</h4>
+                          <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                            Your Mini-Cards ({form.watch("cards")?.length || 0}
+                            /5)
+                          </h4>
                         </div>
                         <div className="flex gap-4 overflow-x-auto pb-4 px-1 custom-scrollbar snap-x">
                           {[0, 1, 2, 3, 4].map((idx) => (
-                            <div key={idx} className="min-w-[220px] aspect-[3/4] snap-center">
+                            <div
+                              key={idx}
+                              className="min-w-[220px] aspect-[3/4] snap-center"
+                            >
                               <MiniCard
                                 idx={idx}
                                 cardJson={form.watch("cards")?.[idx]}
                                 onUpdate={(newJson) => {
-                                  const currentCards = [...(form.getValues("cards") || [])];
+                                  const currentCards = [
+                                    ...(form.getValues("cards") || []),
+                                  ];
                                   currentCards[idx] = newJson;
                                   form.setValue("cards", currentCards);
                                 }}
                                 onDelete={() => {
-                                  const currentCards = [...(form.getValues("cards") || [])];
+                                  const currentCards = [
+                                    ...(form.getValues("cards") || []),
+                                  ];
                                   currentCards.splice(idx, 1);
                                   form.setValue("cards", currentCards);
                                 }}
@@ -727,17 +896,49 @@ export default function AuthPage() {
                                 <div className="h-full border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center p-4">
                                   <div className="grid grid-cols-2 gap-2 w-full">
                                     {CARD_TYPES.map((t) => (
-                                      <button key={t.type} type="button" onClick={() => {
-                                        const currentCards = [...(form.getValues("cards") || [])];
-                                        const newCard = t.type === "pitch" ? { type: "pitch", title: "New Pitch", content: "" } :
-                                                       t.type === "reel" ? { type: "reel", title: "New Reel", url: "" } :
-                                                       t.type === "revenue" ? { type: "revenue", title: "Monthly Sales", value: "$0", imageUrl: "" } :
-                                                       { type: "product", title: "Product", imageUrls: ["", ""] };
-                                        currentCards.push(JSON.stringify(newCard));
-                                        form.setValue("cards", currentCards);
-                                      }} className="flex flex-col items-center gap-1 p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all">
+                                      <button
+                                        key={t.type}
+                                        type="button"
+                                        onClick={() => {
+                                          const currentCards = [
+                                            ...(form.getValues("cards") || []),
+                                          ];
+                                          const newCard =
+                                            t.type === "pitch"
+                                              ? {
+                                                  type: "pitch",
+                                                  title: "New Pitch",
+                                                  content: "",
+                                                }
+                                              : t.type === "reel"
+                                                ? {
+                                                    type: "reel",
+                                                    title: "New Reel",
+                                                    url: "",
+                                                  }
+                                                : t.type === "revenue"
+                                                  ? {
+                                                      type: "revenue",
+                                                      title: "Monthly Sales",
+                                                      value: "$0",
+                                                      imageUrl: "",
+                                                    }
+                                                  : {
+                                                      type: "product",
+                                                      title: "Product",
+                                                      imageUrls: ["", ""],
+                                                    };
+                                          currentCards.push(
+                                            JSON.stringify(newCard),
+                                          );
+                                          form.setValue("cards", currentCards);
+                                        }}
+                                        className="flex flex-col items-center gap-1 p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all"
+                                      >
                                         <t.icon className="w-5 h-5 text-white/60" />
-                                        <span className="text-[8px] text-white/40 uppercase font-bold">{t.label}</span>
+                                        <span className="text-[8px] text-white/40 uppercase font-bold">
+                                          {t.label}
+                                        </span>
                                       </button>
                                     ))}
                                   </div>
@@ -746,58 +947,161 @@ export default function AuthPage() {
                             </div>
                           ))}
                         </div>
-                        <button type="button" disabled={updateProfileMutation.isPending} onClick={() => form.handleSubmit(onSubmit)()} className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all">
-                          {updateProfileMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save All"}
+                        <button
+                          type="button"
+                          disabled={updateProfileMutation.isPending}
+                          onClick={() => form.handleSubmit(onSubmit)()}
+                          className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all"
+                        >
+                          {updateProfileMutation.isPending ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            "Save All"
+                          )}
                         </button>
                       </div>
                     ) : (
                       <div className="py-2">
                         <SwipeCard />
                         <div className="text-center mt-4 space-y-0.5">
-                          <p className="text-xs font-semibold text-white">Swipe to explore</p>
-                          <p className="text-[10px] text-white/40">Left to back • Right to next</p>
+                          <p className="text-xs font-semibold text-white">
+                            Swipe to explore
+                          </p>
+                          <p className="text-[10px] text-white/40">
+                            Left to back • Right to next
+                          </p>
                         </div>
                       </div>
                     )}
                   </div>
                 ) : (
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar"
+                  >
                     <div className="space-y-1">
-                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Name</label>
-                      <input {...form.register("name")} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50" placeholder="Your Name" />
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                        Name
+                      </label>
+                      <input
+                        {...form.register("name")}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50"
+                        placeholder="Your Name"
+                      />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Role</label>
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                        Role
+                      </label>
                       <div className="relative">
-                        <select {...form.register("role")} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white appearance-none">
-                          {ROLES.map(r => <option key={r.value} value={r.value} className="bg-[#1a1a1a]">{r.label}</option>)}
+                        <select
+                          {...form.register("role")}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white appearance-none"
+                        >
+                          {ROLES.map((r) => (
+                            <option
+                              key={r.value}
+                              value={r.value}
+                              className="bg-[#1a1a1a]"
+                            >
+                              {r.label}
+                            </option>
+                          ))}
                         </select>
                         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Startup / Business</label>
-                      <input {...form.register("bio")} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" placeholder="e.g. Collaborate & Grow your Startup" />
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                        Startup / Business
+                      </label>
+                      <input
+                        {...form.register("bio")}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
+                        placeholder="e.g. Collaborate & Grow your Startup"
+                      />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
-                      <div className="space-y-1"><label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Instagram</label><input {...form.register("instagram")} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white" placeholder="URL" /></div>
-                      <div className="space-y-1"><label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">LinkedIn</label><input {...form.register("linkedin")} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white" placeholder="URL" /></div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                          Instagram
+                        </label>
+                        <input
+                          {...form.register("instagram")}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+                          placeholder="URL"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                          LinkedIn
+                        </label>
+                        <input
+                          {...form.register("linkedin")}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+                          placeholder="URL"
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-1"><label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">WhatsApp</label><input {...form.register("whatsapp")} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" placeholder="Number" /></div>
-                    <div className="space-y-1"><label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Portal URL</label><input {...form.register("website")} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" placeholder="https://your-portal.com" /></div>
-                    <button type="button" onClick={() => setMode("register")} className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 mt-4">Next <ArrowRight className="w-4 h-4" /></button>
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                        WhatsApp
+                      </label>
+                      <input
+                        {...form.register("whatsapp")}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
+                        placeholder="Number"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                        Portal URL
+                      </label>
+                      <input
+                        {...form.register("website")}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
+                        placeholder="https://your-portal.com"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setMode("register")}
+                      className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 mt-4"
+                    >
+                      Next <ArrowRight className="w-4 h-4" />
+                    </button>
                   </form>
                 )}
               </motion.div>
             </AnimatePresence>
 
             <div className="relative py-2">
-              <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-white/10"></span></div>
-              <div className="relative flex justify-center text-[10px] uppercase"><span className="bg-card px-2 text-white/40 font-bold">{mode === "customize" ? "EDITING" : (mode === "login" ? "VIEWING" : "FREE")}</span></div>
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-white/10"></span>
+              </div>
+              <div className="relative flex justify-center text-[10px] uppercase">
+                <span className="bg-card px-2 text-white/40 font-bold">
+                  {mode === "customize"
+                    ? "EDITING"
+                    : mode === "login"
+                      ? "VIEWING"
+                      : "FREE"}
+                </span>
+              </div>
             </div>
 
-            <button type="button" onClick={() => mode === "login" ? setMode("customize") : setMode("login")} className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg">
-              {mode === "login" ? "Edit your persona" : (mode === "register" ? "Back to Persona" : "View Profile")}
+            <button
+              type="button"
+              onClick={() =>
+                mode === "login" ? setMode("customize") : setMode("login")
+              }
+              className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg"
+            >
+              {mode === "login"
+                ? "create your persona"
+                : mode === "register"
+                  ? "Back to Persona"
+                  : "View Profile"}
             </button>
           </div>
         </motion.div>
