@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import {
   Infinity as InfinityIcon,
@@ -7,6 +7,13 @@ import {
   Play,
   Mic,
   QrCode,
+  Instagram,
+  Linkedin,
+  MessageCircle,
+  Globe,
+  Save,
+  Check,
+  ChevronDown,
 } from "lucide-react";
 import {
   motion,
@@ -17,13 +24,20 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertUserSchema, type InsertUser } from "@shared/schema";
-import { useLogin, useRegister } from "@/hooks/use-auth";
+import { useLogin, useRegister, useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
 import { SiLinkedin, SiInstagram, SiWhatsapp } from "react-icons/si";
 import peralaLogo from "@/assets/logo.png";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useMutation } from "@tanstack/react-query";
 
-type AuthMode = "login" | "register";
+type AuthMode = "login" | "register" | "customize";
+
+const ROLES = [
+  "CEO", "CTO", "CMO", "Founder", "Lawyer", "VC", "Student", "Employee", 
+  "Doctor", "Farmer", "Director", "Actor", "DOP", "Composer", "Music Director"
+];
 
 const CARDS = [
   {
@@ -216,6 +230,7 @@ export default function AuthPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [mode, setMode] = useState<AuthMode>("login");
+  const { user } = useAuth();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -228,11 +243,34 @@ export default function AuthPage() {
     defaultValues: {
       email: "",
       password: "",
+      name: user?.name || "",
+      role: user?.role || "Founder",
+      bio: user?.bio || "Collaborate & Grow your Startup",
+      instagram: user?.instagram || "",
+      linkedin: user?.linkedin || "",
+      whatsapp: user?.whatsapp || "",
+      website: user?.website || "",
+    },
+  });
+
+  const updateProfileMutation = useMutation({
+    mutationFn: async (data: Partial<InsertUser>) => {
+      const res = await apiRequest("PATCH", "/api/user", data);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      toast({ title: "Profile updated", description: "Your persona has been saved." });
+      setMode("login");
     },
   });
 
   const onSubmit = async (data: InsertUser) => {
     try {
+      if (mode === "customize") {
+        await updateProfileMutation.mutateAsync(data);
+        return;
+      }
       if (mode === "login") {
         await loginMutation.mutateAsync(data);
         toast({
@@ -255,6 +293,8 @@ export default function AuthPage() {
       });
     }
   };
+
+  const currentRole = form.watch("role");
 
   return (
     <div className="min-h-screen bg-[#050505] overflow-hidden relative">
@@ -447,60 +487,66 @@ export default function AuthPage() {
                       {/* Persona Identity Section */}
                       <div className="space-y-1">
                         <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-blue-400 mx-auto flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-purple-500/20">
-                          R
+                          {form.watch("name")?.[0] || user?.username?.[0] || "P"}
                         </div>
                         <h3 className="text-xl font-bold text-white tracking-tight">
-                          Networking Profile
+                          {form.watch("name") || "Networking Profile"}
                         </h3>
-                        <p className="text-white/40 text-xs">
-                          Collaborate & Grow your Startup
+                        <div className="relative group/role inline-block">
+                          <p className="text-white/40 text-xs flex items-center gap-1 justify-center">
+                            {form.watch("role") || "Founder"}
+                          </p>
+                        </div>
+                        <p className="text-white/40 text-[10px] italic">
+                          {form.watch("bio") || "Collaborate & Grow your Startup"}
                         </p>
                       </div>
 
                       {/* Social/Business Links Row */}
                       <div className="flex items-center justify-center gap-3 w-full pt-1">
-                        <button
-                          type="button"
+                        <a
+                          href={form.watch("linkedin") || "#"}
+                          target="_blank"
+                          rel="noreferrer"
                           className="p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white/70 hover:text-white transition-all duration-200 group"
                           title="LinkedIn"
                         >
                           <SiLinkedin className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
+                        </a>
+                        <a
+                          href={form.watch("instagram") || "#"}
+                          target="_blank"
+                          rel="noreferrer"
                           className="p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white/70 hover:text-white transition-all duration-200"
                           title="Instagram"
                         >
                           <SiInstagram className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
+                        </a>
+                        <a
+                          href={form.watch("whatsapp") || "#"}
+                          target="_blank"
+                          rel="noreferrer"
                           className="p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white/70 hover:text-white transition-all duration-200"
                           title="WhatsApp"
                         >
                           <SiWhatsapp className="w-4 h-4" />
-                        </button>
+                        </a>
                       </div>
                     </div>
 
                     <div className="pt-1">
-                      <button
-                        type="submit"
-                        disabled={isPending}
-                        className="w-full bg-primary hover:bg-purple-500 active:bg-purple-700 text-white rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-purple-600/20 disabled:opacity-50 disabled:cursor-not-allowed group"
+                      <a
+                        href={form.watch("website") || "#"}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="w-full bg-primary hover:bg-purple-500 active:bg-purple-700 text-white rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-purple-600/20 group no-underline"
                       >
-                        {isPending ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <>
-                            View Collaboration Portal
-                            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                          </>
-                        )}
-                      </button>
+                        View Collaboration Portal
+                        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                      </a>
                     </div>
                   </form>
-                ) : (
+                ) : mode === "register" ? (
                   <div className="space-y-4">
                     <div className="py-2">
                       <SwipeCard />
@@ -514,6 +560,86 @@ export default function AuthPage() {
                       </div>
                     </div>
                   </div>
+                ) : (
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar"
+                  >
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Name</label>
+                      <input
+                        {...form.register("name")}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50 transition-colors"
+                        placeholder="Your Name"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Role</label>
+                      <div className="relative">
+                        <select
+                          {...form.register("role")}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50 transition-colors appearance-none"
+                        >
+                          {ROLES.map(r => <option key={r} value={r} className="bg-[#1a1a1a]">{r}</option>)}
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Tagline</label>
+                      <input
+                        {...form.register("bio")}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50 transition-colors"
+                        placeholder="e.g. Collaborate & Grow your Startup"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Instagram</label>
+                        <input
+                          {...form.register("instagram")}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+                          placeholder="URL"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">LinkedIn</label>
+                        <input
+                          {...form.register("linkedin")}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+                          placeholder="URL"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">WhatsApp</label>
+                        <input
+                          {...form.register("whatsapp")}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+                          placeholder="Number"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Portal URL</label>
+                      <input
+                        {...form.register("website")}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50 transition-colors"
+                        placeholder="https://your-portal.com"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={updateProfileMutation.isPending}
+                      className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all mt-4"
+                    >
+                      {updateProfileMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" /> Save Persona</>}
+                    </button>
+                  </form>
                 )}
               </motion.div>
             </AnimatePresence>
@@ -524,16 +650,17 @@ export default function AuthPage() {
               </div>
               <div className="relative flex justify-center text-[10px] uppercase">
                 <span className="bg-card px-2 text-white/40 font-bold">
-                  FREE
+                  {mode === "customize" ? "EDITING" : "FREE"}
                 </span>
               </div>
             </div>
 
             <button
               type="button"
+              onClick={() => setMode(mode === "customize" ? "login" : "customize")}
               className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-lg"
             >
-              Create your persona
+              {mode === "customize" ? "Back to Persona" : "Create your persona"}
             </button>
           </div>
         </motion.div>
@@ -541,3 +668,4 @@ export default function AuthPage() {
     </div>
   );
 }
+

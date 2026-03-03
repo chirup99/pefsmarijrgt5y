@@ -63,5 +63,16 @@ export async function registerRoutes(
     }
   });
 
+  app.patch("/api/user", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    try {
+      const data = insertUserSchema.partial().parse(req.body);
+      const user = await storage.updateUser(req.user.id, data);
+      res.json(user);
+    } catch (err) {
+      res.status(400).json({ message: "Invalid data" });
+    }
+  });
+
   return httpServer;
 }
