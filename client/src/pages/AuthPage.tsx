@@ -715,24 +715,19 @@ export default function AuthPage() {
         cards: selectedCards,
       };
 
-      if (mode === "customize" || (mode === "register" && user)) {
+      // If we have a user (logged in), update them. 
+      // If we are in "register" mode (card selection), this is the final save.
+      if (user?.id) {
         await updateProfileMutation.mutateAsync(submitData);
-        setMode("login");
-        return;
+      } else {
+        await registerMutation.mutateAsync(submitData);
       }
       
-      if (mode === "register") {
-        // When registering (Save All), send all details including cards
-        await registerMutation.mutateAsync(submitData);
-        setMode("login");
-      } else if (mode === "login") {
-        await loginMutation.mutateAsync(data);
-        toast({
-          title: "Welcome back",
-          description: "Successfully logged into Persona.",
-        });
-      }
-      setLocation("/");
+      setMode("login");
+      toast({
+        title: "Success",
+        description: "Your persona and cards have been saved.",
+      });
     } catch (error: any) {
       toast({
         title: "Action Failed",
@@ -1168,13 +1163,13 @@ export default function AuthPage() {
                         placeholder="https://your-portal.com"
                       />
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setMode("register")}
-                      className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 mt-4"
-                    >
-                      Next <ArrowRight className="w-4 h-4" />
-                    </button>
+                        <button
+                          type="button"
+                          onClick={onNext}
+                          className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 mt-4"
+                        >
+                          Next <ArrowRight className="w-4 h-4" />
+                        </button>
                   </form>
                 )}
               </motion.div>
