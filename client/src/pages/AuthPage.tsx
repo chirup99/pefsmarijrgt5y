@@ -947,29 +947,15 @@ export default function AuthPage() {
                       </div>
                     )}
                   </form>
-                ) : mode === "register" ? (
+                ) : mode === "register" || mode === "customize" ? (
                   <div className="space-y-4">
-                    {(mode === "register" || mode === "customize") && selectedCards.length > 0 && (mode !== "customize" || user) ? (
-                      <div className="py-2">
-                        <CustomSwipeCard cards={selectedCards} />
-                        <div className="text-center mt-4 space-y-0.5">
-                          <p className="text-xs font-semibold text-white">
-                            Your Custom Persona
-                          </p>
-                          <p className="text-[10px] text-white/40">
-                            {selectedCards.length} cards active
-                          </p>
-                        </div>
-                      </div>
-                    ) : (form.watch("name") || user) && (mode === "register" || mode === "customize") ? (
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-                            Your Mini-Cards ({selectedCards.length}
-                            /5)
-                          </h4>
-                        </div>
-                        <div className="flex gap-4 overflow-x-auto pb-4 px-1 custom-scrollbar snap-x">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                        Your Mini-Cards ({selectedCards.length}
+                        /5)
+                      </h4>
+                    </div>
+                    <div className="flex gap-4 overflow-x-auto pb-4 px-1 custom-scrollbar snap-x">
                           {[0, 1, 2, 3, 4].map((idx) => (
                             <div
                               key={idx}
