@@ -1235,16 +1235,18 @@ export default function AuthPage() {
 
             <button
               type="button"
-              onClick={() =>
-                mode === "login" ? setMode("register") : setMode("login")
-              }
+              onClick={() => {
+                if (mode === "login") {
+                  setMode("register");
+                } else {
+                  setMode("login");
+                }
+              }}
               className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg"
             >
               {mode === "login"
                 ? "create your persona"
-                : mode === "register" || mode === "customize" || mode === "swipe"
-                  ? "Back to Persona"
-                  : "View Profile"}
+                : "Back to Persona"}
             </button>
           </div>
         </motion.div>
