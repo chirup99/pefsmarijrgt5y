@@ -64,7 +64,7 @@ export class DynamoDBStorage implements IStorage {
       ...insertUser,
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString() as any,
-      email: insertUser.email || "",
+      email: insertUser.email || `${Date.now()}@persona.local`,
       password: insertUser.password || "",
       name: insertUser.name || null,
       role: insertUser.role || null,
