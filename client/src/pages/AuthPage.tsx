@@ -580,69 +580,84 @@ export default function AuthPage() {
                   </form>
                 ) : mode === "register" ? (
                   <div className="space-y-4">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h4 className="text-xs font-bold text-white uppercase tracking-wider">Your Mini-Cards ({form.watch("cards")?.length || 0}/5)</h4>
-                        {(!form.watch("cards") || form.watch("cards").length < 5) && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const currentCards = form.getValues("cards") || [];
-                              form.setValue("cards", [...currentCards, "New Activity"]);
-                            }}
-                            className="p-1 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors"
-                          >
-                            <Plus className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                      
-                      <div className="space-y-2 max-h-[250px] overflow-y-auto pr-1 custom-scrollbar">
-                        {form.watch("cards")?.map((card, idx) => (
-                          <div key={idx} className="flex items-center gap-2 bg-white/5 border border-white/10 p-2 rounded-lg group relative">
-                            <input
-                              value={card}
-                              onChange={(e) => {
-                                const currentCards = [...(form.getValues("cards") || [])];
-                                currentCards[idx] = e.target.value;
-                                form.setValue("cards", currentCards);
-                              }}
-                              className="flex-1 bg-transparent border-none text-white text-sm focus:outline-none"
-                              placeholder="Activity Name"
-                            />
+                    {/* Check if we are in customize flow */}
+                    {form.watch("name") || user ? (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-xs font-bold text-white uppercase tracking-wider">Your Mini-Cards ({form.watch("cards")?.length || 0}/5)</h4>
+                          {(!form.watch("cards") || form.watch("cards").length < 5) && (
                             <button
                               type="button"
                               onClick={() => {
-                                const currentCards = form.getValues("cards").filter((_, i) => i !== idx);
-                                form.setValue("cards", currentCards);
+                                const currentCards = form.getValues("cards") || [];
+                                form.setValue("cards", [...currentCards, "New Activity"]);
                               }}
-                              className="absolute top-1 right-1 p-1 text-white/40 hover:text-red-400 transition-all"
+                              className="p-1 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors"
                             >
-                              <X className="w-3 h-3" />
+                              <Plus className="w-4 h-4" />
                             </button>
-                          </div>
-                        ))}
+                          )}
+                        </div>
                         
-                        {(!form.watch("cards") || form.watch("cards").length === 0) && (
-                          <div 
-                            onClick={() => form.setValue("cards", ["New Activity"])}
-                            className="border-2 border-dashed border-white/10 rounded-xl aspect-[3/4] flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors group"
-                          >
-                            <Plus className="w-8 h-8 text-white/20 group-hover:text-white/40 transition-colors" />
-                            <p className="text-[10px] text-white/20 mt-2 uppercase tracking-widest group-hover:text-white/40">Add your first card</p>
-                          </div>
-                        )}
-                      </div>
+                        <div className="space-y-2 max-h-[250px] overflow-y-auto pr-1 custom-scrollbar">
+                          {form.watch("cards")?.map((card, idx) => (
+                            <div key={idx} className="flex items-center gap-2 bg-white/5 border border-white/10 p-2 rounded-lg group relative">
+                              <input
+                                value={card}
+                                onChange={(e) => {
+                                  const currentCards = [...(form.getValues("cards") || [])];
+                                  currentCards[idx] = e.target.value;
+                                  form.setValue("cards", currentCards);
+                                }}
+                                className="flex-1 bg-transparent border-none text-white text-sm focus:outline-none"
+                                placeholder="Activity Name"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const currentCards = form.getValues("cards").filter((_, i) => i !== idx);
+                                  form.setValue("cards", currentCards);
+                                }}
+                                className="absolute top-1 right-1 p-1 text-white/40 hover:text-red-400 transition-all"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ))}
+                          
+                          {(!form.watch("cards") || form.watch("cards").length === 0) && (
+                            <div 
+                              onClick={() => form.setValue("cards", ["New Activity"])}
+                              className="border-2 border-dashed border-white/10 rounded-xl aspect-[3/4] flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors group"
+                            >
+                              <Plus className="w-8 h-8 text-white/20 group-hover:text-white/40 transition-colors" />
+                              <p className="text-[10px] text-white/20 mt-2 uppercase tracking-widest group-hover:text-white/40">Add your first card</p>
+                            </div>
+                          )}
+                        </div>
 
-                      <button
-                        type="button"
-                        disabled={updateProfileMutation.isPending}
-                        onClick={() => form.handleSubmit(onSubmit)()}
-                        className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all mt-4"
-                      >
-                        {updateProfileMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save All"}
-                      </button>
-                    </div>
+                        <button
+                          type="button"
+                          disabled={updateProfileMutation.isPending}
+                          onClick={() => form.handleSubmit(onSubmit)()}
+                          className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all mt-4"
+                        >
+                          {updateProfileMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save All"}
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="py-2">
+                        <SwipeCard />
+                        <div className="text-center mt-4 space-y-0.5">
+                          <p className="text-xs font-semibold text-white">
+                            Swipe to explore
+                          </p>
+                          <p className="text-[10px] text-white/40">
+                            Left to back • Right to next
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <form
