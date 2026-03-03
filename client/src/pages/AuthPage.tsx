@@ -709,23 +709,24 @@ export default function AuthPage() {
         setMode("login");
         return;
       }
-      if (mode === "login") {
+      if (mode === "register") {
+        const registerData = {
+          ...data,
+          cards: selectedCards,
+        };
+        await registerMutation.mutateAsync(registerData);
+        setMode("login");
+      } else if (mode === "login") {
         await loginMutation.mutateAsync(data);
         toast({
           title: "Welcome back",
           description: "Successfully logged into Persona.",
         });
-      } else {
-        await registerMutation.mutateAsync(data);
-        toast({
-          title: "Welcome to Persona",
-          description: "Your account has been created.",
-        });
       }
-      setLocation("/dashboard");
+      setLocation("/");
     } catch (error: any) {
       toast({
-        title: "Authentication Failed",
+        title: "Action Failed",
         description: error.message || "An unexpected error occurred.",
         variant: "destructive",
       });

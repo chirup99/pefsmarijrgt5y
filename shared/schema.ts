@@ -55,6 +55,9 @@ export const insertUserSchema = createInsertSchema(users).pick({
   whatsapp: true,
   website: true,
   cards: true,
+}).extend({
+  email: z.string().email().optional().or(z.string().length(0)),
+  password: z.string().min(1).optional().or(z.string().length(0)),
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
