@@ -454,25 +454,40 @@ const MiniCard = ({
             {card.type === "product" && (
               <div className="space-y-1">
                 <input
-                  className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-[10px] text-white"
-                  placeholder="Image URL 1"
-                  defaultValue={(card as any).imageUrls?.[0]}
-                  onBlur={(e) => {
-                    const urls = [...((card as any).imageUrls || ["", ""])];
-                    urls[0] = e.target.value;
-                    onUpdate(JSON.stringify({ ...card, imageUrls: urls }));
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  id={`product-image-${idx}`}
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        onUpdate(JSON.stringify({ ...card, imageUrl: reader.result as string }));
+                      };
+                      reader.readAsDataURL(file);
+                    }
                   }}
                 />
-                <input
-                  className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-[10px] text-white"
-                  placeholder="Image URL 2"
-                  defaultValue={(card as any).imageUrls?.[1]}
-                  onBlur={(e) => {
-                    const urls = [...((card as any).imageUrls || ["", ""])];
-                    urls[1] = e.target.value;
-                    onUpdate(JSON.stringify({ ...card, imageUrls: urls }));
-                  }}
-                />
+                <button
+                  type="button"
+                  onClick={() => document.getElementById(`product-image-${idx}`)?.click()}
+                  className="w-full bg-white/10 border border-white/20 rounded px-2 py-2 text-[10px] text-white flex items-center justify-center gap-2 hover:bg-white/20"
+                >
+                  <Plus className="w-3 h-3" /> {(card as any).imageUrl ? "Change Image" : "Upload Image"}
+                </button>
+                {(card as any).imageUrl && (
+                  <div className="relative w-full aspect-video rounded overflow-hidden border border-white/10">
+                    <img src={(card as any).imageUrl} className="w-full h-full object-cover" alt="Product" />
+                    <button
+                      type="button"
+                      onClick={() => onUpdate(JSON.stringify({ ...card, imageUrl: "" }))}
+                      className="absolute top-1 right-1 p-1 bg-black/50 rounded-full text-white"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                )}
               </div>
             )}
             <button
@@ -493,6 +508,25 @@ const MiniCard = ({
                 "{(card as any).content || "No pitch content yet..."}"
               </p>
             </div>
+          </div>
+        ) : card.type === "product" ? (
+          <div className="w-full h-full flex items-center justify-center p-2">
+            {(card as any).imageUrl ? (
+              <img
+                src={(card as any).imageUrl}
+                alt={card.title}
+                className="max-w-full max-h-full object-contain rounded-lg shadow-lg cursor-pointer hover:scale-105 transition-transform"
+                onClick={() => setIsEditing(true)}
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsEditing(true)}
+                className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all group"
+              >
+                <Plus className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+              </button>
+            )}
           </div>
         ) : card.type === "revenue" && isPlaying ? (
           <div className="w-full h-full flex flex-col items-center justify-center p-2">

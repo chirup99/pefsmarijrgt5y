@@ -39,7 +39,7 @@ export const cardSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("product"),
     title: z.string(),
-    imageUrls: z.array(z.string()).max(2),
+    imageUrl: z.string(),
   }),
 ]);
 
