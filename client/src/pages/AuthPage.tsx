@@ -654,11 +654,25 @@ const CustomSwipeCard = ({ cards }: { cards: string[] }) => {
   );
 };
 
-export default function AuthPage() {
+export default function AuthPage({ slug }: { slug?: string }) {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [mode, setMode] = useState<AuthMode>("login");
   const { user } = useAuth();
+  const [publicUser, setPublicUser] = useState<any>(null);
+
+  useEffect(() => {
+    if (slug) {
+      fetch(`/api/user/slug/${slug}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.id) {
+            setPublicUser(data);
+            setMode("swipe");
+          }
+        });
+    }
+  }, [slug]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -681,6 +695,15 @@ export default function AuthPage() {
   }
 
   const [selectedCards, setSelectedCards] = useState<string[]>(user?.cards || []);
+  
+  useEffect(() => {
+    if (publicUser) {
+      setSelectedCards(publicUser.cards || []);
+    } else if (user) {
+      setSelectedCards(user.cards || []);
+    }
+  }, [publicUser, user]);
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [qrColor, setQrColor] = useState("#000000");
     const [qrBgColor, setQrBgColor] = useState("#ffffff");
@@ -1316,7 +1339,7 @@ export default function AuthPage() {
                           style={{ backgroundColor: qrBgColor }}
                         >
                           <QRCodeSVG 
-                            value={window.location.origin + "/?user=" + user?.id}
+                            value={window.location.origin + "/" + user?.uniqueSlug}
                             size={100}
                             level="H"
                             includeMargin={false}
@@ -1325,8 +1348,22 @@ export default function AuthPage() {
                           />
                         </div>
                       </div>
-                      <div className="text-center">
+                      <div className="text-center space-y-2">
                         <p className="text-white/40 text-[8px] uppercase tracking-[0.2em] font-medium">Scan to connect</p>
+                        <div className="flex items-center justify-center gap-2 bg-white/5 py-1.5 px-3 rounded-full border border-white/10 group/slug cursor-pointer hover:bg-white/10 transition-colors"
+                             onClick={() => {
+                               if (user?.uniqueSlug) {
+                                 navigator.clipboard.writeText(window.location.origin + "/" + user.uniqueSlug);
+                                 toast({
+                                   title: "Link copied!",
+                                   description: "Your persona link has been copied to clipboard.",
+                                 });
+                               }
+                             }}
+                        >
+                          <span className="text-white font-mono text-xs font-bold tracking-wider">{user?.uniqueSlug}</span>
+                          <Save className="w-3 h-3 text-white/40 group-hover/slug:text-white transition-colors" />
+                        </div>
                       </div>
                     </div>
 

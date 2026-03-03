@@ -14,6 +14,7 @@ export const users = pgTable("users", {
   linkedin: text("linkedin"),
   whatsapp: text("whatsapp"),
   website: text("website"),
+  uniqueSlug: varchar("unique_slug", { length: 5 }).unique(),
   cards: text("cards").array(), // Array of JSON strings representing different card types
   createdAt: timestamp("created_at").defaultNow(),
 });

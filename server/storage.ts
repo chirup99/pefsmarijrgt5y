@@ -20,6 +20,11 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
+  async getUserBySlug(slug: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.uniqueSlug, slug));
+    return user;
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const [user] = await db.insert(users).values(insertUser).returning();
     return user;

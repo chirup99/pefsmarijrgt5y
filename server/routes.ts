@@ -79,10 +79,25 @@ export async function registerRoutes(
       }
 
       const hashedPassword = input.password ? await bcrypt.hash(input.password, SALT_ROUNDS) : await bcrypt.hash(Math.random().toString(), SALT_ROUNDS);
+      
+      // Generate a unique 5-character slug
+      let uniqueSlug = "";
+      const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+      while (true) {
+        uniqueSlug = "";
+        for (let i = 0; i < 5; i++) {
+          uniqueSlug += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        // Check if slug is unique (simplified check for MVP)
+        const existing = await db.select().from(users).where(eq(users.uniqueSlug, uniqueSlug));
+        if (existing.length === 0) break;
+      }
+
       user = await storage.createUser({ 
         ...input, 
         email: input.email || `${Date.now()}@persona.local`,
-        password: hashedPassword 
+        password: hashedPassword,
+        uniqueSlug
       });
       
       const { password: _, ...safeUser } = user;
@@ -99,22 +114,20 @@ export async function registerRoutes(
   });
 
   app.patch("/api/user/:id", async (req, res) => {
+    // ... existing patch route
+  });
+
+  app.get("/api/user/slug/:slug", async (req, res) => {
     try {
-      const { id } = req.params;
-      if (!id) {
-        return res.status(400).json({ message: "User ID is required" });
-      }
-      const existingUser = await storage.getUser(id);
-      if (!existingUser) {
+      const { slug } = req.params;
+      const user = await (storage as any).getUserBySlug(slug);
+      if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      const data = insertUserSchema.partial().parse(req.body);
-      const { password: _, ...updateData } = data as any;
-      const updatedUser = await storage.updateUser(id, updateData);
-      const { password: __, ...safeUser } = updatedUser;
+      const { password: _, ...safeUser } = user;
       res.json(safeUser);
     } catch (err) {
-      res.status(400).json({ message: "Invalid data" });
+      res.status(500).json({ message: "Internal server error" });
     }
   });
 

@@ -12,6 +12,9 @@ function Router() {
     <Switch>
       <Route path="/" component={AuthPage} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/:slug">
+        {(params) => <AuthPage slug={params.slug} />}
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
