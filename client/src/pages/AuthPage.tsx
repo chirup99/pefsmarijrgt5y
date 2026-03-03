@@ -239,32 +239,49 @@ const SwipeCardContent = ({
   );
 };
 
-const SwipeCard = () => {
+const SwipeCard = ({ cards }: { cards: string[] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleSwipeLeft = () => {
-    setCurrentIndex((prev) => (prev + 1) % CARDS.length);
+    setCurrentIndex((prev) => (prev + 1) % (cards.length || CARDS.length));
   };
 
   const handleSwipeRight = () => {
-    setCurrentIndex((prev) => (prev - 1 + CARDS.length) % CARDS.length);
+    setCurrentIndex((prev) => (prev - 1 + (cards.length || CARDS.length)) % (cards.length || CARDS.length));
   };
 
-  const currentCard = CARDS[currentIndex];
-  const nextCard = CARDS[(currentIndex + 1) % CARDS.length];
-  const nextNextCard = CARDS[(currentIndex + 2) % CARDS.length];
+  const displayCards = cards.length > 0 ? cards.map(c => {
+    try {
+      const card = JSON.parse(c);
+      const typeInfo = CARD_TYPES.find(t => t.type === card.type);
+      return {
+        title: card.title,
+        name: card.type.toUpperCase(),
+        subname: card.value || card.url || "Persona",
+        color: typeInfo?.color || "from-gray-700 to-gray-800",
+        bgStack1: "bg-black/20",
+        bgStack2: "bg-black/10"
+      };
+    } catch (e) {
+      return CARDS[0];
+    }
+  }) : CARDS;
+
+  const currentCard = displayCards[currentIndex];
+  const nextCard = displayCards[(currentIndex + 1) % displayCards.length];
+  const nextNextCard = displayCards[(currentIndex + 2) % displayCards.length];
 
   return (
     <div className="relative w-full max-w-[240px] aspect-[3/4] mx-auto perspective-1000">
       <div
-        key={`stack2-${(currentIndex + 2) % CARDS.length}`}
+        key={`stack2-${(currentIndex + 2) % displayCards.length}`}
         className={clsx(
           "absolute inset-0 translate-y-4 translate-x-2 rounded-[24px] -z-20 transition-all duration-700 opacity-40 scale-95",
           nextNextCard.bgStack2,
         )}
       />
       <div
-        key={`stack1-${(currentIndex + 1) % CARDS.length}`}
+        key={`stack1-${(currentIndex + 1) % displayCards.length}`}
         className={clsx(
           "absolute inset-0 translate-y-2 translate-x-1 rounded-[24px] -z-10 transition-all duration-700 opacity-70 scale-[0.98]",
           nextCard.bgStack1,
@@ -276,7 +293,7 @@ const SwipeCard = () => {
           key={currentIndex}
           card={currentCard}
           currentIndex={currentIndex}
-          totalCards={CARDS.length}
+          totalCards={displayCards.length}
           onSwipeLeft={handleSwipeLeft}
           onSwipeRight={handleSwipeRight}
         />
@@ -635,8 +652,14 @@ export default function AuthPage() {
   const [mode, setMode] = useState<AuthMode>("login");
   const { user } = useAuth();
 
-  const [selectedCards, setSelectedCards] = useState<string[]>([]);
+  const [selectedCards, setSelectedCards] = useState<string[]>(user?.cards || []);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (user?.cards) {
+      setSelectedCards(user.cards);
+    }
+  }, [user?.cards]);
 
   const loginMutation = useLogin();
   const registerMutation = useRegister();
@@ -663,8 +686,9 @@ export default function AuthPage() {
       const res = await apiRequest("PATCH", `/api/user/${user.id}`, data);
       return res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(["/api/me"], updatedUser);
+      queryClient.invalidateQueries({ queryKey: ["/api/me"] });
       toast({
         title: "Success",
         description: "Profile updated successfully",
@@ -1111,7 +1135,7 @@ export default function AuthPage() {
                       </div>
                     ) : (
                       <div className="py-2">
-                        <SwipeCard />
+                        <SwipeCard cards={user?.cards || []} />
                         <div className="text-center mt-4 space-y-0.5">
                           <p className="text-xs font-semibold text-white">
                             Swipe to explore
