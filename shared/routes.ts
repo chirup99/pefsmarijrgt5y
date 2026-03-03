@@ -21,7 +21,7 @@ export const api = {
       path: '/api/auth/login' as const,
       input: insertUserSchema,
       responses: {
-        200: z.custom<typeof users.$inferSelect>(),
+        200: z.custom<typeof users>(),
         401: errorSchemas.validation,
       },
     },
@@ -30,7 +30,7 @@ export const api = {
       path: '/api/auth/register' as const,
       input: insertUserSchema,
       responses: {
-        201: z.custom<typeof users.$inferSelect>(),
+        201: z.custom<typeof users>(),
         400: errorSchemas.validation,
       },
     }

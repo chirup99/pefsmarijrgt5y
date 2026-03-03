@@ -31,28 +31,39 @@ export class DynamoDBStorage implements IStorage {
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const { Items } = await ddbDocClient.send(new ScanCommand({
-      TableName: TABLE_NAME,
-      FilterExpression: "email = :email",
-      ExpressionAttributeValues: { ":email": email },
-    }));
-    return (Items && Items.length > 0) ? (Items[0] as User) : undefined;
+    try {
+      const { Items } = await ddbDocClient.send(new ScanCommand({
+        TableName: TABLE_NAME,
+        FilterExpression: "email = :email",
+        ExpressionAttributeValues: { ":email": email },
+      }));
+      return (Items && Items.length > 0) ? (Items[0] as User) : undefined;
+    } catch (error) {
+      console.error("Error getting user by email from DynamoDB:", error);
+      throw error;
+    }
   }
 
   async getUserBySlug(slug: string): Promise<User | undefined> {
-    const { Items } = await ddbDocClient.send(new ScanCommand({
-      TableName: TABLE_NAME,
-      FilterExpression: "uniqueSlug = :slug",
-      ExpressionAttributeValues: { ":slug": slug },
-    }));
-    return (Items && Items.length > 0) ? (Items[0] as User) : undefined;
+    try {
+      const { Items } = await ddbDocClient.send(new ScanCommand({
+        TableName: TABLE_NAME,
+        FilterExpression: "uniqueSlug = :slug",
+        ExpressionAttributeValues: { ":slug": slug },
+      }));
+      return (Items && Items.length > 0) ? (Items[0] as User) : undefined;
+    } catch (error) {
+      console.error("Error getting user by slug from DynamoDB:", error);
+      throw error;
+    }
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
+    console.log("Creating user in DynamoDB:", insertUser.email);
     const newUser: User = {
       ...insertUser,
       id: crypto.randomUUID(),
-      createdAt: new Date(),
+      createdAt: new Date().toISOString() as any,
       email: insertUser.email || "",
       password: insertUser.password || "",
       name: insertUser.name || null,
@@ -65,11 +76,17 @@ export class DynamoDBStorage implements IStorage {
       uniqueSlug: (insertUser as any).uniqueSlug || null,
       cards: insertUser.cards || [],
     };
-    await ddbDocClient.send(new PutCommand({
-      TableName: TABLE_NAME,
-      Item: newUser,
-    }));
-    return newUser;
+    try {
+      await ddbDocClient.send(new PutCommand({
+        TableName: TABLE_NAME,
+        Item: newUser,
+      }));
+      console.log("Successfully created user:", newUser.id);
+      return newUser;
+    } catch (error) {
+      console.error("Error creating user in DynamoDB:", error);
+      throw error;
+    }
   }
 
   async updateUser(id: string, partialUser: Partial<InsertUser>): Promise<User> {
