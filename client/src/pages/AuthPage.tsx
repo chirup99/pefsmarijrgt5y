@@ -369,32 +369,51 @@ const MiniCard = ({
 
   const cardTypeInfo = CARD_TYPES.find((t) => t.type === card.type);
 
+  const getEmbedUrl = (url: string) => {
+    if (!url) return null;
+    const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/))([\w-]{11})/);
+    if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${ytMatch[1]}`;
+    const igMatch = url.match(/(?:instagram\.com\/(?:reels|reel|p)\/)([\w-]{11})/);
+    if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed`;
+    return null;
+  };
+
+  const embedUrl = card.type === "reel" ? getEmbedUrl((card as any).url) : null;
+
   return (
     <motion.div
       layoutId={`card-${idx}`}
       className={clsx(
-        "h-full rounded-2xl p-4 relative overflow-hidden flex flex-col justify-between shadow-xl bg-gradient-to-b",
+        "h-full rounded-2xl relative overflow-hidden flex flex-col justify-between shadow-xl bg-gradient-to-b",
+        isPlaying && card.type === "reel" ? "p-0" : "p-4",
         cardTypeInfo?.color || "from-gray-700 to-gray-800",
       )}
     >
-      <button
-        type="button"
-        onClick={onDelete}
-        className="absolute top-2 right-2 p-1 bg-black/20 rounded-full text-white/60 hover:text-white transition-colors z-20"
-      >
-        <X className="w-4 h-4" />
-      </button>
+      {(!isPlaying || card.type !== "reel") && (
+        <button
+          type="button"
+          onClick={onDelete}
+          className="absolute top-2 right-2 p-1 bg-black/20 rounded-full text-white/60 hover:text-white transition-colors z-20"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      )}
 
-      <div className="space-y-2">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-white/80">
-          {card.type}
-        </p>
-        <h5 className="text-white font-bold text-lg leading-tight">
-          {card.title}
-        </h5>
-      </div>
+      {(!isPlaying || card.type !== "reel") && (
+        <div className="space-y-2">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-white/80">
+            {card.type}
+          </p>
+          <h5 className="text-white font-bold text-lg leading-tight">
+            {card.title}
+          </h5>
+        </div>
+      )}
 
-      <div className="flex-1 flex items-center justify-center relative">
+      <div className={clsx(
+        "flex-1 flex items-center justify-center relative",
+        isPlaying && card.type === "reel" ? "w-full h-full" : ""
+      )}>
         {isEditing ? (
           <div className="w-full space-y-2 bg-black/40 p-3 rounded-xl backdrop-blur-sm z-10">
             <input
@@ -496,6 +515,25 @@ const MiniCard = ({
               className="w-full bg-white text-black py-1 rounded text-[10px] font-bold"
             >
               Done
+            </button>
+          </div>
+        ) : card.type === "reel" && isPlaying ? (
+          <div className="w-full h-full relative group">
+            {embedUrl ? (
+              <iframe
+                src={embedUrl}
+                className="w-full h-full border-0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              <div className="text-white text-xs p-4 text-center">Invalid Video URL</div>
+            )}
+            <button
+              onClick={() => setIsPlaying(false)}
+              className="absolute top-4 right-4 p-2 bg-black/50 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity z-30"
+            >
+              <X className="w-4 h-4" />
             </button>
           </div>
         ) : card.type === "pitch" ? (
