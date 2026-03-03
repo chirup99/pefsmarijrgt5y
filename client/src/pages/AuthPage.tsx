@@ -21,7 +21,7 @@ import { useLogin, useRegister } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
 import { SiLinkedin, SiInstagram, SiWhatsapp } from "react-icons/si";
-import peralaLogo from "@assets/image_1772463268628.png";
+import peralaLogo from "@/assets/logo.png";
 
 type AuthMode = "login" | "register";
 
@@ -260,28 +260,28 @@ export default function AuthPage() {
     <div className="min-h-screen bg-[#050505] overflow-hidden relative">
       {/* Menu Background Layer */}
       <div className="absolute inset-0 flex flex-col justify-end items-end p-12 pb-20 pointer-events-none">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isMenuOpen ? 1 : 0, y: isMenuOpen ? 0 : 20 }}
           className="text-right space-y-4 max-w-[240px] pointer-events-auto"
         >
-          <p className="text-white/40 text-[10px] leading-relaxed uppercase tracking-widest text-center">copyright : persona UI/UX is inspired from</p>
-          
+          <p className="text-white/40 text-[10px] leading-relaxed uppercase tracking-widest text-center">
+            copyright : persona UI/UX is inspired by
+          </p>
+
           <div className="space-y-3">
-            <a 
-              href="https://perala.in" 
-              target="_blank" 
+            <a
+              href="https://perala.in"
+              target="_blank"
               rel="noopener noreferrer"
               className="block group"
             >
-              <img 
-                src={peralaLogo} 
-                alt="Perala" 
+              <img
+                src={peralaLogo}
+                alt="Perala"
                 className="w-full h-auto opacity-80 group-hover:opacity-100 transition-opacity rounded-lg"
               />
             </a>
-            
-  
           </div>
         </motion.div>
       </div>
@@ -350,17 +350,16 @@ export default function AuthPage() {
           className="w-full max-w-md text-center mb-6 z-10"
         >
           <div className="flex items-center justify-center gap-2 mb-1 text-white">
-            <InfinityIcon
-              className="w-6 h-6 text-purple-500"
-              strokeWidth={2.5}
-            />
             <h1 className="text-2xl font-display font-bold tracking-widest uppercase">
               PERSONA
             </h1>
           </div>
           <p className="text-[10px] tracking-[0.3em] text-white/50 font-medium mb-6 flex items-center justify-center gap-2">
             CONNECT . COLLABORATE . EXPOSE
-            <InfinityIcon className="w-3.5 h-3.5 text-purple-500/50" strokeWidth={2.5} />
+            <InfinityIcon
+              className="w-3.5 h-3.5 text-purple-500/50"
+              strokeWidth={2.5}
+            />
           </p>
 
           <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-2">
