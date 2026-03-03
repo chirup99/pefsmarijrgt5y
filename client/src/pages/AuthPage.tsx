@@ -1250,71 +1250,70 @@ export default function AuthPage() {
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="relative w-full max-w-[320px] mx-auto"
+                className="relative w-full max-w-[240px] mx-auto"
               >
-                {/* iPhone Frame */}
-                <div className="relative aspect-[9/19.5] bg-[#1a1a1a] rounded-[55px] p-3 shadow-[0_0_0_2px_#333,0_0_0_6px_#000,0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden border-[1px] border-white/10">
-                  {/* Dynamic Island */}
-                  <div className="absolute top-4 left-1/2 -translate-x-1/2 w-24 h-7 bg-black rounded-full z-50 flex items-center justify-end px-4">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500/20 shadow-[0_0_5px_#3b82f6]" />
+                {/* iPhone Frame - Ultra Compact & Minimalist */}
+                <div className="relative aspect-[9/19.5] bg-[#050505] rounded-[42px] p-1.5 shadow-[0_0_0_1px_#1a1a1a,0_0_0_4px_#000,0_15px_40px_rgba(0,0,0,0.6)] overflow-hidden border-[1px] border-white/5">
+                  {/* Tiny Dynamic Island */}
+                  <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-14 h-4 bg-black rounded-full z-50 flex items-center justify-end px-2.5">
+                    <div className="w-0.5 h-0.5 rounded-full bg-blue-500/20 shadow-[0_0_2px_#3b82f6]" />
                   </div>
 
                   {/* iPhone Screen Content */}
-                  <div className="w-full h-full bg-mesh rounded-[44px] relative overflow-hidden flex flex-col items-center justify-between p-8 pt-20 pb-12">
-                    {/* Time/Date Mockup */}
-                    <div className="text-center space-y-1">
-                      <p className="text-white/80 text-sm font-medium">Tuesday, March 3</p>
-                      <h4 className="text-white text-6xl font-bold tracking-tighter">13:11</h4>
+                  <div className="w-full h-full bg-mesh rounded-[36px] relative overflow-hidden flex flex-col items-center justify-between p-5 pt-12 pb-8">
+                    {/* Minimalist Time/Date */}
+                    <div className="text-center space-y-0">
+                      <p className="text-white/60 text-[8px] font-medium uppercase tracking-widest">March 3</p>
+                      <h4 className="text-white text-3xl font-bold tracking-tighter leading-none">13:11</h4>
                     </div>
 
-                    {/* QR Code Area */}
-                    <div className="flex flex-col items-center gap-6 w-full">
+                    {/* QR Code Area - Compact */}
+                    <div className="flex flex-col items-center gap-3 w-full">
                       <div 
                         ref={qrRef}
-                        className="aspect-square bg-white rounded-[40px] p-6 flex items-center justify-center shadow-2xl relative group"
+                        className="aspect-square bg-white rounded-[28px] p-3.5 flex items-center justify-center shadow-lg relative"
                       >
                         <QRCodeSVG 
                           value={window.location.origin + "/?user=" + user?.id}
-                          size={160}
+                          size={100}
                           level="H"
                           includeMargin={false}
                         />
                       </div>
-                      <div className="text-center space-y-1">
-                        <p className="text-white font-bold text-sm tracking-widest uppercase">Your Persona</p>
-                        <p className="text-white/40 text-[10px] uppercase tracking-[0.2em]">Scan to connect</p>
+                      <div className="text-center">
+                        <p className="text-white/40 text-[8px] uppercase tracking-[0.2em] font-medium">Scan to connect</p>
                       </div>
                     </div>
 
-                    {/* Bottom Controls */}
-                    <div className="w-full flex justify-between items-center px-4">
-                      <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">
-                        <Save className="w-4 h-4 text-white" />
+                    {/* Tiny Controls */}
+                    <div className="w-full flex justify-between items-center px-3 opacity-30">
+                      <div className="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center">
+                        <Save className="w-3 h-3 text-white" />
                       </div>
-                      <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">
-                        <QrCode className="w-4 h-4 text-white" />
+                      <div className="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center">
+                        <QrCode className="w-3 h-3 text-white" />
                       </div>
                     </div>
 
                     {/* Home Indicator */}
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/30 rounded-full" />
+                    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-16 h-0.5 bg-white/20 rounded-full" />
                   </div>
                 </div>
 
-                {/* Action Buttons Below iPhone */}
-                <div className="mt-8 space-y-3 px-4">
+                {/* Action Buttons Below iPhone - Compact */}
+                <div className="mt-5 space-y-2 px-1">
                   <button
                     onClick={downloadQR}
-                    className="w-full bg-white text-black rounded-2xl py-4 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all shadow-xl active:scale-95"
+                    className="w-full bg-white text-black rounded-xl py-3 font-bold text-[11px] flex items-center justify-center gap-2 hover:bg-white/90 transition-all shadow-lg active:scale-95"
                   >
-                    <Save className="w-4 h-4" />
-                    Download Wallpaper
+                    <Save className="w-3.5 h-3.5" />
+                    Download
                   </button>
                   <button
                     onClick={() => setShowQRDialog(false)}
-                    className="w-full bg-white/5 text-white/60 rounded-2xl py-4 font-bold text-sm hover:text-white transition-all"
+                    className="w-full text-white/30 hover:text-white/50 py-1.5 font-bold text-[9px] uppercase tracking-widest transition-all"
                   >
-                    Close Preview
+                    Close
                   </button>
                 </div>
               </motion.div>
