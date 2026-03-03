@@ -715,9 +715,9 @@ export default function AuthPage() {
         await updateProfileMutation.mutateAsync(submitData);
       } else {
         await registerMutation.mutateAsync(submitData);
+        setMode("login");
       }
       
-      setMode("login");
       toast({
         title: "Success",
         description: "Your persona and cards have been saved.",
