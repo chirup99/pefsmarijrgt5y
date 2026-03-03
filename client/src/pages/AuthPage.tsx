@@ -17,6 +17,10 @@ import {
   Plus,
   X,
   Trash2,
+  TrendingUp,
+  Video,
+  Package,
+  FileText,
 } from "lucide-react";
 import {
   motion,
@@ -26,7 +30,7 @@ import {
 } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertUserSchema, type InsertUser } from "@shared/schema";
+import { insertUserSchema, type InsertUser, type CardData } from "@shared/schema";
 import { useLogin, useRegister, useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
@@ -36,6 +40,13 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
 
 type AuthMode = "login" | "register" | "customize";
+
+const CARD_TYPES = [
+  { type: "pitch", label: "Elevated Pitch", icon: FileText, color: "from-blue-500 to-blue-600" },
+  { type: "reel", label: "Reel / Short", icon: Video, color: "from-purple-500 to-purple-600" },
+  { type: "revenue", label: "Revenue / Sales", icon: TrendingUp, color: "from-emerald-500 to-emerald-600" },
+  { type: "product", label: "Product Show", icon: Package, color: "from-orange-500 to-orange-600" },
+];
 
 const ROLES = [
   { value: "founder", label: "Founder" },
@@ -580,72 +591,176 @@ export default function AuthPage() {
                   </form>
                 ) : mode === "register" ? (
                   <div className="space-y-4">
-                    {/* Check if we are in customize flow */}
-                    {form.watch("name") || user ? (
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-xs font-bold text-white uppercase tracking-wider">Your Mini-Cards ({form.watch("cards")?.length || 0}/5)</h4>
-                          {(!form.watch("cards") || form.watch("cards").length < 5) && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const currentCards = form.getValues("cards") || [];
-                                form.setValue("cards", [...currentCards, "New Activity"]);
-                              }}
-                              className="p-1 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors"
-                            >
-                              <Plus className="w-4 h-4" />
-                            </button>
-                          )}
-                        </div>
-                        
-                        <div className="space-y-2 max-h-[250px] overflow-y-auto pr-1 custom-scrollbar">
-                          {form.watch("cards")?.map((card, idx) => (
-                            <div key={idx} className="flex items-center gap-2 bg-white/5 border border-white/10 p-2 rounded-lg group relative">
-                              <input
-                                value={card}
-                                onChange={(e) => {
-                                  const currentCards = [...(form.getValues("cards") || [])];
-                                  currentCards[idx] = e.target.value;
-                                  form.setValue("cards", currentCards);
-                                }}
-                                className="flex-1 bg-transparent border-none text-white text-sm focus:outline-none"
-                                placeholder="Activity Name"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const currentCards = form.getValues("cards").filter((_, i) => i !== idx);
-                                  form.setValue("cards", currentCards);
-                                }}
-                                className="absolute top-1 right-1 p-1 text-white/40 hover:text-red-400 transition-all"
-                              >
-                                <X className="w-3 h-3" />
-                              </button>
-                            </div>
-                          ))}
-                          
-                          {(!form.watch("cards") || form.watch("cards").length === 0) && (
-                            <div 
-                              onClick={() => form.setValue("cards", ["New Activity"])}
-                              className="border-2 border-dashed border-white/10 rounded-xl aspect-[3/4] flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors group"
-                            >
-                              <Plus className="w-8 h-8 text-white/20 group-hover:text-white/40 transition-colors" />
-                              <p className="text-[10px] text-white/20 mt-2 uppercase tracking-widest group-hover:text-white/40">Add your first card</p>
-                            </div>
-                          )}
-                        </div>
-
-                        <button
-                          type="button"
-                          disabled={updateProfileMutation.isPending}
-                          onClick={() => form.handleSubmit(onSubmit)()}
-                          className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all mt-4"
-                        >
-                          {updateProfileMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save All"}
-                        </button>
+                    {/* Mini-Cards Editor */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                          Your Mini-Cards ({form.watch("cards")?.length || 0}/5)
+                        </h4>
                       </div>
-                    ) : (
+
+                      <div className="flex gap-4 overflow-x-auto pb-4 px-1 custom-scrollbar snap-x">
+                        {Array.from({ length: 5 }).map((_, idx) => {
+                          const cardJson = form.watch("cards")?.[idx];
+                          const card: CardData | null = cardJson ? JSON.parse(cardJson) : null;
+                          const [isEditing, setIsEditing] = useState(false);
+
+                          return (
+                            <div key={idx} className="min-w-[220px] aspect-[3/4] snap-center">
+                              {card ? (
+                                <motion.div
+                                  layoutId={`card-${idx}`}
+                                  className={clsx(
+                                    "h-full rounded-2xl p-4 relative overflow-hidden flex flex-col justify-between shadow-xl bg-gradient-to-b",
+                                    CARD_TYPES.find(t => t.type === card.type)?.color || "from-gray-700 to-gray-800"
+                                  )}
+                                >
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const currentCards = [...(form.getValues("cards") || [])];
+                                      currentCards.splice(idx, 1);
+                                      form.setValue("cards", currentCards);
+                                    }}
+                                    className="absolute top-2 right-2 p-1 bg-black/20 rounded-full text-white/60 hover:text-white transition-colors z-20"
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
+
+                                  <div className="space-y-2">
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/80">
+                                      {card.type}
+                                    </p>
+                                    <h5 className="text-white font-bold text-lg leading-tight">
+                                      {card.title}
+                                    </h5>
+                                  </div>
+
+                                  <div className="flex-1 flex items-center justify-center">
+                                    {isEditing ? (
+                                      <div className="w-full space-y-2 bg-black/40 p-3 rounded-xl backdrop-blur-sm z-10">
+                                        <input
+                                          className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
+                                          placeholder="Title"
+                                          defaultValue={card.title}
+                                          onBlur={(e) => {
+                                            const currentCards = [...(form.getValues("cards") || [])];
+                                            const updatedCard = { ...card, title: e.target.value };
+                                            currentCards[idx] = JSON.stringify(updatedCard);
+                                            form.setValue("cards", currentCards);
+                                          }}
+                                        />
+                                        {card.type === "pitch" && (
+                                          <textarea
+                                            className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white h-20"
+                                            placeholder="Pitch content"
+                                            defaultValue={card.content}
+                                            onBlur={(e) => {
+                                              const currentCards = [...(form.getValues("cards") || [])];
+                                              const updatedCard = { ...card, content: e.target.value };
+                                              currentCards[idx] = JSON.stringify(updatedCard);
+                                              form.setValue("cards", currentCards);
+                                            }}
+                                          />
+                                        )}
+                                        {card.type === "reel" && (
+                                          <input
+                                            className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
+                                            placeholder="Reel/Short URL"
+                                            defaultValue={card.url}
+                                            onBlur={(e) => {
+                                              const currentCards = [...(form.getValues("cards") || [])];
+                                              const updatedCard = { ...card, url: e.target.value };
+                                              currentCards[idx] = JSON.stringify(updatedCard);
+                                              form.setValue("cards", currentCards);
+                                            }}
+                                          />
+                                        )}
+                                        {card.type === "revenue" && (
+                                          <input
+                                            className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
+                                            placeholder="Value (e.g. $10k)"
+                                            defaultValue={card.value}
+                                            onBlur={(e) => {
+                                              const currentCards = [...(form.getValues("cards") || [])];
+                                              const updatedCard = { ...card, value: e.target.value };
+                                              currentCards[idx] = JSON.stringify(updatedCard);
+                                              form.setValue("cards", currentCards);
+                                            }}
+                                          />
+                                        )}
+                                        <button
+                                          type="button"
+                                          onClick={() => setIsEditing(false)}
+                                          className="w-full bg-white text-black py-1 rounded text-[10px] font-bold"
+                                        >
+                                          Done
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        onClick={() => setIsEditing(true)}
+                                        className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all group"
+                                      >
+                                        <Plus className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+                                      </button>
+                                    )}
+                                  </div>
+
+                                  <div className="pt-2">
+                                    {card.type === "reel" ? (
+                                      <button className="w-full bg-white text-black rounded-full py-2 text-xs font-bold flex items-center justify-center gap-2">
+                                        <Play className="w-3 h-3 fill-current" /> Play Now
+                                      </button>
+                                    ) : card.type === "revenue" ? (
+                                      <div className="text-white font-bold text-xl">{card.value}</div>
+                                    ) : null}
+                                  </div>
+                                </motion.div>
+                              ) : (
+                                <div className="h-full border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center p-4">
+                                  <div className="grid grid-cols-2 gap-2 w-full">
+                                    {CARD_TYPES.map((t) => (
+                                      <button
+                                        key={t.type}
+                                        type="button"
+                                        onClick={() => {
+                                          const currentCards = [...(form.getValues("cards") || [])];
+                                          const newCard: CardData = 
+                                            t.type === "pitch" ? { type: "pitch", title: "New Pitch", content: "" } :
+                                            t.type === "reel" ? { type: "reel", title: "New Reel", url: "" } :
+                                            t.type === "revenue" ? { type: "revenue", title: "Monthly Sales", value: "$0" } :
+                                            { type: "product", title: "Product", imageUrls: [] };
+                                          
+                                          currentCards.push(JSON.stringify(newCard));
+                                          form.setValue("cards", currentCards);
+                                        }}
+                                        className="flex flex-col items-center gap-1 p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all"
+                                      >
+                                        <t.icon className="w-5 h-5 text-white/60" />
+                                        <span className="text-[8px] text-white/40 uppercase font-bold">{t.label}</span>
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <button
+                        type="button"
+                        disabled={updateProfileMutation.isPending}
+                        onClick={() => form.handleSubmit(onSubmit)()}
+                        className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all"
+                      >
+                        {updateProfileMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save All"}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
                       <div className="py-2">
                         <SwipeCard />
                         <div className="text-center mt-4 space-y-0.5">
@@ -771,6 +886,12 @@ export default function AuthPage() {
           </div>
         </motion.div>
       </motion.div>
+
+      {/* Mini-Card Detail Modal / Interaction simulation */}
+      <AnimatePresence>
+        {/* We can add a modal here for deeper editing if needed, 
+            but for now we've integrated inline editing with the + icon as requested */}
+      </AnimatePresence>
     </div>
   );
 }

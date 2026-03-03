@@ -14,9 +14,35 @@ export const users = pgTable("users", {
   linkedin: text("linkedin"),
   whatsapp: text("whatsapp"),
   website: text("website"),
-  cards: text("cards").array(), // Array of JSON strings or just text descriptions
+  cards: text("cards").array(), // Array of JSON strings representing different card types
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+export const cardSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("pitch"),
+    title: z.string(),
+    content: z.string(),
+  }),
+  z.object({
+    type: z.literal("reel"),
+    title: z.string(),
+    url: z.string(),
+  }),
+  z.object({
+    type: z.literal("revenue"),
+    title: z.string(),
+    value: z.string(),
+    imageUrl: z.string().optional(),
+  }),
+  z.object({
+    type: z.literal("product"),
+    title: z.string(),
+    imageUrls: z.array(z.string()).max(2),
+  }),
+]);
+
+export type CardData = z.infer<typeof cardSchema>;
 
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
