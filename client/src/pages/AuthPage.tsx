@@ -35,8 +35,34 @@ import { useMutation } from "@tanstack/react-query";
 type AuthMode = "login" | "register" | "customize";
 
 const ROLES = [
-  "CEO", "CTO", "CMO", "Founder", "Lawyer", "VC", "Student", "Employee", 
-  "Doctor", "Farmer", "Director", "Actor", "DOP", "Composer", "Music Director"
+  { value: "founder", label: "Founder" },
+  { value: "co-founder", label: "Co-Founder" },
+  { value: "ceo", label: "CEO" },
+  { value: "cto", label: "CTO" },
+  { value: "cmo", label: "CMO" },
+  { value: "coo", label: "COO" },
+  { value: "cfo", label: "CFO" },
+  { value: "director", label: "Director" },
+  { value: "investor", label: "Investor" },
+  { value: "vc", label: "VC (Venture Capitalist)" },
+  { value: "angel-investor", label: "Angel Investor" },
+  { value: "advisor", label: "Advisor" },
+  { value: "consultant", label: "Consultant" },
+  { value: "lawyer", label: "Lawyer" },
+  { value: "mentor", label: "Mentor" },
+  { value: "product-manager", label: "Product Manager" },
+  { value: "software-engineer", label: "Software Engineer" },
+  { value: "designer", label: "UI/UX Designer" },
+  { value: "marketing-specialist", label: "Marketing Specialist" },
+  { value: "sales-executive", label: "Sales Executive" },
+  { value: "hr-manager", label: "HR Manager" },
+  { value: "student", label: "Student" },
+  { value: "intern", label: "Intern" },
+  { value: "employee", label: "Employee" },
+  { value: "startup-enthusiast", label: "Startup Enthusiast" },
+  { value: "business-owner", label: "Business Owner" },
+  { value: "freelancer", label: "Freelancer" },
+  { value: "other", label: "Other" },
 ];
 
 const CARDS = [
@@ -244,7 +270,7 @@ export default function AuthPage() {
       email: "",
       password: "",
       name: user?.name || "",
-      role: user?.role || "Founder",
+      role: user?.role || "founder",
       bio: user?.bio || "Collaborate & Grow your Startup",
       instagram: user?.instagram || "",
       linkedin: user?.linkedin || "",
@@ -494,8 +520,8 @@ export default function AuthPage() {
                         </h3>
                         <div className="relative group/role inline-block">
                           <p className="text-white/40 text-xs flex items-center gap-1 justify-center">
-                            {form.watch("role") || "Founder"}
-                          </p>
+                          {ROLES.find(r => r.value === form.watch("role"))?.label || form.watch("role") || "Founder"}
+                        </p>
                         </div>
                         <p className="text-white/40 text-[10px] italic">
                           {form.watch("bio") || "Collaborate & Grow your Startup"}
@@ -581,7 +607,7 @@ export default function AuthPage() {
                           {...form.register("role")}
                           className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50 transition-colors appearance-none"
                         >
-                          {ROLES.map(r => <option key={r} value={r} className="bg-[#1a1a1a]">{r}</option>)}
+                          {ROLES.map(r => <option key={r.value} value={r.value} className="bg-[#1a1a1a]">{r.label}</option>)}
                         </select>
                         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
                       </div>

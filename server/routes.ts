@@ -65,11 +65,21 @@ export async function registerRoutes(
   });
 
   app.patch("/api/user", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
     try {
       const data = insertUserSchema.partial().parse(req.body);
-      const user = await storage.updateUser(req.user.id, data);
-      res.json(user);
+      // For now, since authentication is removed as requested, we'll use a hardcoded user ID or 
+      // handle it based on email if provided. But the user asked to remove authentication.
+      // If we don't have a session, we'll try to find the user by email from the body.
+      const email = req.body.email;
+      if (!email) {
+        return res.status(400).json({ message: "Email is required to update persona without login" });
+      }
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      const updatedUser = await storage.updateUser(user.id, data);
+      res.json(updatedUser);
     } catch (err) {
       res.status(400).json({ message: "Invalid data" });
     }
