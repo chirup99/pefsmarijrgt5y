@@ -267,8 +267,7 @@ export default function AuthPage() {
   const form = useForm<InsertUser>({
     resolver: zodResolver(insertUserSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      password: "password123", // Default password for persona creation
       name: user?.name || "",
       role: user?.role || "founder",
       bio: user?.bio || "Collaborate & Grow your Startup",
@@ -294,7 +293,12 @@ export default function AuthPage() {
   const onSubmit = async (data: InsertUser) => {
     try {
       if (mode === "customize") {
-        await updateProfileMutation.mutateAsync(data);
+        // Ensure email is set if it's missing (required by schema)
+        const submitData = {
+          ...data,
+          email: data.email || `${Date.now()}@persona.local`
+        };
+        await updateProfileMutation.mutateAsync(submitData);
         return;
       }
       if (mode === "login") {
@@ -592,15 +596,6 @@ export default function AuthPage() {
                     className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar"
                   >
                     <div className="space-y-1">
-                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Email</label>
-                      <input
-                        {...form.register("email")}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50 transition-colors"
-                        placeholder="your@email.com"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
                       <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Name</label>
                       <input
                         {...form.register("name")}
@@ -623,7 +618,7 @@ export default function AuthPage() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Tagline</label>
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Startup / Business</label>
                       <input
                         {...form.register("bio")}
                         className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50 transition-colors"
@@ -631,7 +626,7 @@ export default function AuthPage() {
                       />
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 gap-2">
                       <div className="space-y-1">
                         <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Instagram</label>
                         <input
@@ -648,14 +643,15 @@ export default function AuthPage() {
                           placeholder="URL"
                         />
                       </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">WhatsApp</label>
-                        <input
-                          {...form.register("whatsapp")}
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
-                          placeholder="Number"
-                        />
-                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">WhatsApp</label>
+                      <input
+                        {...form.register("whatsapp")}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none"
+                        placeholder="Number"
+                      />
                     </div>
 
                     <div className="space-y-1">
