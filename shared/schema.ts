@@ -14,6 +14,7 @@ export const users = pgTable("users", {
   linkedin: text("linkedin"),
   whatsapp: text("whatsapp"),
   website: text("website"),
+  cards: text("cards").array(), // Array of JSON strings or just text descriptions
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -27,6 +28,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
   linkedin: true,
   whatsapp: true,
   website: true,
+  cards: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
