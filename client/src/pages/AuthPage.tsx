@@ -690,6 +690,12 @@ export default function AuthPage() {
 
   const [selectedCards, setSelectedCards] = useState<string[]>(user?.cards || []);
 
+  useEffect(() => {
+    if (user?.cards) {
+      setSelectedCards(user.cards);
+    }
+  }, [user]);
+
   const onSubmit = async (data: InsertUser) => {
     try {
       if (mode === "customize" || (mode === "register" && user)) {
@@ -699,6 +705,7 @@ export default function AuthPage() {
           cards: selectedCards,
         };
         await updateProfileMutation.mutateAsync(submitData);
+        setMode("login");
         return;
       }
       if (mode === "login") {
@@ -938,7 +945,7 @@ export default function AuthPage() {
                   </form>
                 ) : mode === "register" ? (
                   <div className="space-y-4">
-                    {mode === "register" && selectedCards.length > 0 && (mode !== "customize") ? (
+                    {mode === "register" && selectedCards.length > 0 && user && (mode !== "customize") ? (
                       <div className="py-2">
                         <CustomSwipeCard cards={selectedCards} />
                         <div className="text-center mt-4 space-y-0.5">
@@ -950,7 +957,7 @@ export default function AuthPage() {
                           </p>
                         </div>
                       </div>
-                    ) : form.watch("name") || user ? (
+                    ) : (form.watch("name") || user) && mode === "register" ? (
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <h4 className="text-xs font-bold text-white uppercase tracking-wider">
