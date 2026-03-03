@@ -43,3 +43,9 @@ outputType = "webview"
 
 [agent]
 expertMode = true
+
+[userenv]
+
+[userenv.shared]
+LIVEKIT_API_KEY = "API2HDNJuG3dHMR"
+LIVEKIT_API_SECRET = "SECRET_PLACEHOLDER"

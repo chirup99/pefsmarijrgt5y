@@ -8,11 +8,33 @@ import bcrypt from "bcrypt";
 
 const SALT_ROUNDS = 12;
 
+import { AccessToken } from "livekit-server-sdk";
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
   
+  app.get("/api/livekit/token", async (req, res) => {
+    const roomName = "pitch-room";
+    const participantName = "user-" + Math.floor(Math.random() * 1000);
+    
+    if (!process.env.LIVEKIT_API_KEY || !process.env.LIVEKIT_API_SECRET) {
+      return res.status(500).json({ error: "LiveKit credentials not configured" });
+    }
+
+    const at = new AccessToken(
+      process.env.LIVEKIT_API_KEY,
+      process.env.LIVEKIT_API_SECRET,
+      {
+        identity: participantName,
+      }
+    );
+    at.addGrant({ roomJoin: true, room: roomName });
+
+    res.json({ token: await at.toJwt() });
+  });
+
   app.post(api.auth.login.path, async (req, res) => {
     try {
       const input = api.auth.login.input.parse(req.body);

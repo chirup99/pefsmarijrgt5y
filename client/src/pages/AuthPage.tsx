@@ -286,23 +286,35 @@ const MiniCard = ({
 
   if (!card) return null;
 
-  const handleSpeak = (text: string) => {
-    if ('speechSynthesis' in window) {
-      // Cancel any ongoing speech
+  const handleSpeak = async (text: string) => {
+    if (isSpeaking) {
       window.speechSynthesis.cancel();
-
-      if (isSpeaking) {
-        setIsSpeaking(false);
-        return;
-      }
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.onend = () => setIsSpeaking(false);
-      utterance.onerror = () => setIsSpeaking(false);
-      
-      setIsSpeaking(true);
-      window.speechSynthesis.speak(utterance);
+      setIsSpeaking(false);
+      return;
     }
+
+    if (!text) return;
+
+    // Use a more natural voice if available
+    const utterance = new SpeechSynthesisUtterance(text);
+    const voices = window.speechSynthesis.getVoices();
+    // Try to find a better English voice
+    const preferredVoice = voices.find(v => v.name.includes("Google") && v.lang.startsWith("en")) || 
+                          voices.find(v => v.lang.startsWith("en-GB")) ||
+                          voices.find(v => v.lang.startsWith("en-US"));
+    
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
+    
+    utterance.pitch = 1;
+    utterance.rate = 0.9; // Slightly slower for better clarity
+    
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    
+    setIsSpeaking(true);
+    window.speechSynthesis.speak(utterance);
   };
 
   const cardTypeInfo = CARD_TYPES.find(t => t.type === card.type);
@@ -417,9 +429,25 @@ const MiniCard = ({
           </div>
         ) : card.type === "pitch" ? (
           <div className="w-full h-full flex flex-col items-center justify-center p-4">
-            <p className="text-white/90 text-sm text-center line-clamp-6 italic leading-relaxed">
-              "{(card as any).content || "No pitch content yet..."}"
-            </p>
+            {isEditing ? (
+               <textarea
+                className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white h-full resize-none"
+                placeholder="Pitch content"
+                defaultValue={(card as any).content}
+                autoFocus
+                onBlur={(e) => {
+                  onUpdate(JSON.stringify({ ...card, content: e.target.value }));
+                  setIsEditing(false);
+                }}
+              />
+            ) : (
+              <p 
+                onClick={() => setIsEditing(true)}
+                className="text-white/90 text-sm text-center line-clamp-6 italic leading-relaxed cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-colors w-full h-full flex items-center justify-center"
+              >
+                "{(card as any).content || "No pitch content yet..."}"
+              </p>
+            )}
           </div>
         ) : card.type === "revenue" && isPlaying ? (
           <div className="w-full h-full flex flex-col items-center justify-center p-2">
