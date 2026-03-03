@@ -688,12 +688,15 @@ export default function AuthPage() {
     },
   });
 
+  const [selectedCards, setSelectedCards] = useState<string[]>(user?.cards || []);
+
   const onSubmit = async (data: InsertUser) => {
     try {
       if (mode === "customize" || (mode === "register" && user)) {
         const submitData = {
           ...data,
           email: data.email || user?.email || `${Date.now()}@persona.local`,
+          cards: selectedCards,
         };
         await updateProfileMutation.mutateAsync(submitData);
         return;
@@ -935,15 +938,15 @@ export default function AuthPage() {
                   </form>
                 ) : mode === "register" ? (
                   <div className="space-y-4">
-                    {mode === "register" && form.watch("cards")?.length > 0 && (mode !== "customize") ? (
+                    {mode === "register" && selectedCards.length > 0 && (mode !== "customize") ? (
                       <div className="py-2">
-                        <CustomSwipeCard cards={form.watch("cards")} />
+                        <CustomSwipeCard cards={selectedCards} />
                         <div className="text-center mt-4 space-y-0.5">
                           <p className="text-xs font-semibold text-white">
                             Your Custom Persona
                           </p>
                           <p className="text-[10px] text-white/40">
-                            {form.watch("cards").length} cards active
+                            {selectedCards.length} cards active
                           </p>
                         </div>
                       </div>
@@ -951,7 +954,7 @@ export default function AuthPage() {
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-                            Your Mini-Cards ({form.watch("cards")?.length || 0}
+                            Your Mini-Cards ({selectedCards.length}
                             /5)
                           </h4>
                         </div>
@@ -961,23 +964,19 @@ export default function AuthPage() {
                               key={idx}
                               className="min-w-[220px] aspect-[3/4] snap-center"
                             >
-                              {form.watch("cards")?.[idx] ? (
+                              {selectedCards[idx] ? (
                                 <MiniCard
                                   idx={idx}
-                                  cardJson={form.watch("cards")?.[idx]}
+                                  cardJson={selectedCards[idx]}
                                   onUpdate={(newJson) => {
-                                    const currentCards = [
-                                      ...(form.getValues("cards") || []),
-                                    ];
+                                    const currentCards = [...selectedCards];
                                     currentCards[idx] = newJson;
-                                    form.setValue("cards", currentCards);
+                                    setSelectedCards(currentCards);
                                   }}
                                   onDelete={() => {
-                                    const currentCards = [
-                                      ...(form.getValues("cards") || []),
-                                    ];
+                                    const currentCards = [...selectedCards];
                                     currentCards.splice(idx, 1);
-                                    form.setValue("cards", currentCards);
+                                    setSelectedCards(currentCards);
                                   }}
                                 />
                               ) : (
@@ -988,9 +987,7 @@ export default function AuthPage() {
                                         key={t.type}
                                         type="button"
                                         onClick={() => {
-                                          const currentCards = [
-                                            ...(form.getValues("cards") || []),
-                                          ];
+                                          const currentCards = [...selectedCards];
                                           const newCard =
                                             t.type === "pitch"
                                               ? {
@@ -1017,7 +1014,7 @@ export default function AuthPage() {
                                                       imageUrls: ["", ""],
                                                     };
                                           currentCards[idx] = JSON.stringify(newCard);
-                                          form.setValue("cards", currentCards);
+                                          setSelectedCards(currentCards);
                                         }}
                                         className="flex flex-col items-center gap-1 p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all"
                                       >
