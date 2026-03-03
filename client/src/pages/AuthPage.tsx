@@ -1388,7 +1388,10 @@ export default function AuthPage() {
                     Download
                   </button>
                   <button
-                    onClick={() => setShowQRDialog(false)}
+                    onClick={() => {
+                      setShowQRDialog(false);
+                      setMode("login");
+                    }}
                     className="w-full text-white/30 hover:text-white/50 py-1.5 font-bold text-[9px] uppercase tracking-widest transition-all"
                   >
                     Close
