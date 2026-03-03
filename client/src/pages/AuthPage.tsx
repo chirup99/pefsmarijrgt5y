@@ -282,8 +282,28 @@ const MiniCard = ({
   
   const [isEditing, setIsEditing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   if (!card) return null;
+
+  const handleSpeak = (text: string) => {
+    if ('speechSynthesis' in window) {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+
+      if (isSpeaking) {
+        setIsSpeaking(false);
+        return;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+      
+      setIsSpeaking(true);
+      window.speechSynthesis.speak(utterance);
+    }
+  };
 
   const cardTypeInfo = CARD_TYPES.find(t => t.type === card.type);
 
@@ -395,6 +415,12 @@ const MiniCard = ({
               Done
             </button>
           </div>
+        ) : card.type === "pitch" ? (
+          <div className="w-full h-full flex flex-col items-center justify-center p-4">
+            <p className="text-white/90 text-sm text-center line-clamp-6 italic leading-relaxed">
+              "{(card as any).content || "No pitch content yet..."}"
+            </p>
+          </div>
         ) : card.type === "revenue" && isPlaying ? (
           <div className="w-full h-full flex flex-col items-center justify-center p-2">
             <div className="w-full h-24 relative overflow-visible">
@@ -444,6 +470,24 @@ const MiniCard = ({
         {card.type === "reel" ? (
           <button className="w-full bg-white text-black rounded-full py-2 text-xs font-bold flex items-center justify-center gap-2">
             <Play className="w-3 h-3 fill-current" /> Play Now
+          </button>
+        ) : card.type === "pitch" ? (
+          <button 
+            onClick={() => handleSpeak((card as any).content || "")}
+            className={clsx(
+              "w-full rounded-full py-2 text-xs font-bold flex items-center justify-center gap-2 transition-colors",
+              isSpeaking ? "bg-red-500 text-white" : "bg-white text-black"
+            )}
+          >
+            {isSpeaking ? (
+              <>
+                <X className="w-3 h-3" /> Stop Pitch
+              </>
+            ) : (
+              <>
+                <Play className="w-3 h-3 fill-current" /> Play Pitch
+              </>
+            )}
           </button>
         ) : card.type === "revenue" ? (
           <div className="space-y-2">
