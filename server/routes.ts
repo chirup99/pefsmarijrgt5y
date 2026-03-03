@@ -147,7 +147,14 @@ export async function registerRoutes(
   });
 
   app.patch("/api/user/:id", async (req, res) => {
-    // ... existing patch route
+    try {
+      const { id } = req.params;
+      const user = await storage.updateUser(id, req.body);
+      const { password: _, ...safeUser } = user;
+      res.json(safeUser);
+    } catch (err) {
+      res.status(500).json({ message: "Internal server error" });
+    }
   });
 
   app.get("/api/user/slug/:slug", async (req, res) => {
