@@ -26,6 +26,9 @@ import {
   Package,
   FileText,
   User,
+  Pencil,
+  Palette,
+  Layout,
 } from "lucide-react";
 import {
   motion,
@@ -679,6 +682,9 @@ export default function AuthPage() {
 
   const [selectedCards, setSelectedCards] = useState<string[]>(user?.cards || []);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [qrColor, setQrColor] = useState("#000000");
+  const [qrBgColor, setQrBgColor] = useState("#ffffff");
+  const [qrLayout, setQrLayout] = useState<"standard" | "compact" | "minimal">("standard");
 
   useEffect(() => {
     if (user?.cards) {
@@ -1269,9 +1275,9 @@ export default function AuthPage() {
                     </div>
 
                     {/* QR Code Area - Compact */}
-                    <div className="flex flex-col items-center gap-4 w-full">
-                      <div className="flex flex-col items-center gap-2">
-                        <div className="w-12 h-12 rounded-full border-2 border-white/20 overflow-hidden bg-white/10">
+                    <div className="flex flex-col items-center gap-4 w-full relative group/qr">
+                      <div className="flex flex-col items-center gap-2 relative">
+                        <div className="w-12 h-12 rounded-full border-2 border-white/20 overflow-hidden bg-white/10 relative group/avatar">
                           {user?.id ? (
                             <img 
                               src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
@@ -1283,6 +1289,9 @@ export default function AuthPage() {
                               <User className="w-6 h-6" />
                             </div>
                           )}
+                          <button className="absolute inset-0 bg-black/40 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex items-center justify-center">
+                            <Pencil className="w-3 h-3 text-white" />
+                          </button>
                         </div>
                         <div className="text-center">
                           <h5 className="text-white text-xs font-bold leading-tight">{user?.name || "Founder Name"}</h5>
@@ -1290,16 +1299,35 @@ export default function AuthPage() {
                         </div>
                       </div>
 
-                      <div 
-                        ref={qrRef}
-                        className="aspect-square bg-white rounded-[28px] p-3.5 flex items-center justify-center shadow-lg relative"
-                      >
-                        <QRCodeSVG 
-                          value={window.location.origin + "/?user=" + user?.id}
-                          size={100}
-                          level="H"
-                          includeMargin={false}
-                        />
+                      <div className="relative group/code">
+                        <div 
+                          ref={qrRef}
+                          className="aspect-square bg-white rounded-[28px] p-3.5 flex items-center justify-center shadow-lg relative overflow-hidden"
+                          style={{ backgroundColor: qrBgColor }}
+                        >
+                          <QRCodeSVG 
+                            value={window.location.origin + "/?user=" + user?.id}
+                            size={100}
+                            level="H"
+                            includeMargin={false}
+                            fgColor={qrColor}
+                            bgColor={qrBgColor}
+                          />
+                        </div>
+                        <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 group-hover/code:opacity-100 transition-opacity">
+                          <button 
+                            onClick={() => setQrColor(qrColor === "#000000" ? "#3b82f6" : "#000000")}
+                            className="p-1.5 bg-black/80 rounded-full border border-white/20 text-white hover:scale-110 transition-transform"
+                          >
+                            <Palette className="w-3 h-3" />
+                          </button>
+                          <button 
+                            onClick={() => setQrLayout(l => l === "standard" ? "minimal" : "standard")}
+                            className="p-1.5 bg-black/80 rounded-full border border-white/20 text-white hover:scale-110 transition-transform"
+                          >
+                            <Layout className="w-3 h-3" />
+                          </button>
+                        </div>
                       </div>
                       <div className="text-center">
                         <p className="text-white/40 text-[8px] uppercase tracking-[0.2em] font-medium">Scan to connect</p>
