@@ -2,9 +2,11 @@ import type { Express } from "express";
 import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
-import { insertUserSchema } from "@shared/schema";
+import { users, insertUserSchema } from "@shared/schema";
 import { z } from "zod";
 import bcrypt from "bcrypt";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 const SALT_ROUNDS = 12;
 
@@ -73,7 +75,29 @@ export async function registerRoutes(
           // If user exists, update their profile with the new details and cards
           const { password: _, ...updateData } = input as any;
           const updatedUser = await storage.updateUser(existingUser.id, updateData);
-          const { password: __, ...safeUser } = updatedUser;
+          
+          let userWithSlug = updatedUser;
+          // Ensure uniqueSlug exists on update if missing
+          if (!existingUser.uniqueSlug) {
+            let uniqueSlug = "";
+            const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+            let isUnique = false;
+            let attempts = 0;
+            while (!isUnique && attempts < 10) {
+              attempts++;
+              uniqueSlug = "";
+              for (let i = 0; i < 5; i++) {
+                uniqueSlug += chars.charAt(Math.floor(Math.random() * chars.length));
+              }
+              const existing = await db.select().from(users).where(eq(users.uniqueSlug, uniqueSlug));
+              if (existing.length === 0) isUnique = true;
+            }
+            if (isUnique) {
+              userWithSlug = await storage.updateUser(existingUser.id, { uniqueSlug } as any);
+            }
+          }
+          
+          const { password: __, ...safeUser } = userWithSlug;
           return res.status(200).json(safeUser);
         }
       }
@@ -83,16 +107,25 @@ export async function registerRoutes(
       // Generate a unique 5-character slug
       let uniqueSlug = "";
       const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-      while (true) {
+      let isUnique = false;
+      let attempts = 0;
+      while (!isUnique && attempts < 10) {
+        attempts++;
         uniqueSlug = "";
         for (let i = 0; i < 5; i++) {
           uniqueSlug += chars.charAt(Math.floor(Math.random() * chars.length));
         }
-        // Check if slug is unique (simplified check for MVP)
         const existing = await db.select().from(users).where(eq(users.uniqueSlug, uniqueSlug));
-        if (existing.length === 0) break;
+        if (existing.length === 0) {
+          isUnique = true;
+        }
       }
 
+      if (!isUnique) {
+        throw new Error("Could not generate a unique slug");
+      }
+
+      console.log("Creating user with slug:", uniqueSlug);
       user = await storage.createUser({ 
         ...input, 
         email: input.email || `${Date.now()}@persona.local`,

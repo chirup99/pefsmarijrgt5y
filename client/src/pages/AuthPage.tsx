@@ -797,22 +797,23 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
   const onSubmit = async (values: InsertUser) => {
     try {
+      console.log("Submitting values:", values, "Mode:", mode);
       if (mode === "login") {
         await loginMutation.mutateAsync(values);
       } else if (mode === "register" || mode === "customize") {
+        const payload = {
+          ...values,
+          cards: selectedCards,
+        };
+        console.log("Registration/Update payload:", payload);
         if (user?.id) {
-          await updateProfileMutation.mutateAsync({
-            ...values,
-            cards: selectedCards,
-          });
+          await updateProfileMutation.mutateAsync(payload);
         } else {
-          await registerMutation.mutateAsync({
-            ...values,
-            cards: selectedCards,
-          });
+          await registerMutation.mutateAsync(payload);
         }
       }
     } catch (err: any) {
+      console.error("Auth error:", err);
       toast({
         title: "Error",
         description: err.message,
