@@ -281,6 +281,7 @@ const MiniCard = ({
   }, [cardJson]);
   
   const [isEditing, setIsEditing] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   if (!card) return null;
 
@@ -311,7 +312,7 @@ const MiniCard = ({
         </h5>
       </div>
 
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center relative">
         {isEditing ? (
           <div className="w-full space-y-2 bg-black/40 p-3 rounded-xl backdrop-blur-sm z-10">
             <input
@@ -394,6 +395,40 @@ const MiniCard = ({
               Done
             </button>
           </div>
+        ) : card.type === "revenue" && isPlaying ? (
+          <div className="w-full h-full flex flex-col items-center justify-center p-2">
+            <div className="w-full h-24 relative overflow-visible">
+              <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <motion.path
+                  d="M 10 90 L 90 10"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 1.5, ease: "easeOut" }}
+                />
+                <motion.circle
+                  cx="90"
+                  cy="10"
+                  r="5"
+                  fill="white"
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 1.5, duration: 0.3 }}
+                />
+              </svg>
+              <motion.div 
+                className="absolute -top-2 right-0 text-white font-bold text-xl"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.5 }}
+              >
+                {(card as any).value}
+              </motion.div>
+            </div>
+          </div>
         ) : (
           <button
             type="button"
@@ -411,7 +446,15 @@ const MiniCard = ({
             <Play className="w-3 h-3 fill-current" /> Play Now
           </button>
         ) : card.type === "revenue" ? (
-          <div className="text-white font-bold text-xl">{(card as any).value}</div>
+          <div className="space-y-2">
+            {!isPlaying && <div className="text-white font-bold text-xl">{(card as any).value}</div>}
+            <button 
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="w-full bg-white text-black rounded-full py-2 text-xs font-bold flex items-center justify-center gap-2"
+            >
+              <Play className="w-3 h-3 fill-current" /> {isPlaying ? "Reset" : "Play Projection"}
+            </button>
+          </div>
         ) : null}
       </div>
     </motion.div>
