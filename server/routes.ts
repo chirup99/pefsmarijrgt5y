@@ -2,11 +2,9 @@ import type { Express } from "express";
 import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
-import { users, insertUserSchema } from "@shared/schema";
+import { insertUserSchema } from "@shared/schema";
 import { z } from "zod";
 import bcrypt from "bcrypt";
-import { db } from "./db";
-import { eq } from "drizzle-orm";
 
 const SALT_ROUNDS = 12;
 
@@ -68,17 +66,14 @@ export async function registerRoutes(
     try {
       const input = api.auth.register.input.parse(req.body);
       
-      let user;
       if (input.email) {
         const existingUser = await storage.getUserByEmail(input.email);
         if (existingUser) {
-          // If user exists, update their profile with the new details and cards
           const { password: _, ...updateData } = input as any;
           const updatedUser = await storage.updateUser(existingUser.id, updateData);
           
           let userWithSlug = updatedUser;
-          // Ensure uniqueSlug exists on update if missing
-          if (!existingUser.uniqueSlug) {
+          if (!existingUser.uniqueSlug && storage.getUserBySlug) {
             let uniqueSlug = "";
             const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
             let isUnique = false;
@@ -89,8 +84,8 @@ export async function registerRoutes(
               for (let i = 0; i < 5; i++) {
                 uniqueSlug += chars.charAt(Math.floor(Math.random() * chars.length));
               }
-              const existing = await db.select().from(users).where(eq(users.uniqueSlug, uniqueSlug));
-              if (existing.length === 0) isUnique = true;
+              const existing = await storage.getUserBySlug(uniqueSlug);
+              if (!existing) isUnique = true;
             }
             if (isUnique) {
               userWithSlug = await storage.updateUser(existingUser.id, { uniqueSlug } as any);
@@ -104,19 +99,18 @@ export async function registerRoutes(
 
       const hashedPassword = input.password ? await bcrypt.hash(input.password, SALT_ROUNDS) : await bcrypt.hash(Math.random().toString(), SALT_ROUNDS);
       
-      // Generate a unique 5-character slug
       let uniqueSlug = "";
       const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
       let isUnique = false;
       let attempts = 0;
-      while (!isUnique && attempts < 10) {
+      while (!isUnique && attempts < 10 && storage.getUserBySlug) {
         attempts++;
         uniqueSlug = "";
         for (let i = 0; i < 5; i++) {
           uniqueSlug += chars.charAt(Math.floor(Math.random() * chars.length));
         }
-        const existing = await db.select().from(users).where(eq(users.uniqueSlug, uniqueSlug));
-        if (existing.length === 0) {
+        const existing = await storage.getUserBySlug(uniqueSlug);
+        if (!existing) {
           isUnique = true;
         }
       }
@@ -125,13 +119,12 @@ export async function registerRoutes(
         throw new Error("Could not generate a unique slug");
       }
 
-      console.log("Creating user with slug:", uniqueSlug);
-      user = await storage.createUser({ 
+      const user = await storage.createUser({ 
         ...input, 
         email: input.email || `${Date.now()}@persona.local`,
         password: hashedPassword,
         uniqueSlug
-      });
+      } as any);
       
       const { password: _, ...safeUser } = user;
       res.status(201).json(safeUser);
@@ -160,7 +153,8 @@ export async function registerRoutes(
   app.get("/api/user/slug/:slug", async (req, res) => {
     try {
       const { slug } = req.params;
-      const user = await (storage as any).getUserBySlug(slug);
+      if (!storage.getUserBySlug) throw new Error("Method not implemented");
+      const user = await storage.getUserBySlug(slug);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }

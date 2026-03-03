@@ -1,23 +1,5 @@
-import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-
-export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  email: text("email").notNull().unique(),
-  password: text("password").notNull(),
-  name: text("name"),
-  role: text("role"),
-  bio: text("bio"),
-  instagram: text("instagram"),
-  linkedin: text("linkedin"),
-  whatsapp: text("whatsapp"),
-  website: text("website"),
-  uniqueSlug: varchar("unique_slug", { length: 5 }).unique(),
-  cards: text("cards").array(), // Array of JSON strings representing different card types
-  createdAt: timestamp("created_at").defaultNow(),
-});
 
 export const cardSchema = z.discriminatedUnion("type", [
   z.object({
@@ -45,21 +27,52 @@ export const cardSchema = z.discriminatedUnion("type", [
 
 export type CardData = z.infer<typeof cardSchema>;
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  email: true,
-  password: true,
-  name: true,
-  role: true,
-  bio: true,
-  instagram: true,
-  linkedin: true,
-  whatsapp: true,
-  website: true,
-  cards: true,
-}).extend({
+// Mocking table structure for DynamoDB types
+export const users = {
+  id: "id",
+  email: "email",
+  password: "password",
+  name: "name",
+  role: "role",
+  bio: "bio",
+  instagram: "instagram",
+  linkedin: "linkedin",
+  whatsapp: "whatsapp",
+  website: "website",
+  uniqueSlug: "uniqueSlug",
+  cards: "cards",
+  createdAt: "createdAt"
+};
+
+export type User = {
+  id: string;
+  email: string;
+  password: string;
+  name: string | null;
+  role: string | null;
+  bio: string | null;
+  instagram: string | null;
+  linkedin: string | null;
+  whatsapp: string | null;
+  website: string | null;
+  uniqueSlug: string | null;
+  cards: string[]; // JSON strings
+  createdAt: Date;
+};
+
+export const insertUserSchema = z.object({
   email: z.string().email().optional().or(z.string().length(0)),
   password: z.string().min(1).optional().or(z.string().length(0)),
+  name: z.string().optional().nullable(),
+  role: z.string().optional().nullable(),
+  bio: z.string().optional().nullable(),
+  instagram: z.string().optional().nullable(),
+  linkedin: z.string().optional().nullable(),
+  whatsapp: z.string().optional().nullable(),
+  website: z.string().optional().nullable(),
+  cards: z.array(z.string()).optional(),
+  uniqueSlug: z.string().optional().nullable(),
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
+
