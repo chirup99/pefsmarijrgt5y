@@ -712,6 +712,7 @@ export default function AuthPage() {
       if (mode === "register") {
         const registerData = {
           ...data,
+          email: data.email || user?.email || `${Date.now()}@persona.local`,
           cards: selectedCards,
         };
         await registerMutation.mutateAsync(registerData);

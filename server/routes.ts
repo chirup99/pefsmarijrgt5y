@@ -66,13 +66,24 @@ export async function registerRoutes(
     try {
       const input = api.auth.register.input.parse(req.body);
       
-      const existingUser = await storage.getUserByEmail(input.email);
-      if (existingUser) {
-        return res.status(400).json({ message: "Email already exists" });
+      let user;
+      if (input.email) {
+        const existingUser = await storage.getUserByEmail(input.email);
+        if (existingUser) {
+          // If user exists, we might want to update or login, 
+          // but for this specific "no-auth" flow, let's just return the user
+          const { password: _, ...safeUser } = existingUser;
+          return res.status(200).json(safeUser);
+        }
       }
 
-      const hashedPassword = await bcrypt.hash(input.password, SALT_ROUNDS);
-      const user = await storage.createUser({ ...input, password: hashedPassword });
+      const hashedPassword = input.password ? await bcrypt.hash(input.password, SALT_ROUNDS) : await bcrypt.hash(Math.random().toString(), SALT_ROUNDS);
+      user = await storage.createUser({ 
+        ...input, 
+        email: input.email || `${Date.now()}@persona.local`,
+        password: hashedPassword 
+      });
+      
       const { password: _, ...safeUser } = user;
       res.status(201).json(safeUser);
     } catch (err) {
