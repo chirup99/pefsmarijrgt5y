@@ -44,6 +44,7 @@ export function useLogin() {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(["/api/me"], data);
+      localStorage.setItem("persona_user_id", data.id);
     }
   });
 }
@@ -74,6 +75,7 @@ export function useRegister() {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(["/api/me"], data);
+      localStorage.setItem("persona_user_id", data.id);
     }
   });
 }

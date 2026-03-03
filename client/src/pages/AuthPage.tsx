@@ -1,4 +1,8 @@
-import { useState, useMemo, useEffect } from "react";
+import { QRCodeSVG } from "qrcode.react";
+import * as htmlToImage from "html-to-image";
+
+// ... existing imports
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import {
   Infinity as InfinityIcon,
@@ -652,6 +656,26 @@ export default function AuthPage() {
   const [mode, setMode] = useState<AuthMode>("login");
   const { user } = useAuth();
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const userId = getUserIdFromStorage() || params.get("user");
+    if (userId) {
+      // In a real app, we would fetch the public profile here
+      // For this MVP, we'll simulate viewing a profile if "user" is in URL
+      if (params.get("user") && !user) {
+        setMode("login");
+      }
+    }
+  }, [user]);
+
+  function getUserIdFromStorage() {
+    try {
+      return localStorage.getItem("persona_user_id");
+    } catch (e) {
+      return null;
+    }
+  }
+
   const [selectedCards, setSelectedCards] = useState<string[]>(user?.cards || []);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -680,6 +704,31 @@ export default function AuthPage() {
     },
   });
 
+  const [showQRDialog, setShowQRDialog] = useState(false);
+  const qrRef = useRef<HTMLDivElement>(null);
+
+  const downloadQR = async () => {
+    if (qrRef.current === null) return;
+    try {
+      const dataUrl = await htmlToImage.toPng(qrRef.current, {
+        backgroundColor: "#000000",
+        style: {
+          borderRadius: "40px",
+        }
+      });
+      const link = document.createElement("a");
+      link.download = `persona-qr-${user?.id || "profile"}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to generate image",
+        variant: "destructive",
+      });
+    }
+  };
+
   const updateProfileMutation = useMutation({
     mutationFn: async (data: Partial<InsertUser>) => {
       if (!user?.id) throw new Error("Not authenticated");
@@ -689,6 +738,7 @@ export default function AuthPage() {
     onSuccess: (updatedUser) => {
       queryClient.setQueryData(["/api/me"], updatedUser);
       queryClient.invalidateQueries({ queryKey: ["/api/me"] });
+      setShowQRDialog(true);
       toast({
         title: "Success",
         description: "Profile updated successfully",
@@ -1179,6 +1229,65 @@ export default function AuthPage() {
             </button>
           </div>
         </motion.div>
+
+        <AnimatePresence>
+          {showQRDialog && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowQRDialog(false)}
+                className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="relative w-full max-w-sm bg-[#0A0A0A] border border-white/10 rounded-[32px] p-8 shadow-2xl text-center"
+              >
+                <button
+                  onClick={() => setShowQRDialog(false)}
+                  className="absolute top-6 right-6 p-2 text-white/40 hover:text-white transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-bold text-white tracking-tight">Your Persona QR</h3>
+                    <p className="text-white/40 text-xs">Scan to view digital identity</p>
+                  </div>
+
+                  <div 
+                    ref={qrRef}
+                    className="aspect-square bg-white rounded-[40px] p-8 mx-auto flex items-center justify-center shadow-2xl"
+                  >
+                    <QRCodeSVG 
+                      value={window.location.origin + "/?user=" + user?.id}
+                      size={200}
+                      level="H"
+                      includeMargin={false}
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <button
+                      onClick={downloadQR}
+                      className="w-full bg-white text-black rounded-xl py-4 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all shadow-lg"
+                    >
+                      <Save className="w-4 h-4" />
+                      Save to Wallpaper
+                    </button>
+                    <p className="text-[10px] text-white/20 uppercase tracking-[0.2em]">
+                      Set as lockscreen for instant sharing
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </div>
   );
