@@ -183,7 +183,6 @@ const SwipeCardContent = ({
         card.color,
       )}
     >
-      {/* Card Content mimicking the image */}
       <div className="flex flex-col h-full items-center justify-between relative z-10">
         <div className="flex items-center gap-1.5">
           <span className="text-white/90 text-[9px] font-bold tracking-[0.2em] uppercase">
@@ -211,8 +210,6 @@ const SwipeCardContent = ({
           </button>
         </div>
       </div>
-
-      {/* Decorative circle from image */}
       <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
     </motion.div>
   );
@@ -229,14 +226,12 @@ const SwipeCard = () => {
     setCurrentIndex((prev) => (prev - 1 + CARDS.length) % CARDS.length);
   };
 
-  // Get the cards for the stack: current, next, and next-next
   const currentCard = CARDS[currentIndex];
   const nextCard = CARDS[(currentIndex + 1) % CARDS.length];
   const nextNextCard = CARDS[(currentIndex + 2) % CARDS.length];
 
   return (
     <div className="relative w-full max-w-[240px] aspect-[3/4] mx-auto perspective-1000">
-      {/* Background stack effect - fixed positions */}
       <div
         key={`stack2-${(currentIndex + 2) % CARDS.length}`}
         className={clsx(
@@ -266,6 +261,163 @@ const SwipeCard = () => {
   );
 };
 
+const MiniCard = ({ 
+  idx, 
+  cardJson, 
+  onUpdate, 
+  onDelete 
+}: { 
+  idx: number; 
+  cardJson?: string; 
+  onUpdate: (json: string) => void; 
+  onDelete: () => void; 
+}) => {
+  const card: CardData | null = useMemo(() => {
+    try {
+      return cardJson ? JSON.parse(cardJson) : null;
+    } catch (e) {
+      return null;
+    }
+  }, [cardJson]);
+  
+  const [isEditing, setIsEditing] = useState(false);
+
+  if (!card) return null;
+
+  const cardTypeInfo = CARD_TYPES.find(t => t.type === card.type);
+
+  return (
+    <motion.div
+      layoutId={`card-${idx}`}
+      className={clsx(
+        "h-full rounded-2xl p-4 relative overflow-hidden flex flex-col justify-between shadow-xl bg-gradient-to-b",
+        cardTypeInfo?.color || "from-gray-700 to-gray-800"
+      )}
+    >
+      <button
+        type="button"
+        onClick={onDelete}
+        className="absolute top-2 right-2 p-1 bg-black/20 rounded-full text-white/60 hover:text-white transition-colors z-20"
+      >
+        <X className="w-4 h-4" />
+      </button>
+
+      <div className="space-y-2">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-white/80">
+          {card.type}
+        </p>
+        <h5 className="text-white font-bold text-lg leading-tight">
+          {card.title}
+        </h5>
+      </div>
+
+      <div className="flex-1 flex items-center justify-center">
+        {isEditing ? (
+          <div className="w-full space-y-2 bg-black/40 p-3 rounded-xl backdrop-blur-sm z-10">
+            <input
+              className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
+              placeholder="Title"
+              defaultValue={card.title}
+              onBlur={(e) => {
+                onUpdate(JSON.stringify({ ...card, title: e.target.value }));
+              }}
+            />
+            {card.type === "pitch" && (
+              <textarea
+                className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white h-20"
+                placeholder="Pitch content"
+                defaultValue={(card as any).content}
+                onBlur={(e) => {
+                  onUpdate(JSON.stringify({ ...card, content: e.target.value }));
+                }}
+              />
+            )}
+            {card.type === "reel" && (
+              <input
+                className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
+                placeholder="Reel/Short URL"
+                defaultValue={(card as any).url}
+                onBlur={(e) => {
+                  onUpdate(JSON.stringify({ ...card, url: e.target.value }));
+                }}
+              />
+            )}
+            {card.type === "revenue" && (
+              <div className="space-y-1">
+                <input
+                  className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
+                  placeholder="Value (e.g. $10k)"
+                  defaultValue={(card as any).value}
+                  onBlur={(e) => {
+                    onUpdate(JSON.stringify({ ...card, value: e.target.value }));
+                  }}
+                />
+                <input
+                  className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-[10px] text-white"
+                  placeholder="Image URL"
+                  defaultValue={(card as any).imageUrl}
+                  onBlur={(e) => {
+                    onUpdate(JSON.stringify({ ...card, imageUrl: e.target.value }));
+                  }}
+                />
+              </div>
+            )}
+            {card.type === "product" && (
+              <div className="space-y-1">
+                <input
+                  className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-[10px] text-white"
+                  placeholder="Image URL 1"
+                  defaultValue={(card as any).imageUrls?.[0]}
+                  onBlur={(e) => {
+                    const urls = [...((card as any).imageUrls || ["", ""])];
+                    urls[0] = e.target.value;
+                    onUpdate(JSON.stringify({ ...card, imageUrls: urls }));
+                  }}
+                />
+                <input
+                  className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-[10px] text-white"
+                  placeholder="Image URL 2"
+                  defaultValue={(card as any).imageUrls?.[1]}
+                  onBlur={(e) => {
+                    const urls = [...((card as any).imageUrls || ["", ""])];
+                    urls[1] = e.target.value;
+                    onUpdate(JSON.stringify({ ...card, imageUrls: urls }));
+                  }}
+                />
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => setIsEditing(false)}
+              className="w-full bg-white text-black py-1 rounded text-[10px] font-bold"
+            >
+              Done
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setIsEditing(true)}
+            className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all group"
+          >
+            <Plus className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+          </button>
+        )}
+      </div>
+
+      <div className="pt-2">
+        {card.type === "reel" ? (
+          <button className="w-full bg-white text-black rounded-full py-2 text-xs font-bold flex items-center justify-center gap-2">
+            <Play className="w-3 h-3 fill-current" /> Play Now
+          </button>
+        ) : card.type === "revenue" ? (
+          <div className="text-white font-bold text-xl">{(card as any).value}</div>
+        ) : null}
+      </div>
+    </motion.div>
+  );
+};
+
 export default function AuthPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -281,7 +433,7 @@ export default function AuthPage() {
   const form = useForm<InsertUser>({
     resolver: zodResolver(insertUserSchema),
     defaultValues: {
-      password: "password123", // Default password for persona creation
+      password: "password123",
       name: user?.name || "",
       role: user?.role || "founder",
       bio: user?.bio || "Collaborate & Grow your Startup",
@@ -308,7 +460,6 @@ export default function AuthPage() {
   const onSubmit = async (data: InsertUser) => {
     try {
       if (mode === "customize") {
-        // Ensure email is set if it's missing (required by schema)
         const submitData = {
           ...data,
           email: data.email || `${Date.now()}@persona.local`
@@ -318,16 +469,10 @@ export default function AuthPage() {
       }
       if (mode === "login") {
         await loginMutation.mutateAsync(data);
-        toast({
-          title: "Welcome back",
-          description: "Successfully logged into Persona.",
-        });
+        toast({ title: "Welcome back", description: "Successfully logged into Persona." });
       } else {
         await registerMutation.mutateAsync(data);
-        toast({
-          title: "Welcome to Persona",
-          description: "Your account has been created.",
-        });
+        toast({ title: "Welcome to Persona", description: "Your account has been created." });
       }
       setLocation("/dashboard");
     } catch (error: any) {
@@ -339,11 +484,8 @@ export default function AuthPage() {
     }
   };
 
-  const currentRole = form.watch("role");
-
   return (
     <div className="min-h-screen bg-[#050505] overflow-hidden relative">
-      {/* Menu Background Layer */}
       <div className="absolute inset-0 flex flex-col justify-end items-end p-12 pb-20 pointer-events-none">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -353,24 +495,14 @@ export default function AuthPage() {
           <p className="text-white/40 text-[10px] leading-relaxed uppercase tracking-widest text-center">
             copyright : persona UI/UX is inspired by
           </p>
-
           <div className="space-y-3">
-            <a
-              href="https://perala.in"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block group"
-            >
-              <img
-                src={peralaLogo}
-                alt="Perala"
-                className="w-full h-auto opacity-80 group-hover:opacity-100 transition-opacity rounded-lg"
-              />
+            <a href="https://perala.in" target="_blank" rel="noopener noreferrer" className="block group">
+              <img src={peralaLogo} alt="Perala" className="w-full h-auto opacity-80 group-hover:opacity-100 transition-opacity rounded-lg" />
             </a>
           </div>
         </motion.div>
       </div>
-      {/* Main Content Layer */}
+
       <motion.div
         animate={{
           x: isMenuOpen ? "-80%" : "0%",
@@ -384,26 +516,12 @@ export default function AuthPage() {
           isMenuOpen ? "cursor-pointer select-none" : "",
         )}
       >
-        <div
-          className="absolute inset-0 bg-black/20 pointer-events-none opacity-0 transition-opacity duration-500"
-          style={{ opacity: isMenuOpen ? 1 : 0 }}
-        ></div>
-        {/* Menu Toggle Button */}
-        <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="absolute top-8 right-8 z-50 p-2 group"
-        >
+        <div className="absolute inset-0 bg-black/20 pointer-events-none opacity-0 transition-opacity duration-500" style={{ opacity: isMenuOpen ? 1 : 0 }}></div>
+        
+        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="absolute top-8 right-8 z-50 p-2 group">
           {isMenuOpen ? (
             <div className="text-white/80 hover:text-white transition-colors">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
@@ -416,328 +534,91 @@ export default function AuthPage() {
           )}
         </button>
 
-        {/* Floating Action Button */}
         <motion.button
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          className="fixed bottom-8 right-8 z-50 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/20 transition-all hover:shadow-[0_8px_30px_rgb(255,255,255,0.2)]"
+          className="fixed bottom-8 right-8 z-50 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg border border-white/20"
         >
           <QrCode className="w-6 h-6 text-black" strokeWidth={2.5} />
         </motion.button>
 
-        {/* Top Branding Section */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="w-full max-w-md text-center mb-6 z-10"
-        >
-          <div className="flex items-center justify-center gap-2 mb-1 text-white">
-            <h1 className="text-2xl font-display font-bold tracking-widest uppercase">
-              PERSONA
-            </h1>
-          </div>
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md text-center mb-6 z-10">
+          <h1 className="text-2xl font-display font-bold tracking-widest uppercase text-white">PERSONA</h1>
           <p className="text-[10px] tracking-[0.3em] text-white/50 font-medium mb-6 flex items-center justify-center gap-2">
-            CONNECT . COLLABORATE . EXPOSE
-            <InfinityIcon
-              className="w-3.5 h-3.5 text-purple-500/50"
-              strokeWidth={2.5}
-            />
+            CONNECT . COLLABORATE . EXPOSE <InfinityIcon className="w-3.5 h-3.5 text-purple-500/50" strokeWidth={2.5} />
           </p>
-
-          <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-2">
-            Networking & Exposure
-          </h2>
-          <p className="text-white/70 text-base mb-4 max-w-sm mx-auto">
-            Persona: Your Digital Identity & Collaboration Hub.
-          </p>
-
-          <div className="flex items-center justify-center gap-4 text-xs font-medium text-green-500/90">
-            <span className="flex items-center gap-1.5">
-              <span className="w-1 h-1 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>{" "}
-              Smart Networking
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-1 h-1 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>{" "}
-              Startup Exposure
-            </span>
-          </div>
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-2">Networking & Exposure</h2>
+          <p className="text-white/70 text-base mb-4 max-w-sm mx-auto">Persona: Your Digital Identity & Collaboration Hub.</p>
         </motion.div>
-        {/* Main Card */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl shadow-purple-900/10 p-5 sm:p-6 z-10 relative overflow-hidden"
-        >
-          {/* Subtle inner glow */}
-          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
 
-          {/* Tab Switcher */}
+        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl p-5 sm:p-6 z-10 relative overflow-hidden">
           <div className="flex p-1 bg-white/10 rounded-lg mb-6 relative">
-            <button
-              type="button"
-              className={clsx(
-                "flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors duration-200",
-                mode === "customize" || mode === "register"
-                  ? "text-white"
-                  : "text-white/50 hover:text-white/80",
-              )}
-            >
-              Persona
-            </button>
-            <button
-              type="button"
-              className={clsx(
-                "flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors duration-200",
-                mode === "register"
-                  ? "text-white"
-                  : "text-white/50 hover:text-white/80",
-              )}
-            >
-              Mini-Cards
-            </button>
-            <motion.div
-              layoutId="activeTab"
-              className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white/20 rounded-md shadow-sm"
-              initial={false}
-              animate={{
-                left: mode === "register" ? "calc(50%)" : "4px",
-              }}
-              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-            />
+            <button onClick={() => setMode("customize")} className={clsx("flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors", (mode === "customize" || mode === "register") ? "text-white" : "text-white/50")}>Persona</button>
+            <button onClick={() => setMode("register")} className={clsx("flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors", mode === "register" ? "text-white" : "text-white/50")}>Mini-Cards</button>
+            <motion.div layoutId="activeTab" className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white/20 rounded-md shadow-sm" animate={{ left: mode === "register" ? "calc(50%)" : "4px" }} />
           </div>
 
-          {/* Form */}
           <div className="space-y-4">
             <AnimatePresence mode="wait">
-              <motion.div
-                key={mode}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.2 }}
-                className="space-y-3"
-              >
+              <motion.div key={mode} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="space-y-3">
                 {mode === "login" ? (
-                  <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-4"
-                  >
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <div className="flex flex-col items-center text-center space-y-4 py-2">
-                      {/* Persona Identity Section */}
-                      <div className="space-y-1">
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-blue-400 mx-auto flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-purple-500/20">
-                          {form.watch("name")?.[0] || user?.username?.[0] || "P"}
-                        </div>
-                        <h3 className="text-xl font-bold text-white tracking-tight">
-                          {form.watch("name") || "Networking Profile"}
-                        </h3>
-                        <div className="relative group/role inline-block">
-                          <p className="text-white/40 text-xs flex items-center gap-1 justify-center">
-                          {ROLES.find(r => r.value === form.watch("role"))?.label || form.watch("role") || "Founder"}
-                        </p>
-                        </div>
-                        <p className="text-white/40 text-[10px] italic">
-                          {form.watch("bio") || "Collaborate & Grow your Startup"}
-                        </p>
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-blue-400 mx-auto flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                        {form.watch("name")?.[0] || "P"}
                       </div>
-
-                      {/* Social/Business Links Row */}
+                      <h3 className="text-xl font-bold text-white tracking-tight">{form.watch("name") || "Networking Profile"}</h3>
+                      <p className="text-white/40 text-xs">{ROLES.find(r => r.value === form.watch("role"))?.label || "Founder"}</p>
+                      <p className="text-white/40 text-[10px] italic">{form.watch("bio")}</p>
                       <div className="flex items-center justify-center gap-3 w-full pt-1">
-                        <a
-                          href={form.watch("linkedin") || "#"}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white/70 hover:text-white transition-all duration-200 group"
-                          title="LinkedIn"
-                        >
-                          <SiLinkedin className="w-4 h-4" />
-                        </a>
-                        <a
-                          href={form.watch("instagram") || "#"}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white/70 hover:text-white transition-all duration-200"
-                          title="Instagram"
-                        >
-                          <SiInstagram className="w-4 h-4" />
-                        </a>
-                        <a
-                          href={form.watch("whatsapp") || "#"}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white/70 hover:text-white transition-all duration-200"
-                          title="WhatsApp"
-                        >
-                          <SiWhatsapp className="w-4 h-4" />
-                        </a>
+                        <a href={form.watch("linkedin") || "#"} target="_blank" rel="noreferrer" className="p-2.5 bg-white/5 rounded-lg text-white/70 hover:text-white"><SiLinkedin className="w-4 h-4" /></a>
+                        <a href={form.watch("instagram") || "#"} target="_blank" rel="noreferrer" className="p-2.5 bg-white/5 rounded-lg text-white/70 hover:text-white"><SiInstagram className="w-4 h-4" /></a>
+                        <a href={form.watch("whatsapp") || "#"} target="_blank" rel="noreferrer" className="p-2.5 bg-white/5 rounded-lg text-white/70 hover:text-white"><SiWhatsapp className="w-4 h-4" /></a>
                       </div>
                     </div>
-
-                    <div className="pt-1">
-                      <a
-                        href={form.watch("website") || "#"}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="w-full bg-primary hover:bg-purple-500 active:bg-purple-700 text-white rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-purple-600/20 group no-underline"
-                      >
-                        View Collaboration Portal
-                        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                      </a>
-                    </div>
+                    <a href={form.watch("website") || "#"} target="_blank" rel="noreferrer" className="w-full bg-primary text-white rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 group no-underline">
+                      View Collaboration Portal <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    </a>
                   </form>
                 ) : mode === "register" ? (
                   <div className="space-y-4">
-                    {/* Mini-Cards Editor */}
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-                          Your Mini-Cards ({form.watch("cards")?.length || 0}/5)
-                        </h4>
-                      </div>
-
-                      <div className="flex gap-4 overflow-x-auto pb-4 px-1 custom-scrollbar snap-x">
-                        {Array.from({ length: 5 }).map((_, idx) => {
-                          const cardJson = form.watch("cards")?.[idx];
-                          const card: CardData | null = cardJson ? JSON.parse(cardJson) : null;
-                          const [isEditing, setIsEditing] = useState(false);
-
-                          return (
+                    {form.watch("name") || user ? (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-xs font-bold text-white uppercase tracking-wider">Your Mini-Cards ({form.watch("cards")?.length || 0}/5)</h4>
+                        </div>
+                        <div className="flex gap-4 overflow-x-auto pb-4 px-1 custom-scrollbar snap-x">
+                          {[0, 1, 2, 3, 4].map((idx) => (
                             <div key={idx} className="min-w-[220px] aspect-[3/4] snap-center">
-                              {card ? (
-                                <motion.div
-                                  layoutId={`card-${idx}`}
-                                  className={clsx(
-                                    "h-full rounded-2xl p-4 relative overflow-hidden flex flex-col justify-between shadow-xl bg-gradient-to-b",
-                                    CARD_TYPES.find(t => t.type === card.type)?.color || "from-gray-700 to-gray-800"
-                                  )}
-                                >
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const currentCards = [...(form.getValues("cards") || [])];
-                                      currentCards.splice(idx, 1);
-                                      form.setValue("cards", currentCards);
-                                    }}
-                                    className="absolute top-2 right-2 p-1 bg-black/20 rounded-full text-white/60 hover:text-white transition-colors z-20"
-                                  >
-                                    <X className="w-4 h-4" />
-                                  </button>
-
-                                  <div className="space-y-2">
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/80">
-                                      {card.type}
-                                    </p>
-                                    <h5 className="text-white font-bold text-lg leading-tight">
-                                      {card.title}
-                                    </h5>
-                                  </div>
-
-                                  <div className="flex-1 flex items-center justify-center">
-                                    {isEditing ? (
-                                      <div className="w-full space-y-2 bg-black/40 p-3 rounded-xl backdrop-blur-sm z-10">
-                                        <input
-                                          className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
-                                          placeholder="Title"
-                                          defaultValue={card.title}
-                                          onBlur={(e) => {
-                                            const currentCards = [...(form.getValues("cards") || [])];
-                                            const updatedCard = { ...card, title: e.target.value };
-                                            currentCards[idx] = JSON.stringify(updatedCard);
-                                            form.setValue("cards", currentCards);
-                                          }}
-                                        />
-                                        {card.type === "pitch" && (
-                                          <textarea
-                                            className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white h-20"
-                                            placeholder="Pitch content"
-                                            defaultValue={card.content}
-                                            onBlur={(e) => {
-                                              const currentCards = [...(form.getValues("cards") || [])];
-                                              const updatedCard = { ...card, content: e.target.value };
-                                              currentCards[idx] = JSON.stringify(updatedCard);
-                                              form.setValue("cards", currentCards);
-                                            }}
-                                          />
-                                        )}
-                                        {card.type === "reel" && (
-                                          <input
-                                            className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
-                                            placeholder="Reel/Short URL"
-                                            defaultValue={card.url}
-                                            onBlur={(e) => {
-                                              const currentCards = [...(form.getValues("cards") || [])];
-                                              const updatedCard = { ...card, url: e.target.value };
-                                              currentCards[idx] = JSON.stringify(updatedCard);
-                                              form.setValue("cards", currentCards);
-                                            }}
-                                          />
-                                        )}
-                                        {card.type === "revenue" && (
-                                          <input
-                                            className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
-                                            placeholder="Value (e.g. $10k)"
-                                            defaultValue={card.value}
-                                            onBlur={(e) => {
-                                              const currentCards = [...(form.getValues("cards") || [])];
-                                              const updatedCard = { ...card, value: e.target.value };
-                                              currentCards[idx] = JSON.stringify(updatedCard);
-                                              form.setValue("cards", currentCards);
-                                            }}
-                                          />
-                                        )}
-                                        <button
-                                          type="button"
-                                          onClick={() => setIsEditing(false)}
-                                          className="w-full bg-white text-black py-1 rounded text-[10px] font-bold"
-                                        >
-                                          Done
-                                        </button>
-                                      </div>
-                                    ) : (
-                                      <button
-                                        type="button"
-                                        onClick={() => setIsEditing(true)}
-                                        className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all group"
-                                      >
-                                        <Plus className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
-                                      </button>
-                                    )}
-                                  </div>
-
-                                  <div className="pt-2">
-                                    {card.type === "reel" ? (
-                                      <button className="w-full bg-white text-black rounded-full py-2 text-xs font-bold flex items-center justify-center gap-2">
-                                        <Play className="w-3 h-3 fill-current" /> Play Now
-                                      </button>
-                                    ) : card.type === "revenue" ? (
-                                      <div className="text-white font-bold text-xl">{card.value}</div>
-                                    ) : null}
-                                  </div>
-                                </motion.div>
-                              ) : (
+                              <MiniCard
+                                idx={idx}
+                                cardJson={form.watch("cards")?.[idx]}
+                                onUpdate={(newJson) => {
+                                  const currentCards = [...(form.getValues("cards") || [])];
+                                  currentCards[idx] = newJson;
+                                  form.setValue("cards", currentCards);
+                                }}
+                                onDelete={() => {
+                                  const currentCards = [...(form.getValues("cards") || [])];
+                                  currentCards.splice(idx, 1);
+                                  form.setValue("cards", currentCards);
+                                }}
+                              />
+                              {!form.watch("cards")?.[idx] && (
                                 <div className="h-full border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center p-4">
                                   <div className="grid grid-cols-2 gap-2 w-full">
                                     {CARD_TYPES.map((t) => (
-                                      <button
-                                        key={t.type}
-                                        type="button"
-                                        onClick={() => {
-                                          const currentCards = [...(form.getValues("cards") || [])];
-                                          const newCard: CardData = 
-                                            t.type === "pitch" ? { type: "pitch", title: "New Pitch", content: "" } :
-                                            t.type === "reel" ? { type: "reel", title: "New Reel", url: "" } :
-                                            t.type === "revenue" ? { type: "revenue", title: "Monthly Sales", value: "$0" } :
-                                            { type: "product", title: "Product", imageUrls: [] };
-                                          
-                                          currentCards.push(JSON.stringify(newCard));
-                                          form.setValue("cards", currentCards);
-                                        }}
-                                        className="flex flex-col items-center gap-1 p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all"
-                                      >
+                                      <button key={t.type} type="button" onClick={() => {
+                                        const currentCards = [...(form.getValues("cards") || [])];
+                                        const newCard = t.type === "pitch" ? { type: "pitch", title: "New Pitch", content: "" } :
+                                                       t.type === "reel" ? { type: "reel", title: "New Reel", url: "" } :
+                                                       t.type === "revenue" ? { type: "revenue", title: "Monthly Sales", value: "$0", imageUrl: "" } :
+                                                       { type: "product", title: "Product", imageUrls: ["", ""] };
+                                        currentCards.push(JSON.stringify(newCard));
+                                        form.setValue("cards", currentCards);
+                                      }} className="flex flex-col items-center gap-1 p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all">
                                         <t.icon className="w-5 h-5 text-white/60" />
                                         <span className="text-[8px] text-white/40 uppercase font-bold">{t.label}</span>
                                       </button>
@@ -746,153 +627,65 @@ export default function AuthPage() {
                                 </div>
                               )}
                             </div>
-                          );
-                        })}
+                          ))}
+                        </div>
+                        <button type="button" disabled={updateProfileMutation.isPending} onClick={() => form.handleSubmit(onSubmit)()} className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all">
+                          {updateProfileMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save All"}
+                        </button>
                       </div>
-
-                      <button
-                        type="button"
-                        disabled={updateProfileMutation.isPending}
-                        onClick={() => form.handleSubmit(onSubmit)()}
-                        className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all"
-                      >
-                        {updateProfileMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save All"}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
+                    ) : (
                       <div className="py-2">
                         <SwipeCard />
                         <div className="text-center mt-4 space-y-0.5">
-                          <p className="text-xs font-semibold text-white">
-                            Swipe to explore
-                          </p>
-                          <p className="text-[10px] text-white/40">
-                            Left to back • Right to next
-                          </p>
+                          <p className="text-xs font-semibold text-white">Swipe to explore</p>
+                          <p className="text-[10px] text-white/40">Left to back • Right to next</p>
                         </div>
                       </div>
                     )}
                   </div>
                 ) : (
-                  <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar"
-                  >
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                     <div className="space-y-1">
                       <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Name</label>
-                      <input
-                        {...form.register("name")}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50 transition-colors"
-                        placeholder="Your Name"
-                      />
+                      <input {...form.register("name")} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50" placeholder="Your Name" />
                     </div>
-
                     <div className="space-y-1">
                       <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Role</label>
                       <div className="relative">
-                        <select
-                          {...form.register("role")}
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50 transition-colors appearance-none"
-                        >
+                        <select {...form.register("role")} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white appearance-none">
                           {ROLES.map(r => <option key={r.value} value={r.value} className="bg-[#1a1a1a]">{r.label}</option>)}
                         </select>
                         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
                       </div>
                     </div>
-
                     <div className="space-y-1">
                       <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Startup / Business</label>
-                      <input
-                        {...form.register("bio")}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50 transition-colors"
-                        placeholder="e.g. Collaborate & Grow your Startup"
-                      />
+                      <input {...form.register("bio")} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" placeholder="e.g. Collaborate & Grow your Startup" />
                     </div>
-
                     <div className="grid grid-cols-2 gap-2">
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Instagram</label>
-                        <input
-                          {...form.register("instagram")}
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
-                          placeholder="URL"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">LinkedIn</label>
-                        <input
-                          {...form.register("linkedin")}
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
-                          placeholder="URL"
-                        />
-                      </div>
+                      <div className="space-y-1"><label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Instagram</label><input {...form.register("instagram")} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white" placeholder="URL" /></div>
+                      <div className="space-y-1"><label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">LinkedIn</label><input {...form.register("linkedin")} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white" placeholder="URL" /></div>
                     </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">WhatsApp</label>
-                      <input
-                        {...form.register("whatsapp")}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none"
-                        placeholder="Number"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Portal URL</label>
-                      <input
-                        {...form.register("website")}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50 transition-colors"
-                        placeholder="https://your-portal.com"
-                      />
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => setMode("register")}
-                      className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all mt-4"
-                    >
-                      Next <ArrowRight className="w-4 h-4" />
-                    </button>
+                    <div className="space-y-1"><label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">WhatsApp</label><input {...form.register("whatsapp")} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" placeholder="Number" /></div>
+                    <div className="space-y-1"><label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Portal URL</label><input {...form.register("website")} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" placeholder="https://your-portal.com" /></div>
+                    <button type="button" onClick={() => setMode("register")} className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 mt-4">Next <ArrowRight className="w-4 h-4" /></button>
                   </form>
                 )}
               </motion.div>
             </AnimatePresence>
 
             <div className="relative py-2">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-white/10"></span>
-              </div>
-              <div className="relative flex justify-center text-[10px] uppercase">
-                <span className="bg-card px-2 text-white/40 font-bold">
-                  {mode === "customize" ? "EDITING" : "FREE"}
-                </span>
-              </div>
+              <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-white/10"></span></div>
+              <div className="relative flex justify-center text-[10px] uppercase"><span className="bg-card px-2 text-white/40 font-bold">{mode === "customize" ? "EDITING" : "FREE"}</span></div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                if (mode === "login") {
-                  setMode("customize");
-                } else {
-                  setMode("login");
-                }
-              }}
-              className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-lg"
-            >
+            <button type="button" onClick={() => mode === "login" ? setMode("customize") : setMode("login")} className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg">
               {mode === "login" ? "Create your persona" : "Back to Persona"}
             </button>
           </div>
         </motion.div>
       </motion.div>
-
-      {/* Mini-Card Detail Modal / Interaction simulation */}
-      <AnimatePresence>
-        {/* We can add a modal here for deeper editing if needed, 
-            but for now we've integrated inline editing with the + icon as requested */}
-      </AnimatePresence>
+      <AnimatePresence></AnimatePresence>
     </div>
   );
 }
-
