@@ -970,14 +970,14 @@ export default function AuthPage() {
                                       ...(form.getValues("cards") || []),
                                     ];
                                     currentCards[idx] = newJson;
-                                    form.setValue("cards", currentCards, { shouldDirty: true });
+                                    form.setValue("cards", currentCards);
                                   }}
                                   onDelete={() => {
                                     const currentCards = [
                                       ...(form.getValues("cards") || []),
                                     ];
                                     currentCards.splice(idx, 1);
-                                    form.setValue("cards", currentCards, { shouldDirty: true });
+                                    form.setValue("cards", currentCards);
                                   }}
                                 />
                               ) : (
@@ -1017,7 +1017,7 @@ export default function AuthPage() {
                                                       imageUrls: ["", ""],
                                                     };
                                           currentCards[idx] = JSON.stringify(newCard);
-                                          form.setValue("cards", currentCards, { shouldDirty: true });
+                                          form.setValue("cards", currentCards);
                                         }}
                                         className="flex flex-col items-center gap-1 p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all"
                                       >
