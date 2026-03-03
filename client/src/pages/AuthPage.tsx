@@ -38,7 +38,7 @@ import {
 import { useLogin, useRegister, useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
-import { SiLinkedin, SiInstagram, SiWhatsapp } from "react-icons/si";
+import { SiInstagram, SiWhatsapp } from "react-icons/si";
 import peralaLogo from "@/assets/logo.png";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
@@ -720,7 +720,9 @@ export default function AuthPage() {
         setMode("login");
         return;
       }
+      
       if (mode === "register") {
+        // When registering (Save All), send all details including cards
         await registerMutation.mutateAsync(submitData);
         setMode("login");
       } else if (mode === "login") {
@@ -738,6 +740,10 @@ export default function AuthPage() {
         variant: "destructive",
       });
     }
+  };
+
+  const onNext = () => {
+    setMode("register");
   };
 
   return (
@@ -914,7 +920,7 @@ export default function AuthPage() {
                           rel="noreferrer"
                           className="p-2.5 bg-white/5 rounded-lg text-white/70 hover:text-white"
                         >
-                          <SiLinkedin className="w-4 h-4" />
+                          <Linkedin className="w-4 h-4" />
                         </a>
                         <a
                           href={form.watch("instagram") || "#"}

@@ -70,9 +70,10 @@ export async function registerRoutes(
       if (input.email) {
         const existingUser = await storage.getUserByEmail(input.email);
         if (existingUser) {
-          // If user exists, we might want to update or login, 
-          // but for this specific "no-auth" flow, let's just return the user
-          const { password: _, ...safeUser } = existingUser;
+          // If user exists, update their profile with the new details and cards
+          const { password: _, ...updateData } = input as any;
+          const updatedUser = await storage.updateUser(existingUser.id, updateData);
+          const { password: __, ...safeUser } = updatedUser;
           return res.status(200).json(safeUser);
         }
       }
