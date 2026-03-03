@@ -25,6 +25,7 @@ import {
   Video,
   Package,
   FileText,
+  User,
 } from "lucide-react";
 import {
   motion,
@@ -1268,7 +1269,27 @@ export default function AuthPage() {
                     </div>
 
                     {/* QR Code Area - Compact */}
-                    <div className="flex flex-col items-center gap-3 w-full">
+                    <div className="flex flex-col items-center gap-4 w-full">
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="w-12 h-12 rounded-full border-2 border-white/20 overflow-hidden bg-white/10">
+                          {user?.id ? (
+                            <img 
+                              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
+                              alt="Avatar"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-white/40">
+                              <User className="w-6 h-6" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-center">
+                          <h5 className="text-white text-xs font-bold leading-tight">{user?.name || "Founder Name"}</h5>
+                          <p className="text-white/60 text-[8px] uppercase tracking-wider">{user?.role || "Founder"} @ {user?.website?.replace(/^https?:\/\/(www\.)?/, "").split("/")[0] || "Startup"}</p>
+                        </div>
+                      </div>
+
                       <div 
                         ref={qrRef}
                         className="aspect-square bg-white rounded-[28px] p-3.5 flex items-center justify-center shadow-lg relative"
