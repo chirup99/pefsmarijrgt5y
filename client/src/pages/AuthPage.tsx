@@ -592,6 +592,15 @@ export default function AuthPage() {
                     className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar"
                   >
                     <div className="space-y-1">
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Email</label>
+                      <input
+                        {...form.register("email")}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50 transition-colors"
+                        placeholder="your@email.com"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
                       <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Name</label>
                       <input
                         {...form.register("name")}
