@@ -1295,7 +1295,10 @@ export default function AuthPage() {
                         </div>
                         <div className="text-center">
                           <h5 className="text-white text-xs font-bold leading-tight">{user?.name || "Founder Name"}</h5>
-                          <p className="text-white/60 text-[8px] uppercase tracking-wider">{user?.role || "Founder"} @ {user?.website?.replace(/^https?:\/\/(www\.)?/, "").split("/")[0] || "Startup"}</p>
+                          <p className="text-white/60 text-[8px] uppercase tracking-wider">
+                            {user?.role || "Founder"} 
+                            {user?.bio ? ` • ${user.bio}` : (user?.website ? ` @ ${user.website.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]}` : " @ Startup")}
+                          </p>
                         </div>
                       </div>
 
