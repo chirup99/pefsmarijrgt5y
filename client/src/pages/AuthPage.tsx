@@ -682,9 +682,20 @@ export default function AuthPage() {
 
   const [selectedCards, setSelectedCards] = useState<string[]>(user?.cards || []);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [qrColor, setQrColor] = useState("#000000");
-  const [qrBgColor, setQrBgColor] = useState("#ffffff");
-  const [qrLayout, setQrLayout] = useState<"standard" | "compact" | "minimal">("standard");
+    const [qrColor, setQrColor] = useState("#000000");
+    const [qrBgColor, setQrBgColor] = useState("#ffffff");
+    const [avatarUrl, setAvatarUrl] = useState(`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id || 'default'}`);
+    const [showAvatarDialog, setShowAvatarDialog] = useState(false);
+
+    const professionalAvatars = [
+      `https://api.dicebear.com/7.x/avataaars/svg?seed=Felix`,
+      `https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka`,
+      `https://api.dicebear.com/7.x/avataaars/svg?seed=Aiden`,
+      `https://api.dicebear.com/7.x/avataaars/svg?seed=Sophia`,
+      `https://api.dicebear.com/7.x/avataaars/svg?seed=Jack`,
+      `https://api.dicebear.com/7.x/avataaars/svg?seed=Mimi`,
+    ];
+    const [qrLayout, setQrLayout] = useState<"standard" | "compact" | "minimal">("standard");
 
   useEffect(() => {
     if (user?.cards) {
@@ -715,28 +726,23 @@ export default function AuthPage() {
   const qrRef = useRef<HTMLDivElement>(null);
 
   const downloadQR = async () => {
-    if (qrRef.current === null) return;
+    const element = document.getElementById("qr-download-area");
+    if (!element) return;
+    
     try {
-      // Create a temporary container for the download to ensure clean background
-      const element = qrRef.current;
       const dataUrl = await htmlToImage.toPng(element, {
-        backgroundColor: "#000000",
-        style: {
-          borderRadius: "40px",
-          margin: "0",
-          padding: "40px",
-        },
-        width: 400,
-        height: 400,
+        quality: 1,
+        pixelRatio: 3,
+        backgroundColor: null,
       });
       const link = document.createElement("a");
-      link.download = `persona-qr-${user?.id || "profile"}.png`;
+      link.download = `persona-qr-${user?.name || "founder"}.png`;
       link.href = dataUrl;
       link.click();
     } catch (err) {
       toast({
-        title: "Error",
-        description: "Failed to generate image",
+        title: "Download failed",
+        description: "Could not generate the QR image. Please try again.",
         variant: "destructive",
       });
     }
@@ -1275,29 +1281,28 @@ export default function AuthPage() {
                     </div>
 
                     {/* QR Code Area - Compact */}
-                    <div className="flex flex-col items-center gap-4 w-full relative group/qr">
+                    <div id="qr-download-area" className="flex flex-col items-center gap-4 w-full relative group/qr bg-mesh p-6 rounded-[36px]">
                       <div className="flex flex-col items-center gap-2 relative">
-                        <div className="w-12 h-12 rounded-full border-2 border-white/20 overflow-hidden bg-white/10 relative group/avatar">
-                          {user?.id ? (
-                            <img 
-                              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
-                              alt="Avatar"
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-white/40">
-                              <User className="w-6 h-6" />
-                            </div>
-                          )}
+                        <div 
+                          onClick={() => setShowAvatarDialog(true)}
+                          className="w-12 h-12 rounded-full border-2 border-white/20 overflow-hidden bg-white/10 relative group/avatar cursor-pointer"
+                        >
+                          <img 
+                            src={avatarUrl}
+                            alt="Avatar"
+                            className="w-full h-full object-cover"
+                          />
                           <button className="absolute inset-0 bg-black/40 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex items-center justify-center">
                             <Pencil className="w-3 h-3 text-white" />
                           </button>
                         </div>
                         <div className="text-center">
                           <h5 className="text-white text-xs font-bold leading-tight">{user?.name || "Founder Name"}</h5>
-                          <p className="text-white/60 text-[8px] uppercase tracking-wider">
-                            {user?.role || "Founder"} 
-                            {user?.bio ? ` • ${user.bio}` : (user?.website ? ` @ ${user.website.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]}` : " @ Startup")}
+                          <p className="text-white/60 text-[8px] uppercase tracking-wider block">
+                            {user?.role || "Founder"}
+                          </p>
+                          <p className="text-white/40 text-[7px] uppercase tracking-wide mt-0.5">
+                            {user?.bio || (user?.website ? user.website.replace(/^https?:\/\/(www\.)?/, "").split("/")[0] : "Startup")}
                           </p>
                         </div>
                       </div>
@@ -1317,25 +1322,46 @@ export default function AuthPage() {
                             bgColor={qrBgColor}
                           />
                         </div>
-                        <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 group-hover/code:opacity-100 transition-opacity">
-                          <button 
-                            onClick={() => setQrColor(qrColor === "#000000" ? "#3b82f6" : "#000000")}
-                            className="p-1.5 bg-black/80 rounded-full border border-white/20 text-white hover:scale-110 transition-transform"
-                          >
-                            <Palette className="w-3 h-3" />
-                          </button>
-                          <button 
-                            onClick={() => setQrLayout(l => l === "standard" ? "minimal" : "standard")}
-                            className="p-1.5 bg-black/80 rounded-full border border-white/20 text-white hover:scale-110 transition-transform"
-                          >
-                            <Layout className="w-3 h-3" />
-                          </button>
-                        </div>
                       </div>
                       <div className="text-center">
                         <p className="text-white/40 text-[8px] uppercase tracking-[0.2em] font-medium">Scan to connect</p>
                       </div>
                     </div>
+
+                    {/* Avatar Selection Dialog */}
+                    <AnimatePresence>
+                      {showAvatarDialog && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.9 }}
+                          className="absolute inset-0 z-[60] flex items-center justify-center p-4"
+                        >
+                          <div className="bg-black/80 backdrop-blur-xl border border-white/10 rounded-3xl p-4 w-full max-w-[200px]">
+                            <div className="flex justify-between items-center mb-3">
+                              <span className="text-white text-[10px] font-bold uppercase tracking-widest">Select Avatar</span>
+                              <button onClick={() => setShowAvatarDialog(false)}>
+                                <X className="w-3 h-3 text-white/40" />
+                              </button>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2">
+                              {professionalAvatars.map((url, i) => (
+                                <button
+                                  key={i}
+                                  onClick={() => {
+                                    setAvatarUrl(url);
+                                    setShowAvatarDialog(false);
+                                  }}
+                                  className="aspect-square rounded-full border border-white/10 overflow-hidden hover:border-white/40 transition-colors"
+                                >
+                                  <img src={url} className="w-full h-full object-cover" />
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
 
                     {/* Tiny Controls */}
                     <div className="w-full flex justify-between items-center px-3 opacity-30">
