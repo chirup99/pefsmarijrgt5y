@@ -86,19 +86,19 @@ export async function registerRoutes(
     }
   });
 
-  app.patch("/api/user", async (req, res) => {
+  app.patch("/api/user/:id", async (req, res) => {
     try {
+      const { id } = req.params;
+      if (!id) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+      const existingUser = await storage.getUser(id);
+      if (!existingUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
       const data = insertUserSchema.partial().parse(req.body);
-      const email = req.body.email;
-      if (!email) {
-        return res.status(400).json({ message: "Email is required to update persona" });
-      }
-      const user = await storage.getUserByEmail(email);
-      if (!user) {
-        return res.status(404).json({ message: "User not found with this email" });
-      }
       const { password: _, ...updateData } = data as any;
-      const updatedUser = await storage.updateUser(user.id, updateData);
+      const updatedUser = await storage.updateUser(id, updateData);
       const { password: __, ...safeUser } = updatedUser;
       res.json(safeUser);
     } catch (err) {

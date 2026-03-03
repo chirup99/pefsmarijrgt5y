@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "wouter";
 import {
   Infinity as InfinityIcon,
@@ -675,7 +675,8 @@ export default function AuthPage() {
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: Partial<InsertUser>) => {
-      const res = await apiRequest("PATCH", "/api/user", data);
+      if (!user?.id) throw new Error("Not authenticated");
+      const res = await apiRequest("PATCH", `/api/user/${user.id}`, data);
       return res.json();
     },
     onSuccess: () => {
