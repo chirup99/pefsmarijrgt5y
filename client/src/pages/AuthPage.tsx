@@ -579,6 +579,73 @@ const MiniCard = ({
   );
 };
 
+const CustomSwipeCard = ({ cards }: { cards: string[] }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const handleSwipeLeft = () => {
+    setCurrentIndex((prev) => (prev + 1) % cards.length);
+  };
+
+  const handleSwipeRight = () => {
+    setCurrentIndex((prev) => (prev - 1 + cards.length) % cards.length);
+  };
+
+  const parsedCards = useMemo(() => {
+    return cards.map(c => {
+      try {
+        const card = JSON.parse(c);
+        const typeInfo = CARD_TYPES.find(t => t.type === card.type);
+        return {
+          title: card.title,
+          name: card.type.toUpperCase(),
+          subname: card.value || card.url || "Persona",
+          color: typeInfo?.color || "from-gray-700 to-gray-800",
+          bgStack1: "bg-black/20",
+          bgStack2: "bg-black/10"
+        };
+      } catch (e) {
+        return null;
+      }
+    }).filter(Boolean);
+  }, [cards]);
+
+  if (parsedCards.length === 0) return null;
+
+  const currentCard = parsedCards[currentIndex]!;
+  const nextCard = parsedCards[(currentIndex + 1) % parsedCards.length]!;
+  const nextNextCard = parsedCards[(currentIndex + 2) % parsedCards.length]!;
+
+  return (
+    <div className="relative w-full max-w-[240px] aspect-[3/4] mx-auto perspective-1000">
+      <div
+        key={`stack2-${(currentIndex + 2) % parsedCards.length}`}
+        className={clsx(
+          "absolute inset-0 translate-y-4 translate-x-2 rounded-[24px] -z-20 transition-all duration-700 opacity-40 scale-95",
+          nextNextCard.bgStack2,
+        )}
+      />
+      <div
+        key={`stack1-${(currentIndex + 1) % parsedCards.length}`}
+        className={clsx(
+          "absolute inset-0 translate-y-2 translate-x-1 rounded-[24px] -z-10 transition-all duration-700 opacity-70 scale-[0.98]",
+          nextCard.bgStack1,
+        )}
+      />
+
+      <AnimatePresence mode="popLayout" initial={false}>
+        <SwipeCardContent
+          key={currentIndex}
+          card={currentCard}
+          currentIndex={currentIndex}
+          totalCards={parsedCards.length}
+          onSwipeLeft={handleSwipeLeft}
+          onSwipeRight={handleSwipeRight}
+        />
+      </AnimatePresence>
+    </div>
+  );
+};
+
 export default function AuthPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -857,10 +924,30 @@ export default function AuthPage() {
                       View Collaboration Portal{" "}
                       <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                     </a>
+                    {form.watch("cards")?.length > 0 && (
+                      <div className="pt-4 border-t border-white/10">
+                         <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold mb-4">Quick Preview</p>
+                         <div className="scale-75 origin-top -mb-20">
+                           <CustomSwipeCard cards={form.watch("cards")} />
+                         </div>
+                      </div>
+                    )}
                   </form>
                 ) : mode === "register" ? (
                   <div className="space-y-4">
-                    {form.watch("name") || user ? (
+                    {mode === "register" && form.watch("cards")?.length > 0 && (mode !== "customize") ? (
+                      <div className="py-2">
+                        <CustomSwipeCard cards={form.watch("cards")} />
+                        <div className="text-center mt-4 space-y-0.5">
+                          <p className="text-xs font-semibold text-white">
+                            Your Custom Persona
+                          </p>
+                          <p className="text-[10px] text-white/40">
+                            {form.watch("cards").length} cards active
+                          </p>
+                        </div>
+                      </div>
+                    ) : form.watch("name") || user ? (
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <h4 className="text-xs font-bold text-white uppercase tracking-wider">
@@ -874,25 +961,26 @@ export default function AuthPage() {
                               key={idx}
                               className="min-w-[220px] aspect-[3/4] snap-center"
                             >
-                              <MiniCard
-                                idx={idx}
-                                cardJson={form.watch("cards")?.[idx]}
-                                onUpdate={(newJson) => {
-                                  const currentCards = [
-                                    ...(form.getValues("cards") || []),
-                                  ];
-                                  currentCards[idx] = newJson;
-                                  form.setValue("cards", currentCards);
-                                }}
-                                onDelete={() => {
-                                  const currentCards = [
-                                    ...(form.getValues("cards") || []),
-                                  ];
-                                  currentCards.splice(idx, 1);
-                                  form.setValue("cards", currentCards);
-                                }}
-                              />
-                              {!form.watch("cards")?.[idx] && (
+                              {form.watch("cards")?.[idx] ? (
+                                <MiniCard
+                                  idx={idx}
+                                  cardJson={form.watch("cards")?.[idx]}
+                                  onUpdate={(newJson) => {
+                                    const currentCards = [
+                                      ...(form.getValues("cards") || []),
+                                    ];
+                                    currentCards[idx] = newJson;
+                                    form.setValue("cards", currentCards, { shouldDirty: true });
+                                  }}
+                                  onDelete={() => {
+                                    const currentCards = [
+                                      ...(form.getValues("cards") || []),
+                                    ];
+                                    currentCards.splice(idx, 1);
+                                    form.setValue("cards", currentCards, { shouldDirty: true });
+                                  }}
+                                />
+                              ) : (
                                 <div className="h-full border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center p-4">
                                   <div className="grid grid-cols-2 gap-2 w-full">
                                     {CARD_TYPES.map((t) => (
@@ -928,10 +1016,8 @@ export default function AuthPage() {
                                                       title: "Product",
                                                       imageUrls: ["", ""],
                                                     };
-                                          currentCards.push(
-                                            JSON.stringify(newCard),
-                                          );
-                                          form.setValue("cards", currentCards);
+                                          currentCards[idx] = JSON.stringify(newCard);
+                                          form.setValue("cards", currentCards, { shouldDirty: true });
                                         }}
                                         className="flex flex-col items-center gap-1 p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all"
                                       >
