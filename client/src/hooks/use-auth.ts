@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@shared/routes";
-import { type InsertUser } from "@shared/schema";
+import { type InsertUser, type User } from "@shared/schema";
 import { z } from "zod";
 
 function parseWithLogging<T>(schema: z.ZodSchema<T>, data: unknown, label: string): T {
@@ -10,6 +10,12 @@ function parseWithLogging<T>(schema: z.ZodSchema<T>, data: unknown, label: strin
     throw result.error;
   }
   return result.data;
+}
+
+export function useAuth() {
+  const queryClient = useQueryClient();
+  const user = queryClient.getQueryData<User>(["/api/me"]) ?? null;
+  return { user };
 }
 
 export function useLogin() {

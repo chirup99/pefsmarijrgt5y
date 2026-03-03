@@ -47,3 +47,10 @@ script/         # Build scripts
 - React 18, TanStack Query, React Hook Form
 - shadcn/ui (Radix UI primitives + Tailwind)
 - bcrypt for password hashing
+
+## Migration Notes
+
+- Added missing `insertUserSchema` import to `server/routes.ts`
+- Added `useAuth` hook export to `client/src/hooks/use-auth.ts`
+- PostgreSQL database provisioned via Replit (DATABASE_URL set)
+- Schema already applied (`npm run db:push` confirmed no changes needed)
