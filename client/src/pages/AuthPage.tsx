@@ -947,7 +947,104 @@ export default function AuthPage() {
                       </div>
                     )}
                   </form>
-                ) : mode === "register" || mode === "customize" ? (
+                ) : mode === "register" ? (
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar"
+                  >
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                        Name
+                      </label>
+                      <input
+                        {...form.register("name")}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50"
+                        placeholder="Your Name"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                        Role
+                      </label>
+                      <div className="relative">
+                        <select
+                          {...form.register("role")}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white appearance-none"
+                        >
+                          {ROLES.map((r) => (
+                            <option
+                              key={r.value}
+                              value={r.value}
+                              className="bg-[#1a1a1a]"
+                            >
+                              {r.label}
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                        Startup / Business
+                      </label>
+                      <input
+                        {...form.register("bio")}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
+                        placeholder="e.g. Collaborate & Grow your Startup"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                          Instagram
+                        </label>
+                        <input
+                          {...form.register("instagram")}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+                          placeholder="URL"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                          LinkedIn
+                        </label>
+                        <input
+                          {...form.register("linkedin")}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+                          placeholder="URL"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                        WhatsApp
+                      </label>
+                      <input
+                        {...form.register("whatsapp")}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
+                        placeholder="Number"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                        Portal URL
+                      </label>
+                      <input
+                        {...form.register("website")}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
+                        placeholder="https://your-portal.com"
+                      />
+                    </div>
+                        <button
+                          type="button"
+                          onClick={() => setMode("customize")}
+                          className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 mt-4"
+                        >
+                          Next <ArrowRight className="w-4 h-4" />
+                        </button>
+                  </form>
+                ) : mode === "customize" ? (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <h4 className="text-xs font-bold text-white uppercase tracking-wider">
@@ -1074,13 +1171,13 @@ export default function AuthPage() {
             <button
               type="button"
               onClick={() =>
-                mode === "login" ? setMode("customize") : setMode("login")
+                mode === "login" ? setMode("register") : setMode("login")
               }
               className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg"
             >
               {mode === "login"
                 ? "create your persona"
-                : mode === "register"
+                : mode === "register" || mode === "customize"
                   ? "Back to Persona"
                   : "View Profile"}
             </button>
