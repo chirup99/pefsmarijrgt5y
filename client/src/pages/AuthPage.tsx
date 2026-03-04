@@ -879,10 +879,10 @@ export default function AuthPage({ slug }: { slug?: string }) {
   useEffect(() => {
     let controls: any = null;
     let isMounted = true;
+    const codeReader = new BrowserMultiFormatReader();
 
     const startScanner = async () => {
       if (showScannerDialog && scannerTab === "scan" && videoRef.current) {
-        const codeReader = new BrowserMultiFormatReader();
         try {
           const ctrl = await codeReader.decodeFromVideoDevice(
             null,
@@ -924,8 +924,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
         if (typeof controls.stop === 'function') {
           controls.stop();
         }
-        controls = null;
       }
+      codeReader.reset();
     };
   }, [showScannerDialog, scannerTab, setLocation, toast]);
 
