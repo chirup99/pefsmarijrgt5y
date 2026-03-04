@@ -1203,19 +1203,32 @@ export default function AuthPage({ slug }: { slug?: string }) {
   };
   const downloadQR = async () => {
     const element = document.getElementById("qr-download-area");
-    if (!element) return;
+    if (!element) {
+      toast({
+        title: "Error",
+        description: "QR element not found",
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
       const dataUrl = await htmlToImage.toPng(element, {
         quality: 1,
         pixelRatio: 3,
-        backgroundColor: "#000000",
+        backgroundColor: "#ffffff",
+        cacheBust: true,
       });
       const link = document.createElement("a");
-      link.download = `persona-qr-${user?.name || "founder"}.png`;
+      link.download = `persona-qr-${user?.uniqueSlug || "code"}.png`;
       link.href = dataUrl;
       link.click();
+      toast({
+        title: "Success",
+        description: "QR Code downloaded successfully",
+      });
     } catch (err) {
+      console.error("Download error:", err);
       toast({
         title: "Download failed",
         description: "Could not generate the QR image. Please try again.",
@@ -2370,7 +2383,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       </div>
 
                       {/* QR Code Section - More Compact */}
-                      <div className="p-4 bg-white rounded-[24px] shadow-2xl">
+                      <div id="qr-download-area" className="p-4 bg-white rounded-[24px] shadow-2xl">
                         <QRCodeSVG
                           value={window.location.origin + "/" + user?.uniqueSlug}
                           size={140}
@@ -2412,21 +2425,33 @@ export default function AuthPage({ slug }: { slug?: string }) {
                               </button>
                             </div>
                             <div className="grid grid-cols-3 gap-3">
-                              {professionalAvatars.map((url, i) => (
-                                <button
-                                  key={i}
-                                  onClick={() => {
-                                    setAvatarUrl(url);
-                                    setShowAvatarDialog(false);
-                                  }}
-                                  className="aspect-square rounded-full border-2 border-white/10 overflow-hidden hover:border-white/60 transition-all hover:scale-110"
-                                >
-                                  <img
-                                    src={url}
-                                    className="w-full h-full object-cover"
-                                  />
-                                </button>
-                              ))}
+                              <AnimatePresence>
+                                {professionalAvatars.map((url, i) => (
+                                  <motion.button
+                                    key={i}
+                                    initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                                    animate={{ 
+                                      opacity: 1, 
+                                      scale: 1, 
+                                      y: 0,
+                                      transition: { delay: i * 0.05 } 
+                                    }}
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => {
+                                      setAvatarUrl(url);
+                                      setShowAvatarDialog(false);
+                                    }}
+                                    className="aspect-square rounded-full border-2 border-white/10 overflow-hidden hover:border-white/60 transition-all"
+                                  >
+                                    <img
+                                      src={url}
+                                      className="w-full h-full object-cover"
+                                      alt={`Avatar ${i + 1}`}
+                                    />
+                                  </motion.button>
+                                ))}
+                              </AnimatePresence>
                             </div>
                           </div>
                         </motion.div>
