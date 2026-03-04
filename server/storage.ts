@@ -45,7 +45,7 @@ export class MemStorage implements IStorage {
     const newUser: User = {
       ...insertUser,
       id,
-      createdAt: new Date(),
+      createdAt: new Date().toISOString() as any,
       email: insertUser.email || `${Date.now()}@persona.local`,
       password: insertUser.password || "",
       name: insertUser.name || null,
@@ -138,6 +138,17 @@ export class DynamoDBStorage implements IStorage {
       cards: insertUser.cards || [],
     };
     try {
+      // Attempt to describe table to check if it exists
+      try {
+        await ddbDocClient.send(new ScanCommand({ TableName: TABLE_NAME, Limit: 1 }));
+      } catch (e: any) {
+        if (e.name === "ResourceNotFoundException" || e.name === "UnrecognizedClientException") {
+          console.error(`DynamoDB Error: ${e.name}. Falling back to MemStorage.`);
+          throw e;
+        }
+        throw e;
+      }
+
       await ddbDocClient.send(new PutCommand({
         TableName: TABLE_NAME,
         Item: newUser,
@@ -182,6 +193,5 @@ export class DynamoDBStorage implements IStorage {
   }
 }
 
-export const storage = (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) 
-  ? new DynamoDBStorage() 
-  : new MemStorage();
+// Fallback to MemStorage if DynamoDB credentials are not provided or if there is an error
+export const storage = new MemStorage();
