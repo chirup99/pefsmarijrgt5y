@@ -897,10 +897,30 @@ export default function AuthPage({ slug }: { slug?: string }) {
   };
   const [qrColor, setQrColor] = useState("#000000");
   const [qrBgColor, setQrBgColor] = useState("#ffffff");
-  const [avatarUrl, setAvatarUrl] = useState(
-    `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id || "default"}`,
-  );
+  const professionalAvatars = [
+    "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop", // Woman 1
+    "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop", // Woman 2
+    "https://images.unsplash.com/photo-1567532939604-b6c5b0ad3804?w=400&h=400&fit=crop", // Woman 3
+    "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop", // Man 1
+    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop", // Man 2
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop", // Man 3
+  ];
+
+  const [avatarUrl, setAvatarUrl] = useState(professionalAvatars[0]);
   const [showAvatarDialog, setShowAvatarDialog] = useState(false);
+
+  const [currentTime, setCurrentTime] = useState(
+    new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+  );
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(
+        new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      );
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
   const [qrLayout, setQrLayout] = useState<"standard" | "compact" | "minimal">(
     "standard",
   );
@@ -2308,35 +2328,52 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   </div>
 
                   {/* iPhone Screen Content */}
-                  <div className="w-full h-full bg-[#050505] rounded-[36px] relative overflow-hidden flex flex-col items-center justify-center p-8">
-                    <div className="flex flex-col items-center w-full space-y-8">
+                  <div className="w-full h-full bg-[#050505] rounded-[36px] relative overflow-hidden flex flex-col items-center p-4">
+                    {/* Status Bar */}
+                    <div className="w-full flex justify-between items-center px-6 pt-2 pb-1 z-50">
+                      <span className="text-white text-[10px] font-medium">{currentTime}</span>
+                      <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 rounded-full border border-white/20" />
+                        <div className="w-4 h-2 rounded-sm border border-white/20" />
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col items-center w-full space-y-4 mt-4">
                       {/* Profile Section */}
-                      <div className="flex flex-col items-center gap-4">
-                        <div className="w-20 h-20 rounded-full border-2 border-white/10 p-1 bg-white/5">
-                          <img
-                            src={avatarUrl}
-                            alt="Avatar"
-                            className="w-full h-full rounded-full object-cover"
-                          />
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="relative group">
+                          <div className="w-16 h-16 rounded-full border-2 border-white/10 p-1 bg-white/5">
+                            <img
+                              src={avatarUrl}
+                              alt="Avatar"
+                              className="w-full h-full rounded-full object-cover"
+                            />
+                          </div>
+                          <button 
+                            onClick={() => setShowAvatarDialog(true)}
+                            className="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg border border-black/5 hover:scale-110 transition-transform"
+                          >
+                            <Pencil className="w-3 h-3 text-black" />
+                          </button>
                         </div>
-                        <div className="text-center space-y-1">
-                          <h5 className="text-white text-xl font-bold tracking-tight">
+                        <div className="text-center space-y-0.5">
+                          <h5 className="text-white text-lg font-bold tracking-tight">
                             {user?.name || "Founder Name"}
                           </h5>
-                          <p className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-black">
+                          <p className="text-white/40 text-[8px] uppercase tracking-[0.2em] font-black">
                             {user?.role || "FOUNDER"}
                           </p>
-                          <p className="text-white/30 text-[9px] uppercase tracking-wider">
+                          <p className="text-white/30 text-[8px] uppercase tracking-wider line-clamp-1 px-4">
                             {user?.bio || "COLLABORATE & GROW YOUR STARTUP"}
                           </p>
                         </div>
                       </div>
 
-                      {/* QR Code Section */}
-                      <div className="p-6 bg-white rounded-[32px] shadow-2xl">
+                      {/* QR Code Section - More Compact */}
+                      <div className="p-4 bg-white rounded-[24px] shadow-2xl">
                         <QRCodeSVG
                           value={window.location.origin + "/" + user?.uniqueSlug}
-                          size={180}
+                          size={140}
                           level="H"
                           includeMargin={false}
                           fgColor={qrColor}
@@ -2345,7 +2382,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       </div>
 
                       <div className="text-center">
-                        <p className="text-[10px] text-white/20 uppercase tracking-[0.3em] font-black">
+                        <p className="text-[8px] text-white/20 uppercase tracking-[0.3em] font-black">
                           Scan to Connect
                         </p>
                       </div>
@@ -2363,7 +2400,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                           exit={{ opacity: 0, scale: 0.9 }}
                           className="absolute inset-0 z-[60] flex items-center justify-center p-4"
                         >
-                          <div className="bg-black/80 backdrop-blur-xl border border-white/10 rounded-3xl p-4 w-full max-w-[200px]">
+                          <div className="bg-black/80 backdrop-blur-xl border border-white/10 rounded-3xl p-4 w-full max-w-[240px]">
                             <div className="flex justify-between items-center mb-3">
                               <span className="text-white text-[10px] font-bold uppercase tracking-widest">
                                 Select Avatar
@@ -2374,7 +2411,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                 <X className="w-3 h-3 text-white/40" />
                               </button>
                             </div>
-                            <div className="grid grid-cols-3 gap-2">
+                            <div className="grid grid-cols-3 gap-3">
                               {professionalAvatars.map((url, i) => (
                                 <button
                                   key={i}
@@ -2382,7 +2419,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                     setAvatarUrl(url);
                                     setShowAvatarDialog(false);
                                   }}
-                                  className="aspect-square rounded-full border border-white/10 overflow-hidden hover:border-white/40 transition-colors"
+                                  className="aspect-square rounded-full border-2 border-white/10 overflow-hidden hover:border-white/60 transition-all hover:scale-110"
                                 >
                                   <img
                                     src={url}
