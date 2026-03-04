@@ -55,6 +55,7 @@ export type User = {
   whatsapp: string | null;
   website: string | null;
   uniqueSlug: string | null;
+  pin: string | null;
   cards: string[]; // JSON strings
   createdAt: Date;
 };

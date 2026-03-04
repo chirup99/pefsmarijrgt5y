@@ -195,5 +195,13 @@ export class DynamoDBStorage implements IStorage {
   }
 }
 
-// Use DynamoDBStorage by default
-export const storage = new DynamoDBStorage();
+// Use DynamoDBStorage when AWS credentials are configured, otherwise fall back to in-memory
+const hasAwsCredentials =
+  process.env.AWS_ACCESS_KEY_ID &&
+  process.env.AWS_SECRET_ACCESS_KEY &&
+  process.env.AWS_ACCESS_KEY_ID.length > 0 &&
+  process.env.AWS_SECRET_ACCESS_KEY.length > 0;
+
+export const storage: IStorage = hasAwsCredentials
+  ? new DynamoDBStorage()
+  : new MemStorage();

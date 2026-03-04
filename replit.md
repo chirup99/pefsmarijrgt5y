@@ -1,57 +1,46 @@
 # Project Overview
 
-PERSONA — a full-stack TypeScript web application for managing profiles and data cards (pitch, reel, revenue, product) with a modern mesh-styled dashboard UI.
+A persona/profile sharing web app built with React + Express (TypeScript). Users can create profiles with cards (pitch, reel, revenue, product), share via unique slug links, and optionally use LiveKit for real-time features.
 
 ## Architecture
 
-- **Frontend**: React 18 + Vite, Tailwind CSS, shadcn/ui components, Wouter for routing, TanStack Query for data fetching
-- **Backend**: Express.js server (TypeScript) with REST API
-- **Database**: AWS DynamoDB via `@aws-sdk/lib-dynamodb`
-- **Auth**: bcrypt password hashing (12 rounds), custom session-less auth (login/register endpoints)
+- **Frontend**: React 18 + Vite, Wouter routing, TailwindCSS, shadcn/ui components, TanStack Query
+- **Backend**: Express 5, TypeScript via tsx, single server serving both API and frontend (via Vite middleware in dev)
+- **Storage**: DynamoDB when AWS credentials are configured; falls back to in-memory storage automatically
+- **Auth**: bcrypt password hashing, session-based auth via express-session + passport
+- **Real-time**: LiveKit integration (optional, requires LIVEKIT_API_KEY + LIVEKIT_API_SECRET env vars)
 
-## Project Structure
+## Key Files
 
-```
-client/         # React frontend (Vite)
-  src/          # App source code
-server/         # Express backend
-  index.ts      # Server entry point
-  routes.ts     # API route handlers
-  storage.ts    # DynamoDB access layer (DynamoDBStorage)
-  vite.ts       # Vite dev middleware
-  static.ts     # Static file serving (production)
-shared/         # Shared types and schemas
-  schema.ts     # Zod schemas and User types
-  routes.ts     # Typed API route definitions
-script/         # Build scripts
-```
+- `server/index.ts` — Express app entry point
+- `server/routes.ts` — API route handlers
+- `server/storage.ts` — IStorage interface, MemStorage and DynamoDBStorage implementations
+- `server/vite.ts` — Vite dev server middleware setup
+- `server/static.ts` — Production static file serving
+- `shared/schema.ts` — Zod schemas and TypeScript types (User, CardData, etc.)
+- `shared/routes.ts` — Typed API route definitions
+- `client/src/App.tsx` — React router
+- `client/src/pages/` — AuthPage, Dashboard, NotFound
+- `vite.config.ts` — Vite config with path aliases (@, @shared, @assets)
 
-## Key Configuration
+## Environment Variables
 
-- Port: 5000 (mapped to external port 80)
-- `NODE_ENV=development` uses Vite dev middleware via Express
-- `NODE_ENV=production` serves static dist/public files
+| Variable | Required | Description |
+|---|---|---|
+| PORT | No | Server port (default: 5000) |
+| AWS_ACCESS_KEY_ID | No | AWS credentials for DynamoDB |
+| AWS_SECRET_ACCESS_KEY | No | AWS credentials for DynamoDB |
+| AWS_REGION | No | AWS region (default: ap-south-1) |
+| DYNAMODB_TABLE_NAME | No | DynamoDB table name (default: Users) |
+| LIVEKIT_API_KEY | No | LiveKit API key for token generation |
+| LIVEKIT_API_SECRET | No | LiveKit API secret |
 
-## Required Environment Variables
+## Running the Project
 
-- `AWS_ACCESS_KEY_ID` — AWS credentials for DynamoDB
-- `AWS_SECRET_ACCESS_KEY` — AWS credentials for DynamoDB
-- `AWS_REGION` — AWS region (defaults to ap-south-1)
-- `DYNAMODB_TABLE_NAME` — DynamoDB table name (defaults to "Users")
-- `LIVEKIT_API_KEY` — LiveKit API key (optional, for LiveKit features)
-- `LIVEKIT_API_SECRET` — LiveKit API secret (optional, for LiveKit features)
-
-## Running the App
-
-- **Dev**: `npm run dev` (tsx server/index.ts)
+- **Development**: `npm run dev` (runs tsx server/index.ts with NODE_ENV=development)
 - **Build**: `npm run build`
 - **Production**: `npm start`
 
-## Dependencies
+## Port Configuration
 
-- Express 5, AWS DynamoDB SDK, Zod validation
-- React 18, TanStack Query, React Hook Form
-- shadcn/ui (Radix UI primitives + Tailwind)
-- bcrypt for password hashing
-- Framer Motion for animations
-- LiveKit for video features
+The app always runs on port 5000 (mapped to external port 80 in .replit).
