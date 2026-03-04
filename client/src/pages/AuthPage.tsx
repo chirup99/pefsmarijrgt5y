@@ -48,7 +48,6 @@ import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
 import { SiInstagram, SiWhatsapp } from "react-icons/si";
 import peralaLogo from "@/assets/logo.png";
-import userAvatar from "@assets/image_1772606729202.png";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
 
@@ -1002,17 +1001,13 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 setShowPersonaDialog(true);
                 setIsMenuOpen(false);
               }}
-              className="flex items-center gap-4 p-2 pr-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-white transition-all group ml-auto backdrop-blur-md"
+              className="flex items-center gap-4 p-1.5 pr-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-white transition-all group ml-auto backdrop-blur-md"
             >
-              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-500/50">
-                <img
-                  src={userAvatar}
-                  alt={user.name || "User"}
-                  className="w-full h-full object-cover"
-                />
+              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/10 group-hover:border-purple-500/30 transition-colors">
+                <User className="w-5 h-5 text-purple-400/80 group-hover:text-purple-400 transition-colors" />
               </div>
               <div className="flex flex-col items-start">
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   <span className="font-bold text-sm tracking-tight">
                     {user.name || "Persona User"}
                   </span>
@@ -1020,7 +1015,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     <Check className="w-2.5 h-2.5 text-black" strokeWidth={4} />
                   </div>
                 </div>
-                <span className="text-[10px] text-white/50 uppercase tracking-widest font-medium">
+                <span className="text-[9px] text-white/40 uppercase tracking-[0.2em] font-bold">
                   {ROLES.find((r) => r.value === user.role)?.label || "Founder"}
                 </span>
               </div>
