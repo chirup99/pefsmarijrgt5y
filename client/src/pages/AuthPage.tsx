@@ -949,21 +949,26 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
   return (
     <div className="min-h-screen bg-[#050505] overflow-hidden relative">
-      <div className="absolute inset-0 flex flex-col justify-end items-end p-12 pb-20 pointer-events-none">
+      <div className="absolute inset-0 flex flex-col justify-start items-end p-12 pt-24 pointer-events-none">
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: isMenuOpen ? 1 : 0, x: isMenuOpen ? 0 : 20 }}
           className="space-y-4 pointer-events-auto mb-8"
         >
           <button
-            onClick={() => setShowPersonaDialog(true)}
+            onClick={() => {
+              setShowPersonaDialog(true);
+              setIsMenuOpen(false);
+            }}
             className="flex items-center gap-3 px-6 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white transition-all group ml-auto"
           >
             <User className="w-5 h-5 text-purple-400" />
             <span className="font-bold text-sm tracking-widest uppercase">My Persona</span>
           </button>
         </motion.div>
+      </div>
 
+      <div className="absolute inset-0 flex flex-col justify-end items-end p-12 pb-20 pointer-events-none">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isMenuOpen ? 1 : 0, y: isMenuOpen ? 0 : 20 }}
