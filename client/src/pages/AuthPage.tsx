@@ -763,7 +763,10 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const { toast } = useToast();
   const [mode, setMode] = useState<AuthMode>("login");
   const { user: authUser } = useAuth();
-  const [localUser, setLocalUser] = useState<any>(null);
+  const [localUser, setLocalUser] = useState<any>(() => {
+    const saved = localStorage.getItem("persona_user");
+    return saved ? JSON.parse(saved) : null;
+  });
   const user = authUser || localUser;
   const [publicUser, setPublicUser] = useState<any>(null);
 
@@ -775,30 +778,52 @@ export default function AuthPage({ slug }: { slug?: string }) {
           if (data.id) {
             setPublicUser(data);
             setMode("swipe");
+            // If viewing a public profile, update form to show its data
+            Object.entries(data).forEach(([key, value]) => {
+              if (value !== null && value !== undefined && key !== 'password') {
+                form.setValue(key as any, value);
+              }
+            });
+            if (data.cards) {
+              setSelectedCards(data.cards);
+            }
           }
         });
-    }
-  }, [slug]);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const userId = getUserIdFromStorage() || params.get("user");
-    if (userId) {
-      // In a real app, we would fetch the public profile here
-      // For this MVP, we'll simulate viewing a profile if "user" is in URL
-      if (params.get("user") && !user) {
-        setMode("login");
+    } else if (user && window.location.pathname === "/") {
+      // If we are logged in but at root, go to our own slug
+      if (user.uniqueSlug) {
+        setLocation(`/${user.uniqueSlug}`);
       }
     }
-  }, [user]);
+  }, [slug, user, setLocation]);
 
-  function getUserIdFromStorage() {
+  const onSubmit = async (values: InsertUser) => {
     try {
-      return localStorage.getItem("persona_user_id");
-    } catch (e) {
-      return null;
+      let result;
+      if (mode === "login") {
+        result = await loginMutation.mutateAsync(values);
+      } else if (mode === "register") {
+        result = await registerMutation.mutateAsync(values);
+      } else {
+        result = await updateProfileMutation.mutateAsync(values);
+      }
+      
+      if (result) {
+        setLocalUser(result);
+        localStorage.setItem("persona_user", JSON.stringify(result));
+        localStorage.setItem("persona_user_id", result.id);
+        if (result.uniqueSlug) {
+          setLocation(`/${result.uniqueSlug}`);
+        }
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     }
-  }
+  };
 
   const [selectedCards, setSelectedCards] = useState<string[]>(
     user?.cards || [],
@@ -833,10 +858,17 @@ export default function AuthPage({ slug }: { slug?: string }) {
   );
 
   useEffect(() => {
-    if (user?.cards) {
-      setSelectedCards(user.cards);
+    if (user && !publicUser) {
+      Object.entries(user).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && key !== 'password') {
+          form.setValue(key as any, value);
+        }
+      });
+      if (user.cards) {
+        setSelectedCards(user.cards);
+      }
     }
-  }, [user?.cards]);
+  }, [user, publicUser]);
 
   const loginMutation = useLogin();
   const registerMutation = useRegister();
@@ -881,13 +913,15 @@ export default function AuthPage({ slug }: { slug?: string }) {
         pin: personaPin,
       });
       const userData = await res.json();
-      // Handle success - maybe redirect to dashboard or update local state
+      setLocalUser(userData);
+      localStorage.setItem("persona_user", JSON.stringify(userData));
+      localStorage.setItem("persona_user_id", userData.id);
       toast({
         title: "Success",
         description: `Verified persona: ${userData.name}`,
       });
       setShowPersonaDialog(false);
-      window.location.href = `/${userData.uniqueSlug}`;
+      setLocation(`/${userData.uniqueSlug}`);
     } catch (err) {
       toast({
         title: "Verification failed",
@@ -898,7 +932,13 @@ export default function AuthPage({ slug }: { slug?: string }) {
       setIsVerifying(false);
     }
   };
-  const [personaCode, setPersonaCode] = useState("");
+  const logout = () => {
+    localStorage.removeItem("persona_user");
+    localStorage.removeItem("persona_user_id");
+    setLocalUser(null);
+    queryClient.setQueryData(["/api/me"], null);
+    setLocation("/");
+  };
   const [pin, setPin] = useState("");
   const [verifyPin, setVerifyPin] = useState("");
   const qrRef = useRef<HTMLDivElement>(null);
@@ -934,6 +974,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
     },
     onSuccess: (updatedUser) => {
       queryClient.setQueryData(["/api/me"], updatedUser);
+      setLocalUser(updatedUser);
+      localStorage.setItem("persona_user", JSON.stringify(updatedUser));
+      localStorage.setItem("persona_user_id", updatedUser.id);
       queryClient.invalidateQueries({ queryKey: ["/api/me"] });
       setShowQRDialog(true);
       toast({
@@ -951,10 +994,17 @@ export default function AuthPage({ slug }: { slug?: string }) {
   });
 
   useEffect(() => {
-    if (user?.cards) {
-      setSelectedCards(user.cards);
+    if (user && !publicUser) {
+      Object.entries(user).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && key !== 'password') {
+          form.setValue(key as any, value);
+        }
+      });
+      if (user.cards) {
+        setSelectedCards(user.cards);
+      }
     }
-  }, [user?.cards]);
+  }, [user, publicUser]);
 
   const onSubmit = async (values: InsertUser) => {
     try {
@@ -997,10 +1047,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
         >
           {user ? (
             <button
-              onClick={() => {
-                setShowPersonaDialog(true);
-                setIsMenuOpen(false);
-              }}
+              onClick={logout}
               className="flex items-center gap-4 p-1.5 pr-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-white transition-all group ml-auto backdrop-blur-md"
             >
               <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/10 group-hover:border-purple-500/30 transition-colors">
@@ -1016,7 +1063,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   </div>
                 </div>
                 <span className="text-[9px] text-white/40 uppercase tracking-[0.2em] font-bold">
-                  {ROLES.find((r) => r.value === user.role)?.label || "Founder"}
+                  Logout
                 </span>
               </div>
             </button>
