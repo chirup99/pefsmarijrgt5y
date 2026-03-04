@@ -805,8 +805,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
       let result;
       if (user?.id) {
         // If logged in, overwrite data
+        const { id, password, createdAt, uniqueSlug, ...updateData } = values as any;
         const payload = {
-          ...values,
+          ...updateData,
           cards: selectedCards,
         };
         result = await updateProfileMutation.mutateAsync(payload);
@@ -2352,7 +2353,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
                     {/* Home Indicator */}
                     <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-16 h-1 bg-white/10 rounded-full" />
-                  </div>
 
                     {/* Avatar Selection Dialog */}
                     <AnimatePresence>
@@ -2397,7 +2397,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     </AnimatePresence>
 
                     {/* Tiny Controls */}
-                    <div className="w-full flex justify-between items-center px-3 opacity-30">
+                    <div className="w-full flex justify-between items-center px-3 opacity-30 mt-auto">
                       <div className="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center">
                         <Save className="w-3 h-3 text-white" />
                       </div>
@@ -2405,9 +2405,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         <QrCode className="w-3 h-3 text-white" />
                       </div>
                     </div>
-
-                    {/* Home Indicator */}
-                    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-16 h-0.5 bg-white/20 rounded-full" />
                   </div>
                 </div>
 
