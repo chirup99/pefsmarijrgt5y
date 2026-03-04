@@ -820,6 +820,44 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [showQRDialog, setShowQRDialog] = useState(false);
   const [showHomeDialog, setShowHomeDialog] = useState(false);
   const [showPersonaDialog, setShowPersonaDialog] = useState(false);
+  const [personaSlug, setPersonaSlug] = useState("");
+  const [personaPin, setPersonaPin] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
+
+  const handleVerifyPersona = async () => {
+    if (!personaSlug || !personaPin) {
+      toast({
+        title: "Error",
+        description: "Please enter both persona code and pin",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsVerifying(true);
+    try {
+      const res = await apiRequest("POST", "/api/auth/verify-persona", {
+        slug: personaSlug,
+        pin: personaPin,
+      });
+      const userData = await res.json();
+      // Handle success - maybe redirect to dashboard or update local state
+      toast({
+        title: "Success",
+        description: `Verified persona: ${userData.name}`,
+      });
+      setShowPersonaDialog(false);
+      window.location.href = `/${userData.uniqueSlug}`;
+    } catch (err) {
+      toast({
+        title: "Verification failed",
+        description: "Invalid persona code or pin",
+        variant: "destructive",
+      });
+    } finally {
+      setIsVerifying(false);
+    }
+  };
   const [personaCode, setPersonaCode] = useState("");
   const [pin, setPin] = useState("");
   const [verifyPin, setVerifyPin] = useState("");
@@ -1377,6 +1415,86 @@ export default function AuthPage({ slug }: { slug?: string }) {
             </button>
           </div>
         </motion.div>
+
+        <AnimatePresence>
+          {showPersonaDialog && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowPersonaDialog(false)}
+                className="absolute inset-0 bg-black/90 backdrop-blur-md"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="relative w-full max-w-md bg-card border border-white/10 rounded-[24px] p-8 shadow-2xl z-10"
+              >
+                <button
+                  onClick={() => setShowPersonaDialog(false)}
+                  className="absolute top-4 right-4 p-2 text-white/40 hover:text-white transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+
+                <div className="text-center space-y-2 mb-8">
+                  <h3 className="text-2xl font-bold text-white uppercase tracking-widest">
+                    Access Persona
+                  </h3>
+                  <p className="text-white/40 text-xs uppercase tracking-wider">
+                    Enter your unique credentials
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold ml-1">
+                      Persona Code
+                    </label>
+                    <input
+                      type="text"
+                      value={personaSlug}
+                      onChange={(e) => setPersonaSlug(e.target.value)}
+                      placeholder="e.g. x8y2z"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 transition-colors"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold ml-1">
+                      PIN
+                    </label>
+                    <input
+                      type="password"
+                      maxLength={5}
+                      value={personaPin}
+                      onChange={(e) => setPersonaPin(e.target.value)}
+                      placeholder="•••••"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 transition-colors tracking-[0.5em]"
+                    />
+                  </div>
+
+                  <button
+                    onClick={handleVerifyPersona}
+                    disabled={isVerifying}
+                    className="w-full bg-white text-black rounded-xl py-4 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all shadow-lg group"
+                  >
+                    {isVerifying ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <>
+                        Connect Persona
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
 
         <AnimatePresence>
           {showQRDialog && (
