@@ -2307,140 +2307,52 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   </div>
 
                   {/* iPhone Screen Content */}
-                  <div className="w-full h-full bg-mesh rounded-[36px] relative overflow-hidden flex flex-col items-center justify-between p-5 pt-12 pb-8">
-                    {/* Minimalist Time/Date */}
-                    <div className="text-center space-y-0">
-                      <p className="text-white/60 text-[8px] font-medium uppercase tracking-widest">
-                        March 3
-                      </p>
-                      <h4 className="text-white text-3xl font-bold tracking-tighter leading-none">
-                        13:11
-                      </h4>
-                    </div>
-
-                    {/* QR Code Area - Compact */}
-                    <div
-                      id="qr-download-area"
-                      className="flex flex-col items-center gap-4 w-full relative group/qr bg-mesh p-6 rounded-[36px]"
-                    >
-                      <div className="flex flex-col items-center gap-2 relative">
-                        <div
-                          onClick={() => setShowAvatarDialog(true)}
-                          className="w-12 h-12 rounded-full border-2 border-white/20 overflow-hidden bg-white/10 relative group/avatar cursor-pointer"
-                        >
+                  <div className="w-full h-full bg-[#050505] rounded-[36px] relative overflow-hidden flex flex-col items-center justify-center p-8">
+                    <div className="flex flex-col items-center w-full space-y-8">
+                      {/* Profile Section */}
+                      <div className="flex flex-col items-center gap-4">
+                        <div className="w-20 h-20 rounded-full border-2 border-white/10 p-1 bg-white/5">
                           <img
                             src={avatarUrl}
                             alt="Avatar"
-                            className="w-full h-full object-cover"
+                            className="w-full h-full rounded-full object-cover"
                           />
-                          <button className="absolute inset-0 bg-black/40 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex items-center justify-center">
-                            <Pencil className="w-3 h-3 text-white" />
-                          </button>
                         </div>
-                        <div className="text-center">
-                          <h5 className="text-white text-xs font-bold leading-tight">
+                        <div className="text-center space-y-1">
+                          <h5 className="text-white text-xl font-bold tracking-tight">
                             {user?.name || "Founder Name"}
                           </h5>
-                          <p className="text-white/60 text-[8px] uppercase tracking-wider block">
-                            {user?.role || "Founder"}
+                          <p className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-black">
+                            {user?.role || "FOUNDER"}
                           </p>
-                          <p className="text-white/40 text-[7px] uppercase tracking-wide mt-0.5">
-                            {user?.bio ||
-                              (user?.website
-                                ? user.website
-                                    .replace(/^https?:\/\/(www\.)?/, "")
-                                    .split("/")[0]
-                                : "Startup")}
+                          <p className="text-white/30 text-[9px] uppercase tracking-wider">
+                            {user?.bio || "COLLABORATE & GROW YOUR STARTUP"}
                           </p>
                         </div>
                       </div>
 
-                      <div className="relative group/iphone perspective-1000">
-                        <div className="absolute -inset-8 bg-gradient-to-tr from-purple-500/30 to-blue-500/30 rounded-[60px] blur-3xl opacity-0 group-hover/iphone:opacity-100 transition-opacity duration-1000" />
-                        <div className="relative p-1 bg-[#1a1a1a] rounded-[48px] shadow-2xl transform transition-all duration-700 group-hover/iphone:scale-[1.02] group-hover/iphone:rotate-1 border-[8px] border-[#0a0a0a] ring-1 ring-white/10 overflow-hidden aspect-[9/19] w-full max-w-[280px]">
-                          {/* iPhone-like Frame Details */}
-                          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-7 bg-[#0a0a0a] rounded-b-[20px] z-20 flex items-center justify-center gap-1.5 px-3">
-                            <div className="w-8 h-1 bg-white/10 rounded-full" />
-                            <div className="w-1.5 h-1.5 rounded-full bg-white/5" />
-                          </div>
-
-                          <div className="bg-[#0a0a0a] rounded-[40px] flex flex-col items-center justify-center h-full w-full relative overflow-hidden">
-                            {/* Avatar/Profile Section */}
-                            <div className="flex flex-col items-center gap-3 mb-4 mt-8">
-                              <div className="w-20 h-20 rounded-full border-4 border-white/10 p-1 bg-black/50">
-                                <img 
-                                  src={avatarUrl} 
-                                  alt="Profile" 
-                                  className="w-full h-full rounded-full object-cover"
-                                />
-                              </div>
-                              <div className="text-center">
-                                <h3 className="text-white font-bold text-xl tracking-tight">
-                                  {user?.name || "Persona"}
-                                </h3>
-                                <p className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-black">
-                                  {user?.role || "Founder"}
-                                </p>
-                                <p className="text-white/30 text-[8px] uppercase tracking-wider mt-1 px-4 line-clamp-1">
-                                  {user?.bio || "COLLABORATE & GROW YOUR STARTUP"}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* QR Code Section */}
-                            <div className="p-5 bg-white rounded-[32px] shadow-2xl mb-6">
-                              <QRCodeSVG
-                                value={window.location.origin + "/" + user?.uniqueSlug}
-                                size={160}
-                                level="H"
-                                includeMargin={false}
-                                fgColor={qrColor}
-                                bgColor={qrBgColor}
-                                className="w-full h-full"
-                              />
-                            </div>
-                            
-                            <div className="text-center pb-8">
-                              <p className="text-[10px] text-white/40 uppercase tracking-[0.3em] font-black">
-                                Scan to Connect
-                              </p>
-                            </div>
-
-                            {/* Decorative elements */}
-                            <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl" />
-                            <div className="absolute -top-10 -left-10 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl" />
-                          </div>
-
-                          {/* iPhone Home Bar */}
-                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-black/20 rounded-full z-20" />
-                        </div>
+                      {/* QR Code Section */}
+                      <div className="p-6 bg-white rounded-[32px] shadow-2xl">
+                        <QRCodeSVG
+                          value={window.location.origin + "/" + user?.uniqueSlug}
+                          size={180}
+                          level="H"
+                          includeMargin={false}
+                          fgColor={qrColor}
+                          bgColor={qrBgColor}
+                        />
                       </div>
-                      <div className="text-center space-y-2">
-                        <p className="text-white/40 text-[8px] uppercase tracking-[0.2em] font-medium">
-                          Scan to connect
+
+                      <div className="text-center">
+                        <p className="text-[10px] text-white/20 uppercase tracking-[0.3em] font-black">
+                          Scan to Connect
                         </p>
-                        <div
-                          className="flex items-center justify-center gap-2 bg-white/5 py-1.5 px-3 rounded-full border border-white/10 group/slug cursor-pointer hover:bg-white/10 transition-colors"
-                          onClick={() => {
-                            if (user?.uniqueSlug) {
-                              navigator.clipboard.writeText(
-                                window.location.origin + "/" + user.uniqueSlug,
-                              );
-                              toast({
-                                title: "Link copied!",
-                                description:
-                                  "Your persona link has been copied to clipboard.",
-                              });
-                            }
-                          }}
-                        >
-                          <span className="text-white font-mono text-xs font-bold tracking-wider">
-                            {user?.uniqueSlug}
-                          </span>
-                          <Save className="w-3 h-3 text-white/40 group-hover/slug:text-white transition-colors" />
-                        </div>
                       </div>
                     </div>
+
+                    {/* Home Indicator */}
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-16 h-1 bg-white/10 rounded-full" />
+                  </div>
 
                     {/* Avatar Selection Dialog */}
                     <AnimatePresence>
