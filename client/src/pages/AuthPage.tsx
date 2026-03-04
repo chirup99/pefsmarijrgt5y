@@ -878,6 +878,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
   useEffect(() => {
     let controls: any;
+    let isMounted = true;
+
     const startScanner = async () => {
       if (showScannerDialog && scannerTab === "scan") {
         const codeReader = new BrowserMultiFormatReader();
@@ -886,7 +888,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
             null,
             videoRef.current,
             (result, err) => {
-              if (result) {
+              if (result && isMounted) {
                 const text = result.getText();
                 const slug = text.includes("/") ? text.split("/").pop() : text;
                 if (slug) {
@@ -900,14 +902,23 @@ export default function AuthPage({ slug }: { slug?: string }) {
               }
             },
           );
-          controls = ctrl;
+          
+          if (!isMounted || !showScannerDialog || scannerTab !== "scan") {
+            if (ctrl && typeof ctrl.stop === 'function') {
+              ctrl.stop();
+            }
+          } else {
+            controls = ctrl;
+          }
         } catch (err) {
           console.error("Scanner error:", err);
-          toast({
-            title: "Camera Error",
-            description: "Could not access camera for scanning.",
-            variant: "destructive",
-          });
+          if (isMounted) {
+            toast({
+              title: "Camera Error",
+              description: "Could not access camera for scanning.",
+              variant: "destructive",
+            });
+          }
         }
       }
     };
@@ -915,6 +926,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
     startScanner();
 
     return () => {
+      isMounted = false;
       if (controls) {
         if (typeof controls.stop === 'function') {
           controls.stop();
