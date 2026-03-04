@@ -802,19 +802,23 @@ export default function AuthPage({ slug }: { slug?: string }) {
     try {
       console.log("Submitting values:", values, "Mode:", mode);
       let result;
-      if (mode === "login") {
+      if (user?.id) {
+        // If logged in, overwrite data
+        const payload = {
+          ...values,
+          cards: selectedCards,
+        };
+        result = await updateProfileMutation.mutateAsync(payload);
+        setMode("login");
+      } else if (mode === "login") {
         result = await loginMutation.mutateAsync(values);
       } else if (mode === "register" || mode === "customize") {
         const payload = {
           ...values,
           cards: selectedCards,
         };
-        console.log("Registration/Update payload:", payload);
-        if (user?.id) {
-          result = await updateProfileMutation.mutateAsync(payload);
-        } else {
-          result = await registerMutation.mutateAsync(payload);
-        }
+        console.log("Registration payload:", payload);
+        result = await registerMutation.mutateAsync(payload);
       }
 
       if (result) {
@@ -1584,6 +1588,16 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 </span>
               </div>
             </div>
+
+            {user && mode === "login" && (
+              <button
+                type="button"
+                onClick={() => setMode("register")}
+                className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg mt-2"
+              >
+                <Pencil className="w-4 h-4" /> Edit Persona
+              </button>
+            )}
 
             {!user && (
               <button
