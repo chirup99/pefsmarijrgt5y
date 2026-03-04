@@ -50,6 +50,8 @@ import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
 import { SiInstagram, SiWhatsapp } from "react-icons/si";
 import peralaLogo from "@/assets/logo.png";
+import avatarWoman from "@assets/image_1772649645691.png";
+import avatarMan from "@assets/image_1772649703230.png";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
 
@@ -898,12 +900,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [qrColor, setQrColor] = useState("#000000");
   const [qrBgColor, setQrBgColor] = useState("#ffffff");
   const professionalAvatars = [
-    "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop", // Woman 1
-    "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop", // Woman 2
-    "https://images.unsplash.com/photo-1567532939604-b6c5b0ad3804?w=400&h=400&fit=crop", // Woman 3
-    "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop", // Man 1
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop", // Man 2
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop", // Man 3
+    avatarWoman,
+    avatarMan,
   ];
 
   const [avatarUrl, setAvatarUrl] = useState(professionalAvatars[0]);
