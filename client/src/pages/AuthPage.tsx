@@ -870,6 +870,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [pin, setPin] = useState("");
   const [verifyPin, setVerifyPin] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
+  const qrRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (user && !publicUser) {
