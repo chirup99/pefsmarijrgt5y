@@ -57,6 +57,7 @@ export class MemStorage implements IStorage {
       website: insertUser.website || null,
       uniqueSlug: (insertUser as any).uniqueSlug || null,
       cards: insertUser.cards || [],
+      notes: insertUser.notes || [],
       pin: insertUser.pin || null,
     };
     this.users.set(id, newUser);
@@ -137,6 +138,7 @@ export class DynamoDBStorage implements IStorage {
       website: insertUser.website || null,
       uniqueSlug: (insertUser as any).uniqueSlug || null,
       cards: insertUser.cards || [],
+      notes: insertUser.notes || [],
       pin: insertUser.pin || null,
     };
     try {

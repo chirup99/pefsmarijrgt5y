@@ -924,17 +924,71 @@ export default function AuthPage({ slug }: { slug?: string }) {
       console.error("Failed to update persona code:", error);
     }
   };
-  const [notes, setNotes] = useState<{ id: string; text: string; completed: boolean }[]>([]);
+  const [notes, setNotes] = useState<{ id: string; text: string; completed: boolean; expiresAt: string }[]>([]);
   const [newNote, setNewNote] = useState("");
+
+  // Sync notes from user object
+  useEffect(() => {
+    if (user?.notes) {
+      setNotes(user.notes);
+    }
+  }, [user?.notes]);
+
+  // Auto-expire notes
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date();
+      setNotes(prev => {
+        const filtered = prev.filter(note => new Date(note.expiresAt) > now);
+        if (filtered.length !== prev.length && user) {
+          updateProfileMutation.mutate({ notes: filtered });
+        }
+        return filtered;
+      });
+    }, 60000);
+    return () => clearInterval(timer);
+  }, [user]);
 
   const addNote = () => {
     if (!newNote.trim()) return;
-    setNotes([...notes, { id: Math.random().toString(36).substr(2, 9), text: newNote, completed: false }]);
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    const note = {
+      id: Math.random().toString(36).substr(2, 9),
+      text: newNote,
+      completed: false,
+      expiresAt
+    };
+    const updatedNotes = [...notes, note];
+    setNotes(updatedNotes);
     setNewNote("");
+    if (user) {
+      updateProfileMutation.mutate({ notes: updatedNotes });
+    }
   };
 
   const toggleNote = (id: string) => {
-    setNotes(notes.map(n => n.id === id ? { ...n, completed: !n.completed } : n));
+    const updatedNotes = notes.map((n) =>
+      n.id === id ? { ...n, completed: !n.completed } : n
+    );
+    setNotes(updatedNotes);
+    if (user) {
+      updateProfileMutation.mutate({ notes: updatedNotes });
+    }
+  };
+
+  const getTimerColor = (expiresAt: string) => {
+    const hoursLeft = (new Date(expiresAt).getTime() - Date.now()) / (1000 * 60 * 60);
+    if (hoursLeft > 12) return "text-green-400";
+    if (hoursLeft > 3) return "text-white";
+    return "text-red-500 font-bold";
+  };
+
+  const formatTimeLeft = (expiresAt: string) => {
+    const diff = new Date(expiresAt).getTime() - Date.now();
+    if (diff <= 0) return "Expired";
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    return `${hours}h ${mins}m`;
   };
   const [showHomeDialog, setShowHomeDialog] = useState(false);
   const [showPersonaDialog, setShowPersonaDialog] = useState(false);
@@ -1626,12 +1680,17 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                     >
                                       {note.completed && <Check className="w-2.5 h-2.5 text-white" />}
                                     </button>
-                                    <span className={clsx(
-                                      "text-xs transition-all",
-                                      note.completed ? "text-white/20 line-through" : "text-white/70"
-                                    )}>
-                                      {note.text}
-                                    </span>
+                                    <div className="flex flex-col flex-1">
+                                      <span className={clsx(
+                                        "text-xs transition-all",
+                                        note.completed ? "text-white/20 line-through" : "text-white/70"
+                                      )}>
+                                        {note.text}
+                                      </span>
+                                      <span className={clsx("text-[8px] uppercase tracking-tighter", getTimerColor(note.expiresAt))}>
+                                        Expires in {formatTimeLeft(note.expiresAt)}
+                                      </span>
+                                    </div>
                                   </div>
                                 ))}
                                 {notes.length === 0 && (
