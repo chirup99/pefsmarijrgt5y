@@ -763,7 +763,7 @@ const CustomSwipeCard = ({ cards }: { cards: string[] }) => {
 };
 
 export default function AuthPage({ slug }: { slug?: string }) {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const { toast } = useToast();
   const [mode, setMode] = useState<AuthMode>("login");
   const { user: authUser } = useAuth();
@@ -771,8 +771,11 @@ export default function AuthPage({ slug }: { slug?: string }) {
     const saved = localStorage.getItem("persona_user");
     return saved ? JSON.parse(saved) : null;
   });
-  const user = authUser || localUser;
+  const loggedInUser = authUser || localUser;
   const [publicUser, setPublicUser] = useState<any>(null);
+
+  const isOtherPersona = slug && loggedInUser && loggedInUser.uniqueSlug !== slug;
+  const user = isOtherPersona ? publicUser : loggedInUser;
 
   useEffect(() => {
     if (slug) {
@@ -2100,7 +2103,15 @@ export default function AuthPage({ slug }: { slug?: string }) {
               </div>
             </div>
 
-            {user && mode === "login" && (
+            {isOtherPersona ? (
+              <button
+                type="button"
+                onClick={() => setLocation(`/${loggedInUser.uniqueSlug}`)}
+                className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg mt-2"
+              >
+                Back to My Persona
+              </button>
+            ) : user && mode === "login" && (
               <button
                 type="button"
                 onClick={() => setMode("register")}
