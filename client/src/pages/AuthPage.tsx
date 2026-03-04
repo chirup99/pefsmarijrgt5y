@@ -887,11 +887,11 @@ export default function AuthPage({ slug }: { slug?: string }) {
             // Handle both full URLs and just slugs
             const slug = text.includes("/") ? text.split("/").pop() : text;
             if (slug) {
-              setPersonaSlug(slug);
-              setScannerTab("code");
+              setLocation(`/${slug}`);
+              setShowScannerDialog(false);
               toast({
                 title: "QR Code Scanned",
-                description: `Found persona: ${slug}. Please enter PIN to connect.`,
+                description: `Loading persona: ${slug}`,
               });
             }
           }
@@ -946,10 +946,10 @@ export default function AuthPage({ slug }: { slug?: string }) {
   });
 
   const handleVerifyPersona = async () => {
-    if (!personaSlug || !personaPin) {
+    if (!personaSlug) {
       toast({
         title: "Error",
-        description: "Please enter both persona code and pin",
+        description: "Please enter a persona code",
         variant: "destructive",
       });
       return;
@@ -957,6 +957,14 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
     setIsVerifying(true);
     try {
+      // If no pin is provided, we're just loading public data
+      if (!personaPin) {
+        setLocation(`/${personaSlug}`);
+        setShowScannerDialog(false);
+        setShowPersonaDialog(false);
+        return;
+      }
+
       const res = await apiRequest("POST", "/api/auth/verify-persona", {
         slug: personaSlug,
         pin: personaPin,
