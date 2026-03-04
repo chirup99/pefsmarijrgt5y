@@ -5,8 +5,8 @@ import { type InsertUser, type User } from "@shared/schema";
     const client = new DynamoDBClient({
       region: process.env.AWS_REGION || "ap-south-1",
       credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID || "MOCK_KEY",
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "MOCK_SECRET",
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
       },
     });
 
@@ -193,5 +193,5 @@ export class DynamoDBStorage implements IStorage {
   }
 }
 
-// Fallback to MemStorage if DynamoDB credentials are not provided or if there is an error
-export const storage = new MemStorage();
+// Use DynamoDBStorage by default
+export const storage = new DynamoDBStorage();
