@@ -172,12 +172,18 @@ export async function registerRoutes(
 
   app.patch("/api/user/slug", async (req, res) => {
     try {
-      const { uniqueSlug } = z.object({ uniqueSlug: z.string() }).parse(req.body);
+      const { uniqueSlug, userId } = z.object({ 
+        uniqueSlug: z.string(),
+        userId: z.string().optional()
+      }).parse(req.body);
       
-      // In a real app, we'd get the user ID from the session
-      // For this implementation, we'll use the first user or a dummy ID since it's a demo
-      const users = await storage.getUsers?.() || [];
-      const user = users[0];
+      let user;
+      if (userId) {
+        user = await storage.getUser(userId);
+      } else {
+        const users = await storage.getUsers?.() || [];
+        user = users[0];
+      }
       
       if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -192,6 +198,7 @@ export async function registerRoutes(
       const { password: _, ...safeUser } = updatedUser;
       res.json(safeUser);
     } catch (err) {
+      console.error("Update slug error:", err);
       res.status(400).json({ message: "Invalid request" });
     }
   });

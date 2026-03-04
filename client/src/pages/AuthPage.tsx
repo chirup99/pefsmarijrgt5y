@@ -888,7 +888,10 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
   const updateSlugMutation = useMutation({
     mutationFn: async (newSlug: string) => {
-      const res = await apiRequest("PATCH", "/api/user/slug", { uniqueSlug: newSlug });
+      const res = await apiRequest("PATCH", "/api/user/slug", { 
+        uniqueSlug: newSlug,
+        userId: user?.id 
+      });
       return res.json();
     },
     onSuccess: (updatedUser) => {
