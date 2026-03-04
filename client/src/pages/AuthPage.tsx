@@ -1792,7 +1792,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   <button
                     onClick={() => {
                       setShowQRDialog(false);
-                      setShowHomeDialog(true);
                     }}
                     className="w-full text-white/30 hover:text-white/50 py-1.5 font-bold text-[9px] uppercase tracking-widest transition-all"
                   >
