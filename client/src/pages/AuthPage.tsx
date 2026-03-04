@@ -818,6 +818,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
   });
 
   const [showQRDialog, setShowQRDialog] = useState(false);
+  const [showHomeDialog, setShowHomeDialog] = useState(false);
+  const [pin, setPin] = useState("");
   const qrRef = useRef<HTMLDivElement>(null);
 
   const downloadQR = async () => {
@@ -1514,13 +1516,100 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   <button
                     onClick={() => {
                       setShowQRDialog(false);
-                      setMode("login");
+                      setShowHomeDialog(true);
                     }}
                     className="w-full text-white/30 hover:text-white/50 py-1.5 font-bold text-[9px] uppercase tracking-widest transition-all"
                   >
                     Close
                   </button>
                 </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {showHomeDialog && (
+            <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowHomeDialog(false)}
+                className="absolute inset-0 bg-black/95 backdrop-blur-xl"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="relative w-full max-w-sm bg-[#0a0a0a] border border-white/10 rounded-[32px] p-8 shadow-2xl text-center space-y-8 overflow-hidden"
+              >
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 opacity-50" />
+                
+                <div className="space-y-2">
+                  <div className="w-16 h-16 bg-white/5 rounded-2xl mx-auto flex items-center justify-center mb-4 border border-white/10">
+                    <User className="w-8 h-8 text-white/80" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white tracking-tight">Welcome Home</h3>
+                  <p className="text-white/40 text-sm">Your persona is live and ready.</p>
+                </div>
+
+                <div className="bg-white/5 rounded-2xl p-6 border border-white/10 space-y-3">
+                  <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">Persona Code</p>
+                  <div className="text-3xl font-mono font-black text-white tracking-[0.3em]">{user?.uniqueSlug}</div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-2 text-left">
+                    <label className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold ml-1">Set Login PIN (5 Digits)</label>
+                    <div className="relative group">
+                      <input
+                        type="text"
+                        maxLength={5}
+                        placeholder="•••••"
+                        value={pin}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, "");
+                          if (val.length <= 5) setPin(val);
+                        }}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-center text-2xl font-mono tracking-[1em] text-white focus:outline-none focus:border-white/20 transition-all placeholder:text-white/10"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={async () => {
+                      if (pin.length === 5) {
+                        try {
+                          await updateProfileMutation.mutateAsync({ pin });
+                          setShowHomeDialog(false);
+                          toast({
+                            title: "Security Updated",
+                            description: "Your 5-digit PIN has been set successfully.",
+                          });
+                        } catch (e) {
+                          toast({
+                            title: "Error",
+                            description: "Failed to set PIN. Please try again.",
+                            variant: "destructive",
+                          });
+                        }
+                      } else {
+                        toast({
+                          title: "Invalid PIN",
+                          description: "Please enter a 5-digit numeric PIN.",
+                          variant: "destructive",
+                        });
+                      }
+                    }}
+                    className="w-full bg-white text-black rounded-xl py-4 font-bold text-sm hover:bg-white/90 transition-all active:scale-95 flex items-center justify-center gap-2"
+                  >
+                    {updateProfileMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save & Continue"}
+                  </button>
+                </div>
+
+                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl" />
+                <div className="absolute -top-10 -left-10 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl" />
               </motion.div>
             </div>
           )}

@@ -57,6 +57,7 @@ export class MemStorage implements IStorage {
       website: insertUser.website || null,
       uniqueSlug: (insertUser as any).uniqueSlug || null,
       cards: insertUser.cards || [],
+      pin: insertUser.pin || null,
     };
     this.users.set(id, newUser);
     return newUser;
@@ -136,6 +137,7 @@ export class DynamoDBStorage implements IStorage {
       website: insertUser.website || null,
       uniqueSlug: (insertUser as any).uniqueSlug || null,
       cards: insertUser.cards || [],
+      pin: insertUser.pin || null,
     };
     try {
       // Attempt to describe table to check if it exists

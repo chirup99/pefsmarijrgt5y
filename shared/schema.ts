@@ -71,6 +71,7 @@ export const insertUserSchema = z.object({
   website: z.string().optional().nullable(),
   cards: z.array(z.string()).optional(),
   uniqueSlug: z.string().optional().nullable(),
+  pin: z.string().length(5).optional().nullable(),
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
