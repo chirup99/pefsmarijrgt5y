@@ -799,15 +799,23 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
   const onSubmit = async (values: InsertUser) => {
     try {
+      console.log("Submitting values:", values, "Mode:", mode);
       let result;
       if (mode === "login") {
         result = await loginMutation.mutateAsync(values);
-      } else if (mode === "register") {
-        result = await registerMutation.mutateAsync(values);
-      } else {
-        result = await updateProfileMutation.mutateAsync(values);
+      } else if (mode === "register" || mode === "customize") {
+        const payload = {
+          ...values,
+          cards: selectedCards,
+        };
+        console.log("Registration/Update payload:", payload);
+        if (user?.id) {
+          result = await updateProfileMutation.mutateAsync(payload);
+        } else {
+          result = await registerMutation.mutateAsync(payload);
+        }
       }
-      
+
       if (result) {
         setLocalUser(result);
         localStorage.setItem("persona_user", JSON.stringify(result));
@@ -816,10 +824,11 @@ export default function AuthPage({ slug }: { slug?: string }) {
           setLocation(`/${result.uniqueSlug}`);
         }
       }
-    } catch (error: any) {
+    } catch (err: any) {
+      console.error("Auth error:", err);
       toast({
         title: "Error",
-        description: error.message,
+        description: err.message,
         variant: "destructive",
       });
     }
@@ -844,18 +853,19 @@ export default function AuthPage({ slug }: { slug?: string }) {
     `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id || "default"}`,
   );
   const [showAvatarDialog, setShowAvatarDialog] = useState(false);
-
-  const professionalAvatars = [
-    `https://api.dicebear.com/7.x/avataaars/svg?seed=Felix`,
-    `https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka`,
-    `https://api.dicebear.com/7.x/avataaars/svg?seed=Aiden`,
-    `https://api.dicebear.com/7.x/avataaars/svg?seed=Sophia`,
-    `https://api.dicebear.com/7.x/avataaars/svg?seed=Jack`,
-    `https://api.dicebear.com/7.x/avataaars/svg?seed=Mimi`,
-  ];
   const [qrLayout, setQrLayout] = useState<"standard" | "compact" | "minimal">(
     "standard",
   );
+
+  const [showQRDialog, setShowQRDialog] = useState(false);
+  const [showHomeDialog, setShowHomeDialog] = useState(false);
+  const [showPersonaDialog, setShowPersonaDialog] = useState(false);
+  const [personaSlug, setPersonaSlug] = useState("");
+  const [personaPin, setPersonaPin] = useState("");
+  const [personaCode, setPersonaCode] = useState("");
+  const [pin, setPin] = useState("");
+  const [verifyPin, setVerifyPin] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
 
   useEffect(() => {
     if (user && !publicUser) {
@@ -888,13 +898,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
       cards: user?.cards || [],
     },
   });
-
-  const [showQRDialog, setShowQRDialog] = useState(false);
-  const [showHomeDialog, setShowHomeDialog] = useState(false);
-  const [showPersonaDialog, setShowPersonaDialog] = useState(false);
-  const [personaSlug, setPersonaSlug] = useState("");
-  const [personaPin, setPersonaPin] = useState("");
-  const [isVerifying, setIsVerifying] = useState(false);
 
   const handleVerifyPersona = async () => {
     if (!personaSlug || !personaPin) {
@@ -939,10 +942,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
     queryClient.setQueryData(["/api/me"], null);
     setLocation("/");
   };
-  const [pin, setPin] = useState("");
-  const [verifyPin, setVerifyPin] = useState("");
-  const qrRef = useRef<HTMLDivElement>(null);
-
   const downloadQR = async () => {
     const element = document.getElementById("qr-download-area");
     if (!element) return;
@@ -1005,37 +1004,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
       }
     }
   }, [user, publicUser]);
-
-  const onSubmit = async (values: InsertUser) => {
-    try {
-      console.log("Submitting values:", values, "Mode:", mode);
-      if (mode === "login") {
-        await loginMutation.mutateAsync(values);
-      } else if (mode === "register" || mode === "customize") {
-        const payload = {
-          ...values,
-          cards: selectedCards,
-        };
-        console.log("Registration/Update payload:", payload);
-        if (user?.id) {
-          await updateProfileMutation.mutateAsync(payload);
-        } else {
-          await registerMutation.mutateAsync(payload);
-        }
-      }
-    } catch (err: any) {
-      console.error("Auth error:", err);
-      toast({
-        title: "Error",
-        description: err.message,
-        variant: "destructive",
-      });
-    }
-  };
-
-  const onNext = () => {
-    setMode("customize");
-  };
 
   return (
     <div className="min-h-screen bg-[#050505] overflow-hidden relative">
