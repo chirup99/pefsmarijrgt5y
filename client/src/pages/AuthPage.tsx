@@ -1452,23 +1452,124 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     </a>
                     {user && (form.watch("cards")?.length ?? 0) > 0 && (
                       <div className="pt-4 border-t border-white/10">
-                        <div className="flex items-center justify-center gap-1.5 mb-4 text-[10px] font-bold text-white uppercase tracking-wider">
-                          <div className="w-3 h-3 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/40">
-                            <div className="w-1 h-1 rounded-full bg-blue-400 shadow-[0_0_4px_#60a5fa]" />
-                          </div>
-                          Connect
+                        {/* Tabs Navigation */}
+                        <div className="flex p-1 bg-white/5 border border-white/10 rounded-xl mb-4">
+                          <button
+                            type="button"
+                            onClick={() => setActiveTab("notes")}
+                            className={clsx(
+                              "flex-1 py-2 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider",
+                              activeTab === "notes" ? "bg-white/10 text-white shadow-lg" : "text-white/40 hover:text-white/60"
+                            )}
+                          >
+                            Notes
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setActiveTab("events")}
+                            className={clsx(
+                              "flex-1 py-2 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider",
+                              activeTab === "events" ? "bg-white/10 text-white shadow-lg" : "text-white/40 hover:text-white/60"
+                            )}
+                          >
+                            Upcoming Events
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setActiveTab("connect")}
+                            className={clsx(
+                              "flex-1 py-2 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider flex items-center justify-center gap-1.5",
+                              activeTab === "connect" ? "bg-white/10 text-white shadow-lg" : "text-white/40 hover:text-white/60"
+                            )}
+                          >
+                            <div className="w-3 h-3 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/40">
+                              <div className="w-1 h-1 rounded-full bg-blue-400 shadow-[0_0_4px_#60a5fa]" />
+                            </div>
+                            Connect
+                          </button>
                         </div>
 
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="h-[120px] flex items-center justify-center border border-dashed border-white/10 rounded-2xl bg-gradient-to-tr from-blue-500/5 to-purple-500/5"
-                        >
-                          <div className="text-center space-y-2">
-                            <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">Exclusive Connect</p>
-                            <p className="text-xs text-white/20 font-medium">Coming Soon</p>
-                          </div>
-                        </motion.div>
+                        {/* Tab Content */}
+                        <AnimatePresence mode="wait">
+                          {activeTab === "notes" ? (
+                            <motion.div
+                              key="notes"
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              className="space-y-3"
+                            >
+                              <div className="flex gap-2">
+                                <input
+                                  type="text"
+                                  value={newNote}
+                                  onChange={(e) => setNewNote(e.target.value)}
+                                  onKeyPress={(e) => e.key === "Enter" && addNote()}
+                                  placeholder="Add a quick note..."
+                                  className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={addNote}
+                                  className="bg-white/10 hover:bg-white/20 text-white p-2 rounded-lg transition-colors"
+                                >
+                                  <Plus className="w-4 h-4" />
+                                </button>
+                              </div>
+                              <div className="space-y-2 max-h-[120px] overflow-y-auto custom-scrollbar">
+                                {notes.map((note) => (
+                                  <div key={note.id} className="flex items-center gap-3 group">
+                                    <button
+                                      type="button"
+                                      onClick={() => toggleNote(note.id)}
+                                      className={clsx(
+                                        "w-4 h-4 rounded-full border transition-all flex items-center justify-center",
+                                        note.completed ? "bg-purple-500 border-purple-500" : "border-white/20 hover:border-white/40"
+                                      )}
+                                    >
+                                      {note.completed && <Check className="w-2.5 h-2.5 text-white" />}
+                                    </button>
+                                    <span className={clsx(
+                                      "text-xs transition-all",
+                                      note.completed ? "text-white/20 line-through" : "text-white/70"
+                                    )}>
+                                      {note.text}
+                                    </span>
+                                  </div>
+                                ))}
+                                {notes.length === 0 && (
+                                  <p className="text-[10px] text-white/20 uppercase tracking-widest text-center py-4">No notes yet</p>
+                                )}
+                              </div>
+                            </motion.div>
+                          ) : activeTab === "events" ? (
+                            <motion.div
+                              key="events"
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              className="h-[120px] flex items-center justify-center border border-dashed border-white/10 rounded-2xl"
+                            >
+                              <div className="text-center space-y-2">
+                                <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">Upcoming Events</p>
+                                <p className="text-xs text-white/20 font-medium">Coming Soon</p>
+                              </div>
+                            </motion.div>
+                          ) : (
+                            <motion.div
+                              key="connect"
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              className="h-[120px] flex items-center justify-center border border-dashed border-white/10 rounded-2xl bg-gradient-to-tr from-blue-500/5 to-purple-500/5"
+                            >
+                              <div className="text-center space-y-2">
+                                <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">Exclusive Connect</p>
+                                <p className="text-xs text-white/20 font-medium">Coming Soon</p>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     )}
                   </form>
