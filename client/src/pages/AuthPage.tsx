@@ -871,6 +871,38 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [showScannerDialog, setShowScannerDialog] = useState(false);
   const [scannerTab, setScannerTab] = useState<"scan" | "code">("scan");
   const [activeTab, setActiveTab] = useState<"notes" | "events" | "connect">("notes");
+  const [isEditingSlug, setIsEditingSlug] = useState(false);
+  const [slugValue, setSlugValue] = useState(user?.uniqueSlug || "");
+
+  const updateSlugMutation = useMutation({
+    mutationFn: async (newSlug: string) => {
+      const res = await apiRequest("PATCH", "/api/user/slug", { uniqueSlug: newSlug });
+      return res.json();
+    },
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(["/api/user"], updatedUser);
+      setIsEditingSlug(false);
+      toast({
+        title: "Success",
+        description: "Persona code updated successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSaveSlug = () => {
+    if (slugValue === user?.uniqueSlug) {
+      setIsEditingSlug(false);
+      return;
+    }
+    updateSlugMutation.mutate(slugValue);
+  };
   const [notes, setNotes] = useState<{ id: string; text: string; completed: boolean }[]>([]);
   const [newNote, setNewNote] = useState("");
 
@@ -1169,19 +1201,44 @@ export default function AuthPage({ slug }: { slug?: string }) {
                           <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
                             Persona Code
                           </label>
-                          <div className="flex items-center justify-between group/item">
-                            <span className="text-sm font-mono text-white">
-                              {user.uniqueSlug || "---"}
-                            </span>
-                            <button 
-                              onClick={() => {
-                                setMode("register");
-                                setIsMenuOpen(false);
-                              }}
-                              className="p-1.5 bg-white/5 rounded-lg text-white/40 hover:text-white transition-colors opacity-0 group-hover/item:opacity-100"
-                            >
-                              <Pencil className="w-3.5 h-3.5" />
-                            </button>
+                          <div className="flex items-center justify-between group/item gap-2">
+                            {isEditingSlug ? (
+                              <div className="flex-1 flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-2 py-1">
+                                <input
+                                  type="text"
+                                  value={slugValue}
+                                  onChange={(e) => setSlugValue(e.target.value)}
+                                  className="flex-1 bg-transparent border-none text-sm font-mono text-white focus:outline-none"
+                                  autoFocus
+                                />
+                                <button
+                                  onClick={handleSaveSlug}
+                                  disabled={updateSlugMutation.isPending}
+                                  className="p-1 bg-white/10 rounded-full text-green-400 hover:text-green-300 transition-colors disabled:opacity-50"
+                                >
+                                  {updateSlugMutation.isPending ? (
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                  ) : (
+                                    <Check className="w-3.5 h-3.5" />
+                                  )}
+                                </button>
+                              </div>
+                            ) : (
+                              <>
+                                <span className="text-sm font-mono text-white">
+                                  {user.uniqueSlug || "---"}
+                                </span>
+                                <button 
+                                  onClick={() => {
+                                    setSlugValue(user.uniqueSlug || "");
+                                    setIsEditingSlug(true);
+                                  }}
+                                  className="p-1.5 bg-white/5 rounded-lg text-white/40 hover:text-white transition-colors opacity-0 group-hover/item:opacity-100"
+                                >
+                                  <Pencil className="w-3.5 h-3.5" />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </div>
 

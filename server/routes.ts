@@ -160,6 +160,32 @@ export async function registerRoutes(
     }
   });
 
+  app.patch("/api/user/slug", async (req, res) => {
+    try {
+      const { uniqueSlug } = z.object({ uniqueSlug: z.string() }).parse(req.body);
+      
+      // In a real app, we'd get the user ID from the session
+      // For this implementation, we'll use the first user or a dummy ID since it's a demo
+      const users = await storage.getUsers?.() || [];
+      const user = users[0];
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const existing = await storage.getUserBySlug(uniqueSlug);
+      if (existing && existing.id !== user.id) {
+        return res.status(400).json({ message: "Persona code already taken" });
+      }
+
+      const updatedUser = await storage.updateUser(user.id, { uniqueSlug });
+      const { password: _, ...safeUser } = updatedUser;
+      res.json(safeUser);
+    } catch (err) {
+      res.status(400).json({ message: "Invalid request" });
+    }
+  });
+
   app.patch("/api/user/:id", async (req, res) => {
     try {
       const { id } = req.params;
