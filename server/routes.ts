@@ -160,6 +160,16 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/user/check-slug/:slug", async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const existing = await storage.getUserBySlug(slug);
+      res.json({ taken: !!existing });
+    } catch (err) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.patch("/api/user/slug", async (req, res) => {
     try {
       const { uniqueSlug } = z.object({ uniqueSlug: z.string() }).parse(req.body);

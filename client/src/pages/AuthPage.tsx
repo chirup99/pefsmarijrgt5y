@@ -874,6 +874,18 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [isEditingSlug, setIsEditingSlug] = useState(false);
   const [slugValue, setSlugValue] = useState(user?.uniqueSlug || "");
 
+  const [isSlugTaken, setIsSlugTaken] = useState(false);
+
+  const checkSlugMutation = useMutation({
+    mutationFn: async (slug: string) => {
+      const res = await apiRequest("GET", `/api/user/check-slug/${slug}`);
+      return res.json();
+    },
+    onSuccess: (data) => {
+      setIsSlugTaken(data.taken);
+    },
+  });
+
   const updateSlugMutation = useMutation({
     mutationFn: async (newSlug: string) => {
       const res = await apiRequest("PATCH", "/api/user/slug", { uniqueSlug: newSlug });
@@ -1207,21 +1219,40 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                 <input
                                   type="text"
                                   value={slugValue}
-                                  onChange={(e) => setSlugValue(e.target.value)}
+                                  onChange={(e) => {
+                                    setSlugValue(e.target.value);
+                                    if (e.target.value !== user.uniqueSlug) {
+                                      checkSlugMutation.mutate(e.target.value);
+                                    } else {
+                                      setIsSlugTaken(false);
+                                    }
+                                  }}
                                   className="flex-1 bg-transparent border-none text-sm font-mono text-white focus:outline-none"
                                   autoFocus
                                 />
-                                <button
-                                  onClick={handleSaveSlug}
-                                  disabled={updateSlugMutation.isPending}
-                                  className="p-1 bg-white/10 rounded-full text-green-400 hover:text-green-300 transition-colors disabled:opacity-50"
-                                >
-                                  {updateSlugMutation.isPending ? (
-                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                  ) : (
-                                    <Check className="w-3.5 h-3.5" />
+                                <div className="flex flex-col items-end gap-1">
+                                  <button
+                                    onClick={handleSaveSlug}
+                                    disabled={updateSlugMutation.isPending || isSlugTaken}
+                                    className={clsx(
+                                      "p-1 rounded-full transition-colors disabled:opacity-50",
+                                      isSlugTaken ? "bg-red-500/20 text-red-400 cursor-not-allowed" : "bg-white/10 text-green-400 hover:text-green-300"
+                                    )}
+                                  >
+                                    {updateSlugMutation.isPending ? (
+                                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                    ) : isSlugTaken ? (
+                                      <X className="w-3.5 h-3.5" />
+                                    ) : (
+                                      <Check className="w-3.5 h-3.5" />
+                                    )}
+                                  </button>
+                                  {isSlugTaken && (
+                                    <span className="text-[8px] text-red-400 uppercase tracking-tighter font-bold">
+                                      Taken
+                                    </span>
                                   )}
-                                </button>
+                                </div>
                               </div>
                             ) : (
                               <>
