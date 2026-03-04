@@ -1172,7 +1172,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
       const res = await apiRequest("PATCH", `/api/user/${user.id}`, data);
       return res.json();
     },
-    onSuccess: (updatedUser) => {
+    onSuccess: (updatedUser, variables) => {
       queryClient.setQueryData(["/api/me"], updatedUser);
       setLocalUser(updatedUser);
       localStorage.setItem("persona_user", JSON.stringify(updatedUser));
@@ -1180,21 +1180,28 @@ export default function AuthPage({ slug }: { slug?: string }) {
       queryClient.invalidateQueries({ queryKey: ["/api/me"] });
       
       // If we just set the pin, show QR
-      if (updatedUser.pin) {
+      if (updatedUser.pin && variables.pin) {
         setShowQRDialog(true);
       }
       
-      toast({
-        title: "Success",
-        description: "Profile updated successfully",
-      });
+      // Silent update for notes or completed (checklist)
+      const isSilentUpdate = 'notes' in variables || 'cards' in variables || 'completed' in variables;
+      if (!isSilentUpdate) {
+        toast({
+          title: "Success",
+          description: "Profile updated successfully",
+        });
+      }
     },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+    onError: (error: Error, variables) => {
+      const isSilentUpdate = 'notes' in variables || 'cards' in variables;
+      if (!isSilentUpdate) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     },
   });
 
@@ -2250,22 +2257,40 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         </div>
                       </div>
 
-                      <div className="relative group/code">
-                        <div
-                          ref={qrRef}
-                          className="aspect-square bg-white rounded-[28px] p-3.5 flex items-center justify-center shadow-lg relative overflow-hidden"
-                          style={{ backgroundColor: qrBgColor }}
-                        >
-                          <QRCodeSVG
-                            value={
-                              window.location.origin + "/" + user?.uniqueSlug
-                            }
-                            size={100}
-                            level="H"
-                            includeMargin={false}
-                            fgColor={qrColor}
-                            bgColor={qrBgColor}
-                          />
+                      <div className="relative group/iphone perspective-1000">
+                        <div className="absolute -inset-8 bg-gradient-to-tr from-purple-500/30 to-blue-500/30 rounded-[60px] blur-3xl opacity-0 group-hover/iphone:opacity-100 transition-opacity duration-1000" />
+                        <div className="relative p-1 bg-[#1a1a1a] rounded-[48px] shadow-2xl transform transition-all duration-700 group-hover/iphone:scale-[1.02] group-hover/iphone:rotate-1 border-[8px] border-[#0a0a0a] ring-1 ring-white/10 overflow-hidden">
+                          {/* iPhone-like Frame Details */}
+                          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-7 bg-[#0a0a0a] rounded-b-[20px] z-20 flex items-center justify-center gap-1.5 px-3">
+                            <div className="w-8 h-1 bg-white/10 rounded-full" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-white/5" />
+                          </div>
+
+                          <div className="bg-white p-8 pt-12 pb-10 rounded-[40px] flex flex-col items-center gap-6">
+                            <div className="p-4 bg-white rounded-3xl shadow-inner border border-black/5">
+                              <QRCodeSVG
+                                value={window.location.origin + "/" + user?.uniqueSlug}
+                                size={180}
+                                level="H"
+                                includeMargin={false}
+                                fgColor={qrColor}
+                                bgColor={qrBgColor}
+                                className="w-full h-full"
+                              />
+                            </div>
+                            
+                            <div className="text-center space-y-1">
+                              <p className="text-[10px] text-black/40 uppercase tracking-[0.2em] font-black">
+                                Scan to Connect
+                              </p>
+                              <p className="text-xs font-mono font-bold text-black tracking-widest">
+                                {user?.uniqueSlug}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* iPhone Home Bar */}
+                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-black/20 rounded-full z-20" />
                         </div>
                       </div>
                       <div className="text-center space-y-2">
