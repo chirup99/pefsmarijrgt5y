@@ -5,8 +5,8 @@ import { type InsertUser, type User } from "@shared/schema";
     const client = new DynamoDBClient({
       region: process.env.AWS_REGION || "ap-south-1",
       credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID || "MOCK_KEY",
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "MOCK_SECRET",
       },
     });
 
@@ -21,13 +21,68 @@ export interface IStorage {
   updateUser(id: string, user: Partial<InsertUser>): Promise<User>;
 }
 
+export class MemStorage implements IStorage {
+  private users: Map<string, User>;
+
+  constructor() {
+    this.users = new Map();
+  }
+
+  async getUser(id: string): Promise<User | undefined> {
+    return this.users.get(id);
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find((u) => u.email === email);
+  }
+
+  async getUserBySlug(slug: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find((u) => u.uniqueSlug === slug);
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const id = crypto.randomUUID();
+    const newUser: User = {
+      ...insertUser,
+      id,
+      createdAt: new Date(),
+      email: insertUser.email || `${Date.now()}@persona.local`,
+      password: insertUser.password || "",
+      name: insertUser.name || null,
+      role: insertUser.role || null,
+      bio: insertUser.bio || null,
+      instagram: insertUser.instagram || null,
+      linkedin: insertUser.linkedin || null,
+      whatsapp: insertUser.whatsapp || null,
+      website: insertUser.website || null,
+      uniqueSlug: (insertUser as any).uniqueSlug || null,
+      cards: insertUser.cards || [],
+    };
+    this.users.set(id, newUser);
+    return newUser;
+  }
+
+  async updateUser(id: string, partialUser: Partial<InsertUser>): Promise<User> {
+    const user = this.users.get(id);
+    if (!user) throw new Error("User not found");
+    const updatedUser = { ...user, ...partialUser };
+    this.users.set(id, updatedUser);
+    return updatedUser;
+  }
+}
+
 export class DynamoDBStorage implements IStorage {
   async getUser(id: string): Promise<User | undefined> {
-    const { Item } = await ddbDocClient.send(new GetCommand({
-      TableName: TABLE_NAME,
-      Key: { id },
-    }));
-    return Item as User | undefined;
+    try {
+      const { Item } = await ddbDocClient.send(new GetCommand({
+        TableName: TABLE_NAME,
+        Key: { id },
+      }));
+      return Item as User | undefined;
+    } catch (e) {
+      console.error("DynamoDB Get Error:", e);
+      return undefined;
+    }
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
@@ -127,4 +182,6 @@ export class DynamoDBStorage implements IStorage {
   }
 }
 
-export const storage = new DynamoDBStorage();
+export const storage = (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) 
+  ? new DynamoDBStorage() 
+  : new MemStorage();

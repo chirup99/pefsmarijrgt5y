@@ -1,4 +1,3 @@
-import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export const cardSchema = z.discriminatedUnion("type", [
