@@ -142,7 +142,8 @@ export async function registerRoutes(
   app.patch("/api/user/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      const user = await storage.updateUser(id, req.body);
+      const { password, id: _id, createdAt, ...allowedFields } = req.body;
+      const user = await storage.updateUser(id, allowedFields);
       const { password: _, ...safeUser } = user;
       res.json(safeUser);
     } catch (err) {
