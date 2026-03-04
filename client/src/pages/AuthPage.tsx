@@ -910,6 +910,12 @@ export default function AuthPage({ slug }: { slug?: string }) {
     },
   });
 
+  useEffect(() => {
+    if (user?.cards) {
+      setSelectedCards(user.cards);
+    }
+  }, [user?.cards]);
+
   const onSubmit = async (values: InsertUser) => {
     try {
       console.log("Submitting values:", values, "Mode:", mode);
@@ -1160,7 +1166,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       <div className="pt-4 border-t border-white/10">
                          <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold mb-4">Quick Preview</p>
                          <div className="scale-75 origin-top -mb-20">
-                           <CustomSwipeCard cards={form.watch("cards")} />
+                           <CustomSwipeCard cards={selectedCards} />
                          </div>
                       </div>
                     )}
@@ -1369,7 +1375,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       </div>
                     ) : (
                       <div className="py-2">
-                        <SwipeCard cards={user?.cards || []} />
+                        <SwipeCard cards={selectedCards} />
                         <div className="text-center mt-4 space-y-0.5">
                           <p className="text-xs font-semibold text-white">
                             Swipe to explore
