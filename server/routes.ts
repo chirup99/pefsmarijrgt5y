@@ -206,11 +206,18 @@ export async function registerRoutes(
   app.patch("/api/user/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      const { password, id: _id, createdAt, ...allowedFields } = req.body;
-      const user = await storage.updateUser(id, allowedFields);
+      const { password, id: _id, createdAt, pin, ...allowedFields } = req.body;
+      
+      const updateData = { ...allowedFields };
+      if (pin !== undefined) {
+        updateData.pin = pin;
+      }
+      
+      const user = await storage.updateUser(id, updateData);
       const { password: _, ...safeUser } = user;
       res.json(safeUser);
     } catch (err) {
+      console.error("Update user error:", err);
       res.status(500).json({ message: "Internal server error" });
     }
   });

@@ -857,6 +857,43 @@ export default function AuthPage({ slug }: { slug?: string }) {
   }, [publicUser, user]);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isEditingPin, setIsEditingPin] = useState(false);
+  const [newPinValue, setNewPinValue] = useState("");
+
+  const updatePinMutation = useMutation({
+    mutationFn: async (newPin: string) => {
+      const res = await apiRequest("PATCH", `/api/user/${user?.id}`, { pin: newPin });
+      return res.json();
+    },
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(["/api/user"], updatedUser);
+      toast({
+        title: "Success",
+        description: "PIN updated successfully",
+      });
+      setIsEditingPin(false);
+      setNewPinValue("");
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update PIN",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handlePinUpdate = () => {
+    if (newPinValue.length !== 5) {
+      toast({
+        title: "Invalid PIN",
+        description: "PIN must be exactly 5 digits",
+        variant: "destructive",
+      });
+      return;
+    }
+    updatePinMutation.mutate(newPinValue);
+  };
   const [qrColor, setQrColor] = useState("#000000");
   const [qrBgColor, setQrBgColor] = useState("#ffffff");
   const [avatarUrl, setAvatarUrl] = useState(
@@ -1348,18 +1385,51 @@ export default function AuthPage({ slug }: { slug?: string }) {
                             Change PIN
                           </label>
                           <div className="flex items-center justify-between group/item">
-                            <span className="text-sm tracking-[0.3em] text-white/60">
-                              •••••
-                            </span>
-                            <button 
-                              onClick={() => {
-                                setMode("register");
-                                setIsMenuOpen(false);
-                              }}
-                              className="p-1.5 bg-white/5 rounded-lg text-white/40 hover:text-white transition-colors opacity-0 group-hover/item:opacity-100"
-                            >
-                              <Pencil className="w-3.5 h-3.5" />
-                            </button>
+                            {isEditingPin ? (
+                              <div className="flex items-center gap-2 w-full">
+                                <input
+                                  type="text"
+                                  maxLength={5}
+                                  value={newPinValue}
+                                  onChange={(e) => setNewPinValue(e.target.value.replace(/\D/g, ""))}
+                                  placeholder="New 5-digit PIN"
+                                  className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-purple-500/50"
+                                  autoFocus
+                                />
+                                <button
+                                  onClick={handlePinUpdate}
+                                  disabled={updatePinMutation.isPending}
+                                  className="p-1.5 bg-purple-500/20 rounded-lg text-purple-400 hover:bg-purple-500/30 transition-colors disabled:opacity-50"
+                                >
+                                  {updatePinMutation.isPending ? (
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                  ) : (
+                                    <Check className="w-3.5 h-3.5" />
+                                  )}
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setIsEditingPin(false);
+                                    setNewPinValue("");
+                                  }}
+                                  className="p-1.5 bg-white/5 rounded-lg text-white/40 hover:text-white transition-colors"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            ) : (
+                              <>
+                                <span className="text-sm tracking-[0.3em] text-white/60">
+                                  •••••
+                                </span>
+                                <button 
+                                  onClick={() => setIsEditingPin(true)}
+                                  className="p-1.5 bg-white/5 rounded-lg text-white/40 hover:text-white transition-colors opacity-0 group-hover/item:opacity-100"
+                                >
+                                  <Pencil className="w-3.5 h-3.5" />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
