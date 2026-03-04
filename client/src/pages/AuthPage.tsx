@@ -820,7 +820,11 @@ export default function AuthPage({ slug }: { slug?: string }) {
         setLocalUser(result);
         localStorage.setItem("persona_user", JSON.stringify(result));
         localStorage.setItem("persona_user_id", result.id);
-        if (result.uniqueSlug) {
+        
+        // If it's a new registration or missing uniqueSlug, show the QR/Pin flow
+        if (mode === "register" || !result.pin) {
+          setShowHomeDialog(true);
+        } else if (result.uniqueSlug) {
           setLocation(`/${result.uniqueSlug}`);
         }
       }
@@ -977,7 +981,12 @@ export default function AuthPage({ slug }: { slug?: string }) {
       localStorage.setItem("persona_user", JSON.stringify(updatedUser));
       localStorage.setItem("persona_user_id", updatedUser.id);
       queryClient.invalidateQueries({ queryKey: ["/api/me"] });
-      setShowQRDialog(true);
+      
+      // If we just set the pin, show QR
+      if (updatedUser.pin) {
+        setShowQRDialog(true);
+      }
+      
       toast({
         title: "Success",
         description: "Profile updated successfully",
@@ -1856,6 +1865,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         try {
                           await updateProfileMutation.mutateAsync({ pin });
                           setShowHomeDialog(false);
+                          setShowQRDialog(true);
                           toast({
                             title: "Security Updated",
                             description:
