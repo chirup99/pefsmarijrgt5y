@@ -109,10 +109,12 @@ export class DynamoDBStorage implements IStorage {
       console.log("Searching user by slug:", slug);
       const { Items } = await ddbDocClient.send(new ScanCommand({
         TableName: TABLE_NAME,
-        FilterExpression: "uniqueSlug = :slug",
-        ExpressionAttributeValues: { ":slug": slug },
       }));
-      const user = (Items && Items.length > 0) ? (Items[0] as User) : undefined;
+      
+      const user = Items?.find(item => 
+        String(item.uniqueSlug).toLowerCase() === String(slug).toLowerCase()
+      ) as User | undefined;
+
       console.log("User found by slug:", user ? user.id : "none");
       return user;
     } catch (error) {

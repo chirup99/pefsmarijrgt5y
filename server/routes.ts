@@ -20,11 +20,17 @@ export async function registerRoutes(
       const { slug, pin } = z.object({ slug: z.string(), pin: z.string() }).parse(req.body);
       const user = await storage.getUserBySlug(slug);
       
+      console.log("Verify Persona - Slug:", slug, "PIN provided:", pin);
+      
       if (!user) {
+        console.log("Verify Persona - User not found for slug:", slug);
         return res.status(404).json({ message: "Persona not found" });
       }
 
-      if (user.pin !== pin) {
+      console.log("Verify Persona - User found:", user.id, "User PIN in DB:", user.pin);
+
+      if (String(user.pin) !== String(pin)) {
+        console.log("Verify Persona - PIN mismatch");
         return res.status(401).json({ message: "Invalid PIN" });
       }
 
