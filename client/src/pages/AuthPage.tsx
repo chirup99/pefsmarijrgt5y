@@ -2329,18 +2329,41 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
                       <div className="relative group/iphone perspective-1000">
                         <div className="absolute -inset-8 bg-gradient-to-tr from-purple-500/30 to-blue-500/30 rounded-[60px] blur-3xl opacity-0 group-hover/iphone:opacity-100 transition-opacity duration-1000" />
-                        <div className="relative p-1 bg-[#1a1a1a] rounded-[48px] shadow-2xl transform transition-all duration-700 group-hover/iphone:scale-[1.02] group-hover/iphone:rotate-1 border-[8px] border-[#0a0a0a] ring-1 ring-white/10 overflow-hidden">
+                        <div className="relative p-1 bg-[#1a1a1a] rounded-[48px] shadow-2xl transform transition-all duration-700 group-hover/iphone:scale-[1.02] group-hover/iphone:rotate-1 border-[8px] border-[#0a0a0a] ring-1 ring-white/10 overflow-hidden aspect-[9/19] w-full max-w-[280px]">
                           {/* iPhone-like Frame Details */}
                           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-7 bg-[#0a0a0a] rounded-b-[20px] z-20 flex items-center justify-center gap-1.5 px-3">
                             <div className="w-8 h-1 bg-white/10 rounded-full" />
                             <div className="w-1.5 h-1.5 rounded-full bg-white/5" />
                           </div>
 
-                          <div className="bg-white p-8 pt-12 pb-10 rounded-[40px] flex flex-col items-center gap-6">
-                            <div className="p-4 bg-white rounded-3xl shadow-inner border border-black/5">
+                          <div className="bg-[#0a0a0a] rounded-[40px] flex flex-col items-center justify-center h-full w-full relative overflow-hidden">
+                            {/* Avatar/Profile Section */}
+                            <div className="flex flex-col items-center gap-3 mb-4 mt-8">
+                              <div className="w-20 h-20 rounded-full border-4 border-white/10 p-1 bg-black/50">
+                                <img 
+                                  src={avatarUrl} 
+                                  alt="Profile" 
+                                  className="w-full h-full rounded-full object-cover"
+                                />
+                              </div>
+                              <div className="text-center">
+                                <h3 className="text-white font-bold text-xl tracking-tight">
+                                  {user?.name || "Persona"}
+                                </h3>
+                                <p className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-black">
+                                  {user?.role || "Founder"}
+                                </p>
+                                <p className="text-white/30 text-[8px] uppercase tracking-wider mt-1 px-4 line-clamp-1">
+                                  {user?.bio || "COLLABORATE & GROW YOUR STARTUP"}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* QR Code Section */}
+                            <div className="p-5 bg-white rounded-[32px] shadow-2xl mb-6">
                               <QRCodeSVG
                                 value={window.location.origin + "/" + user?.uniqueSlug}
-                                size={180}
+                                size={160}
                                 level="H"
                                 includeMargin={false}
                                 fgColor={qrColor}
@@ -2349,14 +2372,15 @@ export default function AuthPage({ slug }: { slug?: string }) {
                               />
                             </div>
                             
-                            <div className="text-center space-y-1">
-                              <p className="text-[10px] text-black/40 uppercase tracking-[0.2em] font-black">
+                            <div className="text-center pb-8">
+                              <p className="text-[10px] text-white/40 uppercase tracking-[0.3em] font-black">
                                 Scan to Connect
                               </p>
-                              <p className="text-xs font-mono font-bold text-black tracking-widest">
-                                {user?.uniqueSlug}
-                              </p>
                             </div>
+
+                            {/* Decorative elements */}
+                            <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl" />
+                            <div className="absolute -top-10 -left-10 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl" />
                           </div>
 
                           {/* iPhone Home Bar */}
