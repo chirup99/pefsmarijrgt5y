@@ -1713,7 +1713,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       View Collaboration Portal{" "}
                       <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                     </a>
-                    {user && (form.watch("cards")?.length ?? 0) > 0 && (
+                    {!isOtherPersona && user && (form.watch("cards")?.length ?? 0) > 0 && (
                       <div className="pt-4 border-t border-white/10">
                         {/* Tabs Navigation */}
                         <div className="flex p-1 bg-white/5 border border-white/10 rounded-xl mb-4">
