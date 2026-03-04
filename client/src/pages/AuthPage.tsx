@@ -1197,16 +1197,21 @@ export default function AuthPage({ slug }: { slug?: string }) {
           )}
         </button>
 
-        <motion.button
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={() => setShowScannerDialog(true)}
-          className="fixed bottom-8 right-8 z-50 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg border border-white/20"
-        >
-          <QrCode className="w-6 h-6 text-black" strokeWidth={2.5} />
-        </motion.button>
+        <AnimatePresence>
+          {!showScannerDialog && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              exit={{ opacity: 0, scale: 0.5 }}
+              onClick={() => setShowScannerDialog(true)}
+              className="fixed bottom-8 right-8 z-50 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg border border-white/20"
+            >
+              <QrCode className="w-6 h-6 text-black" strokeWidth={2.5} />
+            </motion.button>
+          )}
+        </AnimatePresence>
 
         <motion.div
           initial={{ opacity: 0, y: -10 }}
