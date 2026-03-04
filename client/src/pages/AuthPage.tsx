@@ -868,6 +868,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
   const [showQRDialog, setShowQRDialog] = useState(false);
   const [showScannerDialog, setShowScannerDialog] = useState(false);
+  const [scannerTab, setScannerTab] = useState<"scan" | "code">("scan");
   const [activeTab, setActiveTab] = useState<"notes" | "events" | "connect">("notes");
   const [notes, setNotes] = useState<{ id: string; text: string; completed: boolean }[]>([]);
   const [newNote, setNewNote] = useState("");
