@@ -1,5 +1,6 @@
 import { QRCodeSVG } from "qrcode.react";
 import * as htmlToImage from "html-to-image";
+import { BrowserMultiFormatReader } from "@zxing/library";
 
 // ... existing imports
 import { useState, useMemo, useEffect, useRef } from "react";
@@ -873,6 +874,44 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [verifyPin, setVerifyPin] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const qrRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    let controls: any;
+    if (showScannerDialog && scannerTab === "scan") {
+      const codeReader = new BrowserMultiFormatReader();
+      codeReader
+        .decodeFromVideoDevice(null, videoRef.current, (result, err) => {
+          if (result) {
+            const text = result.getText();
+            // Handle both full URLs and just slugs
+            const slug = text.includes("/") ? text.split("/").pop() : text;
+            if (slug) {
+              setPersonaSlug(slug);
+              setScannerTab("code");
+              toast({
+                title: "QR Code Scanned",
+                description: `Found persona: ${slug}. Please enter PIN to connect.`,
+              });
+            }
+          }
+        })
+        .then((ctrl) => {
+          controls = ctrl;
+        })
+        .catch((err) => {
+          console.error("Scanner error:", err);
+          toast({
+            title: "Camera Error",
+            description: "Could not access camera for scanning.",
+            variant: "destructive",
+          });
+        });
+    }
+    return () => {
+      if (controls) controls.stop();
+    };
+  }, [showScannerDialog, scannerTab]);
 
   useEffect(() => {
     if (user && !publicUser) {
@@ -923,14 +962,20 @@ export default function AuthPage({ slug }: { slug?: string }) {
         pin: personaPin,
       });
       const userData = await res.json();
+      
+      // Update local state and cache
       setLocalUser(userData);
+      queryClient.setQueryData(["/api/me"], userData);
+      
       localStorage.setItem("persona_user", JSON.stringify(userData));
       localStorage.setItem("persona_user_id", userData.id);
+      
       toast({
         title: "Success",
         description: `Verified persona: ${userData.name}`,
       });
       setShowPersonaDialog(false);
+      setShowScannerDialog(false);
       setLocation(`/${userData.uniqueSlug}`);
     } catch (err) {
       toast({
@@ -1575,8 +1620,12 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   {scannerTab === "scan" ? (
                     <div className="space-y-6 text-center">
                       <div className="relative aspect-square max-w-[200px] mx-auto bg-white/5 rounded-3xl border border-white/10 flex items-center justify-center group overflow-hidden">
+                        <video
+                          ref={videoRef}
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
                         <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <QrCode className="w-12 h-12 text-white/20" />
+                        <QrCode className="w-12 h-12 text-white/20 relative z-10" />
                         <div className="absolute bottom-4 left-0 right-0">
                           <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-bold">
                             Scanner Active
