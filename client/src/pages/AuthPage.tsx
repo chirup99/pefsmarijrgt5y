@@ -878,38 +878,47 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
   useEffect(() => {
     let controls: any;
-    if (showScannerDialog && scannerTab === "scan") {
-      const codeReader = new BrowserMultiFormatReader();
-      codeReader
-        .decodeFromVideoDevice(null, videoRef.current, (result, err) => {
-          if (result) {
-            const text = result.getText();
-            // Handle both full URLs and just slugs
-            const slug = text.includes("/") ? text.split("/").pop() : text;
-            if (slug) {
-              setLocation(`/${slug}`);
-              setShowScannerDialog(false);
-              toast({
-                title: "QR Code Scanned",
-                description: `Loading persona: ${slug}`,
-              });
-            }
-          }
-        })
-        .then((ctrl) => {
+    const startScanner = async () => {
+      if (showScannerDialog && scannerTab === "scan") {
+        const codeReader = new BrowserMultiFormatReader();
+        try {
+          const ctrl = await codeReader.decodeFromVideoDevice(
+            null,
+            videoRef.current,
+            (result, err) => {
+              if (result) {
+                const text = result.getText();
+                const slug = text.includes("/") ? text.split("/").pop() : text;
+                if (slug) {
+                  setLocation(`/${slug}`);
+                  setShowScannerDialog(false);
+                  toast({
+                    title: "QR Code Scanned",
+                    description: `Loading persona: ${slug}`,
+                  });
+                }
+              }
+            },
+          );
           controls = ctrl;
-        })
-        .catch((err) => {
+        } catch (err) {
           console.error("Scanner error:", err);
           toast({
             title: "Camera Error",
             description: "Could not access camera for scanning.",
             variant: "destructive",
           });
-        });
-    }
+        }
+      }
+    };
+
+    startScanner();
+
     return () => {
-      if (controls) controls.stop();
+      if (controls) {
+        controls.stop();
+        controls = null;
+      }
     };
   }, [showScannerDialog, scannerTab]);
 
