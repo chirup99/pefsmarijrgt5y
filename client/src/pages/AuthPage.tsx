@@ -48,6 +48,7 @@ import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
 import { SiInstagram, SiWhatsapp } from "react-icons/si";
 import peralaLogo from "@/assets/logo.png";
+import userAvatar from "@assets/image_1772606729202.png";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
 
@@ -255,25 +256,32 @@ const SwipeCard = ({ cards }: { cards: string[] }) => {
   };
 
   const handleSwipeRight = () => {
-    setCurrentIndex((prev) => (prev - 1 + (cards.length || CARDS.length)) % (cards.length || CARDS.length));
+    setCurrentIndex(
+      (prev) =>
+        (prev - 1 + (cards.length || CARDS.length)) %
+        (cards.length || CARDS.length),
+    );
   };
 
-  const displayCards = cards.length > 0 ? cards.map(c => {
-    try {
-      const card = JSON.parse(c);
-      const typeInfo = CARD_TYPES.find(t => t.type === card.type);
-      return {
-        title: card.title,
-        name: card.type.toUpperCase(),
-        subname: card.value || card.url || "Persona",
-        color: typeInfo?.color || "from-gray-700 to-gray-800",
-        bgStack1: "bg-black/20",
-        bgStack2: "bg-black/10"
-      };
-    } catch (e) {
-      return CARDS[0];
-    }
-  }) : CARDS;
+  const displayCards =
+    cards.length > 0
+      ? cards.map((c) => {
+          try {
+            const card = JSON.parse(c);
+            const typeInfo = CARD_TYPES.find((t) => t.type === card.type);
+            return {
+              title: card.title,
+              name: card.type.toUpperCase(),
+              subname: card.value || card.url || "Persona",
+              color: typeInfo?.color || "from-gray-700 to-gray-800",
+              bgStack1: "bg-black/20",
+              bgStack2: "bg-black/10",
+            };
+          } catch (e) {
+            return CARDS[0];
+          }
+        })
+      : CARDS;
 
   const currentCard = displayCards[currentIndex];
   const nextCard = displayCards[(currentIndex + 1) % displayCards.length];
@@ -371,9 +379,14 @@ const MiniCard = ({
 
   const getEmbedUrl = (url: string) => {
     if (!url) return null;
-    const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/))([\w-]{11})/);
-    if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${ytMatch[1]}`;
-    const igMatch = url.match(/(?:instagram\.com\/(?:reels|reel|p)\/)([\w-]{11})/);
+    const ytMatch = url.match(
+      /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/))([\w-]{11})/,
+    );
+    if (ytMatch)
+      return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${ytMatch[1]}`;
+    const igMatch = url.match(
+      /(?:instagram\.com\/(?:reels|reel|p)\/)([\w-]{11})/,
+    );
     if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed`;
     return null;
   };
@@ -410,10 +423,12 @@ const MiniCard = ({
         </div>
       )}
 
-      <div className={clsx(
-        "flex-1 flex items-center justify-center relative",
-        isPlaying && card.type === "reel" ? "w-full h-full" : ""
-      )}>
+      <div
+        className={clsx(
+          "flex-1 flex items-center justify-center relative",
+          isPlaying && card.type === "reel" ? "w-full h-full" : "",
+        )}
+      >
         {isEditing ? (
           <div className="w-full space-y-2 bg-black/40 p-3 rounded-xl backdrop-blur-sm z-10">
             <input
@@ -482,7 +497,12 @@ const MiniCard = ({
                     if (file) {
                       const reader = new FileReader();
                       reader.onloadend = () => {
-                        onUpdate(JSON.stringify({ ...card, imageUrl: reader.result as string }));
+                        onUpdate(
+                          JSON.stringify({
+                            ...card,
+                            imageUrl: reader.result as string,
+                          }),
+                        );
                       };
                       reader.readAsDataURL(file);
                     }
@@ -490,17 +510,26 @@ const MiniCard = ({
                 />
                 <button
                   type="button"
-                  onClick={() => document.getElementById(`product-image-${idx}`)?.click()}
+                  onClick={() =>
+                    document.getElementById(`product-image-${idx}`)?.click()
+                  }
                   className="w-full bg-white/10 border border-white/20 rounded px-2 py-2 text-[10px] text-white flex items-center justify-center gap-2 hover:bg-white/20"
                 >
-                  <Plus className="w-3 h-3" /> {(card as any).imageUrl ? "Change Image" : "Upload Image"}
+                  <Plus className="w-3 h-3" />{" "}
+                  {(card as any).imageUrl ? "Change Image" : "Upload Image"}
                 </button>
                 {(card as any).imageUrl && (
                   <div className="relative w-full aspect-video rounded overflow-hidden border border-white/10">
-                    <img src={(card as any).imageUrl} className="w-full h-full object-cover" alt="Product" />
+                    <img
+                      src={(card as any).imageUrl}
+                      className="w-full h-full object-cover"
+                      alt="Product"
+                    />
                     <button
                       type="button"
-                      onClick={() => onUpdate(JSON.stringify({ ...card, imageUrl: "" }))}
+                      onClick={() =>
+                        onUpdate(JSON.stringify({ ...card, imageUrl: "" }))
+                      }
                       className="absolute top-1 right-1 p-1 bg-black/50 rounded-full text-white"
                     >
                       <X className="w-3 h-3" />
@@ -527,7 +556,9 @@ const MiniCard = ({
                 allowFullScreen
               />
             ) : (
-              <div className="text-white text-xs p-4 text-center">Invalid Video URL</div>
+              <div className="text-white text-xs p-4 text-center">
+                Invalid Video URL
+              </div>
             )}
             <button
               onClick={() => setIsPlaying(false)}
@@ -671,22 +702,24 @@ const CustomSwipeCard = ({ cards }: { cards: string[] }) => {
   };
 
   const parsedCards = useMemo(() => {
-    return cards.map(c => {
-      try {
-        const card = JSON.parse(c);
-        const typeInfo = CARD_TYPES.find(t => t.type === card.type);
-        return {
-          title: card.title,
-          name: card.type.toUpperCase(),
-          subname: card.value || card.url || "Persona",
-          color: typeInfo?.color || "from-gray-700 to-gray-800",
-          bgStack1: "bg-black/20",
-          bgStack2: "bg-black/10"
-        };
-      } catch (e) {
-        return null;
-      }
-    }).filter(Boolean);
+    return cards
+      .map((c) => {
+        try {
+          const card = JSON.parse(c);
+          const typeInfo = CARD_TYPES.find((t) => t.type === card.type);
+          return {
+            title: card.title,
+            name: card.type.toUpperCase(),
+            subname: card.value || card.url || "Persona",
+            color: typeInfo?.color || "from-gray-700 to-gray-800",
+            bgStack1: "bg-black/20",
+            bgStack2: "bg-black/10",
+          };
+        } catch (e) {
+          return null;
+        }
+      })
+      .filter(Boolean);
   }, [cards]);
 
   if (parsedCards.length === 0) return null;
@@ -738,8 +771,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
   useEffect(() => {
     if (slug) {
       fetch(`/api/user/slug/${slug}`)
-        .then(res => res.json())
-        .then(data => {
+        .then((res) => res.json())
+        .then((data) => {
           if (data.id) {
             setPublicUser(data);
             setMode("swipe");
@@ -768,8 +801,10 @@ export default function AuthPage({ slug }: { slug?: string }) {
     }
   }
 
-  const [selectedCards, setSelectedCards] = useState<string[]>(user?.cards || []);
-  
+  const [selectedCards, setSelectedCards] = useState<string[]>(
+    user?.cards || [],
+  );
+
   useEffect(() => {
     if (publicUser) {
       setSelectedCards(publicUser.cards || []);
@@ -779,20 +814,24 @@ export default function AuthPage({ slug }: { slug?: string }) {
   }, [publicUser, user]);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [qrColor, setQrColor] = useState("#000000");
-    const [qrBgColor, setQrBgColor] = useState("#ffffff");
-    const [avatarUrl, setAvatarUrl] = useState(`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id || 'default'}`);
-    const [showAvatarDialog, setShowAvatarDialog] = useState(false);
+  const [qrColor, setQrColor] = useState("#000000");
+  const [qrBgColor, setQrBgColor] = useState("#ffffff");
+  const [avatarUrl, setAvatarUrl] = useState(
+    `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id || "default"}`,
+  );
+  const [showAvatarDialog, setShowAvatarDialog] = useState(false);
 
-    const professionalAvatars = [
-      `https://api.dicebear.com/7.x/avataaars/svg?seed=Felix`,
-      `https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka`,
-      `https://api.dicebear.com/7.x/avataaars/svg?seed=Aiden`,
-      `https://api.dicebear.com/7.x/avataaars/svg?seed=Sophia`,
-      `https://api.dicebear.com/7.x/avataaars/svg?seed=Jack`,
-      `https://api.dicebear.com/7.x/avataaars/svg?seed=Mimi`,
-    ];
-    const [qrLayout, setQrLayout] = useState<"standard" | "compact" | "minimal">("standard");
+  const professionalAvatars = [
+    `https://api.dicebear.com/7.x/avataaars/svg?seed=Felix`,
+    `https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka`,
+    `https://api.dicebear.com/7.x/avataaars/svg?seed=Aiden`,
+    `https://api.dicebear.com/7.x/avataaars/svg?seed=Sophia`,
+    `https://api.dicebear.com/7.x/avataaars/svg?seed=Jack`,
+    `https://api.dicebear.com/7.x/avataaars/svg?seed=Mimi`,
+  ];
+  const [qrLayout, setQrLayout] = useState<"standard" | "compact" | "minimal">(
+    "standard",
+  );
 
   useEffect(() => {
     if (user?.cards) {
@@ -868,7 +907,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const downloadQR = async () => {
     const element = document.getElementById("qr-download-area");
     if (!element) return;
-    
+
     try {
       const dataUrl = await htmlToImage.toPng(element, {
         quality: 1,
@@ -957,16 +996,49 @@ export default function AuthPage({ slug }: { slug?: string }) {
           animate={{ opacity: isMenuOpen ? 1 : 0, x: isMenuOpen ? 0 : 20 }}
           className="space-y-4 pointer-events-auto mb-8"
         >
-          <button
-            onClick={() => {
-              setShowPersonaDialog(true);
-              setIsMenuOpen(false);
-            }}
-            className="flex items-center gap-3 px-6 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white transition-all group ml-auto"
-          >
-            <User className="w-5 h-5 text-purple-400" />
-            <span className="font-bold text-sm tracking-widest uppercase">My Persona</span>
-          </button>
+          {user ? (
+            <button
+              onClick={() => {
+                setShowPersonaDialog(true);
+                setIsMenuOpen(false);
+              }}
+              className="flex items-center gap-4 p-2 pr-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-white transition-all group ml-auto backdrop-blur-md"
+            >
+              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-500/50">
+                <img
+                  src={userAvatar}
+                  alt={user.name || "User"}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex flex-col items-start">
+                <div className="flex items-center gap-1">
+                  <span className="font-bold text-sm tracking-tight">
+                    {user.name || "Persona User"}
+                  </span>
+                  <div className="w-3.5 h-3.5 bg-yellow-400 rounded-full flex items-center justify-center">
+                    <Check className="w-2.5 h-2.5 text-black" strokeWidth={4} />
+                  </div>
+                </div>
+                <span className="text-[10px] text-white/50 uppercase tracking-widest font-medium">
+                  {ROLES.find((r) => r.value === user.role)?.label || "Founder"}
+                </span>
+              </div>
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                setShowPersonaDialog(true);
+                setIsMenuOpen(false);
+              }}
+              className="flex items-center gap-3 px-6 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white transition-all group ml-auto"
+            >
+              <User className="w-5 h-5 text-purple-400" />
+              <span className="font-bold text-sm tracking-widest uppercase">
+                My Persona
+              </span>
+            </button>
+          )}
         </motion.div>
       </div>
 
@@ -1084,7 +1156,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
               onClick={() => setMode("login")}
               className={clsx(
                 "flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors",
-                mode === "login" || mode === "register" || mode === "customize" ? "text-white" : "text-white/50",
+                mode === "login" || mode === "register" || mode === "customize"
+                  ? "text-white"
+                  : "text-white/50",
               )}
             >
               Persona
@@ -1171,10 +1245,12 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     </a>
                     {(form.watch("cards")?.length ?? 0) > 0 && (
                       <div className="pt-4 border-t border-white/10">
-                         <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold mb-4">Quick Preview</p>
-                         <div className="scale-75 origin-top -mb-20">
-                           <CustomSwipeCard cards={selectedCards} />
-                         </div>
+                        <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold mb-4">
+                          Quick Preview
+                        </p>
+                        <div className="scale-75 origin-top -mb-20">
+                          <CustomSwipeCard cards={selectedCards} />
+                        </div>
                       </div>
                     )}
                   </form>
@@ -1279,13 +1355,13 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         placeholder="https://your-portal.com"
                       />
                     </div>
-                        <button
-                          type="button"
-                          onClick={() => setMode("customize")}
-                          className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 mt-4"
-                        >
-                          Next <ArrowRight className="w-4 h-4" />
-                        </button>
+                    <button
+                      type="button"
+                      onClick={() => setMode("customize")}
+                      className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 mt-4"
+                    >
+                      Next <ArrowRight className="w-4 h-4" />
+                    </button>
                   </form>
                 ) : mode === "customize" ? (
                   <div className="space-y-4">
@@ -1296,103 +1372,104 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       </h4>
                     </div>
                     <div className="flex gap-4 overflow-x-auto pb-4 px-1 custom-scrollbar snap-x">
-                          {[0, 1, 2, 3, 4].map((idx) => (
-                            <div
-                              key={idx}
-                              className="min-w-[220px] aspect-[3/4] snap-center"
-                            >
-                              {selectedCards[idx] ? (
-                                <MiniCard
-                                  idx={idx}
-                                  cardJson={selectedCards[idx]}
-                                  onUpdate={(newJson) => {
-                                    const currentCards = [...selectedCards];
-                                    currentCards[idx] = newJson;
-                                    setSelectedCards(currentCards);
-                                  }}
-                                  onDelete={() => {
-                                    const currentCards = [...selectedCards];
-                                    currentCards.splice(idx, 1);
-                                    setSelectedCards(currentCards);
-                                  }}
-                                />
-                              ) : (
-                                <div className="h-full border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center p-4">
-                                  <div className="grid grid-cols-2 gap-2 w-full">
-                                    {CARD_TYPES.map((t) => (
-                                      <button
-                                        key={t.type}
-                                        type="button"
-                                        onClick={() => {
-                                          const currentCards = [...selectedCards];
-                                          const newCard =
-                                            t.type === "pitch"
-                                              ? {
-                                                  type: "pitch",
-                                                  title: "New Pitch",
-                                                  content: "",
-                                                }
-                                              : t.type === "reel"
-                                                ? {
-                                                    type: "reel",
-                                                    title: "New Reel",
-                                                    url: "",
-                                                  }
-                                                : t.type === "revenue"
-                                                  ? {
-                                                      type: "revenue",
-                                                      title: "Monthly Sales",
-                                                      value: "$0",
-                                                      imageUrl: "",
-                                                    }
-                                                  : {
-                                                      type: "product",
-                                                      title: "Product",
-                                                      imageUrls: ["", ""],
-                                                    };
-                                          currentCards[idx] = JSON.stringify(newCard);
-                                          setSelectedCards(currentCards);
-                                        }}
-                                        className="flex flex-col items-center gap-1 p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all"
-                                      >
-                                        <t.icon className="w-5 h-5 text-white/60" />
-                                        <span className="text-[8px] text-white/40 uppercase font-bold">
-                                          {t.label}
-                                        </span>
-                                      </button>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                        <button
-                          type="button"
-                          disabled={updateProfileMutation.isPending}
-                          onClick={() => form.handleSubmit(onSubmit)()}
-                          className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all"
+                      {[0, 1, 2, 3, 4].map((idx) => (
+                        <div
+                          key={idx}
+                          className="min-w-[220px] aspect-[3/4] snap-center"
                         >
-                          {updateProfileMutation.isPending ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
+                          {selectedCards[idx] ? (
+                            <MiniCard
+                              idx={idx}
+                              cardJson={selectedCards[idx]}
+                              onUpdate={(newJson) => {
+                                const currentCards = [...selectedCards];
+                                currentCards[idx] = newJson;
+                                setSelectedCards(currentCards);
+                              }}
+                              onDelete={() => {
+                                const currentCards = [...selectedCards];
+                                currentCards.splice(idx, 1);
+                                setSelectedCards(currentCards);
+                              }}
+                            />
                           ) : (
-                            "Save All"
+                            <div className="h-full border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center p-4">
+                              <div className="grid grid-cols-2 gap-2 w-full">
+                                {CARD_TYPES.map((t) => (
+                                  <button
+                                    key={t.type}
+                                    type="button"
+                                    onClick={() => {
+                                      const currentCards = [...selectedCards];
+                                      const newCard =
+                                        t.type === "pitch"
+                                          ? {
+                                              type: "pitch",
+                                              title: "New Pitch",
+                                              content: "",
+                                            }
+                                          : t.type === "reel"
+                                            ? {
+                                                type: "reel",
+                                                title: "New Reel",
+                                                url: "",
+                                              }
+                                            : t.type === "revenue"
+                                              ? {
+                                                  type: "revenue",
+                                                  title: "Monthly Sales",
+                                                  value: "$0",
+                                                  imageUrl: "",
+                                                }
+                                              : {
+                                                  type: "product",
+                                                  title: "Product",
+                                                  imageUrls: ["", ""],
+                                                };
+                                      currentCards[idx] =
+                                        JSON.stringify(newCard);
+                                      setSelectedCards(currentCards);
+                                    }}
+                                    className="flex flex-col items-center gap-1 p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all"
+                                  >
+                                    <t.icon className="w-5 h-5 text-white/60" />
+                                    <span className="text-[8px] text-white/40 uppercase font-bold">
+                                      {t.label}
+                                    </span>
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
                           )}
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="py-2">
-                        <SwipeCard cards={selectedCards} />
-                        <div className="text-center mt-4 space-y-0.5">
-                          <p className="text-xs font-semibold text-white">
-                            Swipe to explore
-                          </p>
-                          <p className="text-[10px] text-white/40">
-                            Left to back • Right to next
-                          </p>
                         </div>
-                      </div>
-                    )}
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      disabled={updateProfileMutation.isPending}
+                      onClick={() => form.handleSubmit(onSubmit)()}
+                      className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all"
+                    >
+                      {updateProfileMutation.isPending ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        "Save All"
+                      )}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="py-2">
+                    <SwipeCard cards={selectedCards} />
+                    <div className="text-center mt-4 space-y-0.5">
+                      <p className="text-xs font-semibold text-white">
+                        Swipe to explore
+                      </p>
+                      <p className="text-[10px] text-white/40">
+                        Left to back • Right to next
+                      </p>
+                    </div>
+                  </div>
+                )}
               </motion.div>
             </AnimatePresence>
 
@@ -1405,7 +1482,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   {mode === "customize"
                     ? "EDITING"
                     : mode === "login"
-                      ? "VIEWING"
+                      ? "FREE"
                       : "FREE"}
                 </span>
               </div>
@@ -1423,9 +1500,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 }}
                 className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg"
               >
-                {mode === "login"
-                  ? "create your persona"
-                  : "Back to Persona"}
+                {mode === "login" ? "create your persona" : "Back to Persona"}
               </button>
             )}
           </div>
@@ -1538,18 +1613,25 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   <div className="w-full h-full bg-mesh rounded-[36px] relative overflow-hidden flex flex-col items-center justify-between p-5 pt-12 pb-8">
                     {/* Minimalist Time/Date */}
                     <div className="text-center space-y-0">
-                      <p className="text-white/60 text-[8px] font-medium uppercase tracking-widest">March 3</p>
-                      <h4 className="text-white text-3xl font-bold tracking-tighter leading-none">13:11</h4>
+                      <p className="text-white/60 text-[8px] font-medium uppercase tracking-widest">
+                        March 3
+                      </p>
+                      <h4 className="text-white text-3xl font-bold tracking-tighter leading-none">
+                        13:11
+                      </h4>
                     </div>
 
                     {/* QR Code Area - Compact */}
-                    <div id="qr-download-area" className="flex flex-col items-center gap-4 w-full relative group/qr bg-mesh p-6 rounded-[36px]">
+                    <div
+                      id="qr-download-area"
+                      className="flex flex-col items-center gap-4 w-full relative group/qr bg-mesh p-6 rounded-[36px]"
+                    >
                       <div className="flex flex-col items-center gap-2 relative">
-                        <div 
+                        <div
                           onClick={() => setShowAvatarDialog(true)}
                           className="w-12 h-12 rounded-full border-2 border-white/20 overflow-hidden bg-white/10 relative group/avatar cursor-pointer"
                         >
-                          <img 
+                          <img
                             src={avatarUrl}
                             alt="Avatar"
                             className="w-full h-full object-cover"
@@ -1559,24 +1641,33 @@ export default function AuthPage({ slug }: { slug?: string }) {
                           </button>
                         </div>
                         <div className="text-center">
-                          <h5 className="text-white text-xs font-bold leading-tight">{user?.name || "Founder Name"}</h5>
+                          <h5 className="text-white text-xs font-bold leading-tight">
+                            {user?.name || "Founder Name"}
+                          </h5>
                           <p className="text-white/60 text-[8px] uppercase tracking-wider block">
                             {user?.role || "Founder"}
                           </p>
                           <p className="text-white/40 text-[7px] uppercase tracking-wide mt-0.5">
-                            {user?.bio || (user?.website ? user.website.replace(/^https?:\/\/(www\.)?/, "").split("/")[0] : "Startup")}
+                            {user?.bio ||
+                              (user?.website
+                                ? user.website
+                                    .replace(/^https?:\/\/(www\.)?/, "")
+                                    .split("/")[0]
+                                : "Startup")}
                           </p>
                         </div>
                       </div>
 
                       <div className="relative group/code">
-                        <div 
+                        <div
                           ref={qrRef}
                           className="aspect-square bg-white rounded-[28px] p-3.5 flex items-center justify-center shadow-lg relative overflow-hidden"
                           style={{ backgroundColor: qrBgColor }}
                         >
-                          <QRCodeSVG 
-                            value={window.location.origin + "/" + user?.uniqueSlug}
+                          <QRCodeSVG
+                            value={
+                              window.location.origin + "/" + user?.uniqueSlug
+                            }
                             size={100}
                             level="H"
                             includeMargin={false}
@@ -1586,19 +1677,27 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         </div>
                       </div>
                       <div className="text-center space-y-2">
-                        <p className="text-white/40 text-[8px] uppercase tracking-[0.2em] font-medium">Scan to connect</p>
-                        <div className="flex items-center justify-center gap-2 bg-white/5 py-1.5 px-3 rounded-full border border-white/10 group/slug cursor-pointer hover:bg-white/10 transition-colors"
-                             onClick={() => {
-                               if (user?.uniqueSlug) {
-                                 navigator.clipboard.writeText(window.location.origin + "/" + user.uniqueSlug);
-                                 toast({
-                                   title: "Link copied!",
-                                   description: "Your persona link has been copied to clipboard.",
-                                 });
-                               }
-                             }}
+                        <p className="text-white/40 text-[8px] uppercase tracking-[0.2em] font-medium">
+                          Scan to connect
+                        </p>
+                        <div
+                          className="flex items-center justify-center gap-2 bg-white/5 py-1.5 px-3 rounded-full border border-white/10 group/slug cursor-pointer hover:bg-white/10 transition-colors"
+                          onClick={() => {
+                            if (user?.uniqueSlug) {
+                              navigator.clipboard.writeText(
+                                window.location.origin + "/" + user.uniqueSlug,
+                              );
+                              toast({
+                                title: "Link copied!",
+                                description:
+                                  "Your persona link has been copied to clipboard.",
+                              });
+                            }
+                          }}
                         >
-                          <span className="text-white font-mono text-xs font-bold tracking-wider">{user?.uniqueSlug}</span>
+                          <span className="text-white font-mono text-xs font-bold tracking-wider">
+                            {user?.uniqueSlug}
+                          </span>
                           <Save className="w-3 h-3 text-white/40 group-hover/slug:text-white transition-colors" />
                         </div>
                       </div>
@@ -1615,8 +1714,12 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         >
                           <div className="bg-black/80 backdrop-blur-xl border border-white/10 rounded-3xl p-4 w-full max-w-[200px]">
                             <div className="flex justify-between items-center mb-3">
-                              <span className="text-white text-[10px] font-bold uppercase tracking-widest">Select Avatar</span>
-                              <button onClick={() => setShowAvatarDialog(false)}>
+                              <span className="text-white text-[10px] font-bold uppercase tracking-widest">
+                                Select Avatar
+                              </span>
+                              <button
+                                onClick={() => setShowAvatarDialog(false)}
+                              >
                                 <X className="w-3 h-3 text-white/40" />
                               </button>
                             </div>
@@ -1630,7 +1733,10 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                   }}
                                   className="aspect-square rounded-full border border-white/10 overflow-hidden hover:border-white/40 transition-colors"
                                 >
-                                  <img src={url} className="w-full h-full object-cover" />
+                                  <img
+                                    src={url}
+                                    className="w-full h-full object-cover"
+                                  />
                                 </button>
                               ))}
                             </div>
@@ -1695,23 +1801,33 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 className="relative w-full max-w-sm bg-[#0a0a0a] border border-white/10 rounded-[32px] p-8 shadow-2xl text-center space-y-8 overflow-hidden"
               >
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 opacity-50" />
-                
+
                 <div className="space-y-2">
                   <div className="w-16 h-16 bg-white/5 rounded-2xl mx-auto flex items-center justify-center mb-4 border border-white/10">
                     <User className="w-8 h-8 text-white/80" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white tracking-tight">Welcome Home</h3>
-                  <p className="text-white/40 text-sm">Your persona is live and ready.</p>
+                  <h3 className="text-2xl font-bold text-white tracking-tight">
+                    Welcome Home
+                  </h3>
+                  <p className="text-white/40 text-sm">
+                    Your persona is live and ready.
+                  </p>
                 </div>
 
                 <div className="bg-white/5 rounded-2xl p-6 border border-white/10 space-y-3">
-                  <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">Persona Code</p>
-                  <div className="text-3xl font-mono font-black text-white tracking-[0.3em]">{user?.uniqueSlug}</div>
+                  <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">
+                    Persona Code
+                  </p>
+                  <div className="text-3xl font-mono font-black text-white tracking-[0.3em]">
+                    {user?.uniqueSlug}
+                  </div>
                 </div>
 
                 <div className="space-y-4">
                   <div className="space-y-2 text-left">
-                    <label className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold ml-1">Set Login PIN (5 Digits)</label>
+                    <label className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold ml-1">
+                      Set Login PIN (5 Digits)
+                    </label>
                     <div className="relative group">
                       <input
                         type="text"
@@ -1735,7 +1851,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
                           setShowHomeDialog(false);
                           toast({
                             title: "Security Updated",
-                            description: "Your 5-digit PIN has been set successfully.",
+                            description:
+                              "Your 5-digit PIN has been set successfully.",
                           });
                         } catch (e) {
                           toast({
@@ -1754,7 +1871,11 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     }}
                     className="w-full bg-white text-black rounded-xl py-4 font-bold text-sm hover:bg-white/90 transition-all active:scale-95 flex items-center justify-center gap-2"
                   >
-                    {updateProfileMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save & Continue"}
+                    {updateProfileMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      "Save & Continue"
+                    )}
                   </button>
                 </div>
 
@@ -1781,24 +1902,34 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 className="relative w-full max-w-sm bg-[#0a0a0a] border border-white/10 rounded-[32px] p-8 shadow-2xl text-center space-y-6"
               >
                 <div className="space-y-2">
-                  <h3 className="text-2xl font-bold text-white tracking-tight">Access Persona</h3>
-                  <p className="text-white/40 text-sm">Enter your code and PIN to continue.</p>
+                  <h3 className="text-2xl font-bold text-white tracking-tight">
+                    Access Persona
+                  </h3>
+                  <p className="text-white/40 text-sm">
+                    Enter your code and PIN to continue.
+                  </p>
                 </div>
 
                 <div className="space-y-4">
                   <div className="space-y-2 text-left">
-                    <label className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold ml-1">Persona Code</label>
+                    <label className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold ml-1">
+                      Persona Code
+                    </label>
                     <input
                       type="text"
                       placeholder="e.g. x1y2z"
                       value={personaCode}
-                      onChange={(e) => setPersonaCode(e.target.value.toLowerCase())}
+                      onChange={(e) =>
+                        setPersonaCode(e.target.value.toLowerCase())
+                      }
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 transition-all font-mono"
                     />
                   </div>
 
                   <div className="space-y-2 text-left">
-                    <label className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold ml-1">5-Digit PIN</label>
+                    <label className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold ml-1">
+                      5-Digit PIN
+                    </label>
                     <input
                       type="password"
                       maxLength={5}
@@ -1816,12 +1947,16 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     onClick={async () => {
                       if (personaCode && verifyPin.length === 5) {
                         try {
-                          const res = await apiRequest("POST", "/api/auth/verify-persona", { 
-                            slug: personaCode, 
-                            pin: verifyPin 
-                          });
+                          const res = await apiRequest(
+                            "POST",
+                            "/api/auth/verify-persona",
+                            {
+                              slug: personaCode,
+                              pin: verifyPin,
+                            },
+                          );
                           const userData = await res.json();
-                          
+
                           // Set user and sync form
                           queryClient.setQueryData(["/api/me"], userData);
                           setLocalUser(userData);
