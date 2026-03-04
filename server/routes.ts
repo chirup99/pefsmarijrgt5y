@@ -15,6 +15,26 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   
+  app.post("/api/auth/verify-persona", async (req, res) => {
+    try {
+      const { slug, pin } = z.object({ slug: z.string(), pin: z.string() }).parse(req.body);
+      const user = await storage.getUserBySlug(slug);
+      
+      if (!user) {
+        return res.status(404).json({ message: "Persona not found" });
+      }
+
+      if (user.pin !== pin) {
+        return res.status(401).json({ message: "Invalid PIN" });
+      }
+
+      const { password: _, ...safeUser } = user;
+      res.status(200).json(safeUser);
+    } catch (err) {
+      res.status(400).json({ message: "Invalid request" });
+    }
+  });
+
   app.get("/api/livekit/token", async (req, res) => {
     const roomName = "pitch-room";
     const participantName = "user-" + Math.floor(Math.random() * 1000);

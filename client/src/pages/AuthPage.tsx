@@ -819,7 +819,10 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
   const [showQRDialog, setShowQRDialog] = useState(false);
   const [showHomeDialog, setShowHomeDialog] = useState(false);
+  const [showPersonaDialog, setShowPersonaDialog] = useState(false);
+  const [personaCode, setPersonaCode] = useState("");
   const [pin, setPin] = useState("");
+  const [verifyPin, setVerifyPin] = useState("");
   const qrRef = useRef<HTMLDivElement>(null);
 
   const downloadQR = async () => {
@@ -902,6 +905,22 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
   return (
     <div className="min-h-screen bg-[#050505] overflow-hidden relative">
+      <div className="absolute inset-0 flex flex-col justify-end items-start p-12 pb-20 pointer-events-none">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: isMenuOpen ? 1 : 0, x: isMenuOpen ? 0 : -20 }}
+          className="space-y-4 pointer-events-auto"
+        >
+          <button
+            onClick={() => setShowPersonaDialog(true)}
+            className="flex items-center gap-3 px-6 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white transition-all group"
+          >
+            <User className="w-5 h-5 text-purple-400" />
+            <span className="font-bold text-sm tracking-widest uppercase">My Persona</span>
+          </button>
+        </motion.div>
+      </div>
+
       <div className="absolute inset-0 flex flex-col justify-end items-end p-12 pb-20 pointer-events-none">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -1610,6 +1629,102 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
                 <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl" />
                 <div className="absolute -top-10 -left-10 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl" />
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {showPersonaDialog && (
+            <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowPersonaDialog(false)}
+                className="absolute inset-0 bg-black/95 backdrop-blur-xl"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="relative w-full max-w-sm bg-[#0a0a0a] border border-white/10 rounded-[32px] p-8 shadow-2xl text-center space-y-6"
+              >
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-bold text-white tracking-tight">Access Persona</h3>
+                  <p className="text-white/40 text-sm">Enter your code and PIN to continue.</p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-2 text-left">
+                    <label className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold ml-1">Persona Code</Clabel>
+                    <input
+                      type="text"
+                      placeholder="e.g. x1y2z"
+                      value={personaCode}
+                      onChange={(e) => setPersonaCode(e.target.value.toLowerCase())}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 transition-all font-mono"
+                    />
+                  </div>
+
+                  <div className="space-y-2 text-left">
+                    <label className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold ml-1">5-Digit PIN</label>
+                    <input
+                      type="password"
+                      maxLength={5}
+                      placeholder="•••••"
+                      value={verifyPin}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, "");
+                        if (val.length <= 5) setVerifyPin(val);
+                      }}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-center text-xl font-mono tracking-[1em] text-white focus:outline-none focus:border-purple-500/50 transition-all"
+                    />
+                  </div>
+
+                  <button
+                    onClick={async () => {
+                      if (personaCode && verifyPin.length === 5) {
+                        try {
+                          const res = await apiRequest("POST", "/api/auth/verify-persona", { 
+                            slug: personaCode, 
+                            pin: verifyPin 
+                          });
+                          const userData = await res.json();
+                          
+                          // Set user and sync form
+                          queryClient.setQueryData(["/api/user"], userData);
+                          form.reset({
+                            email: userData.email || "",
+                            name: userData.name || "",
+                            role: userData.role || "founder",
+                            bio: userData.bio || "",
+                            instagram: userData.instagram || "",
+                            linkedin: userData.linkedin || "",
+                            whatsapp: userData.whatsapp || "",
+                            website: userData.website || "",
+                            cards: userData.cards || [],
+                          });
+                          setSelectedCards(userData.cards || []);
+                          setMode("login");
+                          setShowPersonaDialog(false);
+                          toast({
+                            title: "Welcome back!",
+                            description: `Successfully loaded persona: ${userData.name}`,
+                          });
+                        } catch (e: any) {
+                          toast({
+                            title: "Access Denied",
+                            description: "Invalid persona code or PIN.",
+                            variant: "destructive",
+                          });
+                        }
+                      }
+                    }}
+                    className="w-full bg-white text-black rounded-xl py-4 font-bold text-sm hover:bg-white/90 transition-all active:scale-95"
+                  >
+                    Load Persona
+                  </button>
+                </div>
               </motion.div>
             </div>
           )}
