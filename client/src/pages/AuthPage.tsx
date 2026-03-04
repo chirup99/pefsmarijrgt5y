@@ -877,11 +877,11 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    let controls: any;
+    let controls: any = null;
     let isMounted = true;
 
     const startScanner = async () => {
-      if (showScannerDialog && scannerTab === "scan") {
+      if (showScannerDialog && scannerTab === "scan" && videoRef.current) {
         const codeReader = new BrowserMultiFormatReader();
         try {
           const ctrl = await codeReader.decodeFromVideoDevice(
@@ -912,13 +912,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
           }
         } catch (err) {
           console.error("Scanner error:", err);
-          if (isMounted) {
-            toast({
-              title: "Camera Error",
-              description: "Could not access camera for scanning.",
-              variant: "destructive",
-            });
-          }
         }
       }
     };
@@ -934,7 +927,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
         controls = null;
       }
     };
-  }, [showScannerDialog, scannerTab]);
+  }, [showScannerDialog, scannerTab, setLocation, toast]);
 
   useEffect(() => {
     if (user && !publicUser) {
