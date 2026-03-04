@@ -1656,7 +1656,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
                 <div className="space-y-4">
                   <div className="space-y-2 text-left">
-                    <label className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold ml-1">Persona Code</Clabel>
+                    <label className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold ml-1">Persona Code</label>
                     <input
                       type="text"
                       placeholder="e.g. x1y2z"
