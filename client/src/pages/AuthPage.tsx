@@ -916,7 +916,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
     return () => {
       if (controls) {
-        controls.stop();
+        if (typeof controls.stop === 'function') {
+          controls.stop();
+        }
         controls = null;
       }
     };
