@@ -908,12 +908,18 @@ export default function AuthPage({ slug }: { slug?: string }) {
     },
   });
 
-  const handleSaveSlug = () => {
+  const handleSaveSlug = async () => {
     if (slugValue === user?.uniqueSlug) {
       setIsEditingSlug(false);
       return;
     }
-    updateSlugMutation.mutate(slugValue);
+    try {
+      await updateSlugMutation.mutateAsync(slugValue);
+      setIsEditingSlug(false);
+      setShowQRDialog(true);
+    } catch (error) {
+      console.error("Failed to update persona code:", error);
+    }
   };
   const [notes, setNotes] = useState<{ id: string; text: string; completed: boolean }[]>([]);
   const [newNote, setNewNote] = useState("");
