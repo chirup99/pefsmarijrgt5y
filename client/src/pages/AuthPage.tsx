@@ -730,7 +730,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [mode, setMode] = useState<AuthMode>("login");
-  const { user } = useAuth();
+  const { user: authUser } = useAuth();
+  const [localUser, setLocalUser] = useState<any>(null);
+  const user = authUser || localUser;
   const [publicUser, setPublicUser] = useState<any>(null);
 
   useEffect(() => {
@@ -1821,7 +1823,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
                           const userData = await res.json();
                           
                           // Set user and sync form
-                          queryClient.setQueryData(["/api/user"], userData);
+                          queryClient.setQueryData(["/api/me"], userData);
+                          setLocalUser(userData);
                           form.reset({
                             email: userData.email || "",
                             name: userData.name || "",
