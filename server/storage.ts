@@ -143,8 +143,8 @@ export class DynamoDBStorage implements IStorage {
         await ddbDocClient.send(new ScanCommand({ TableName: TABLE_NAME, Limit: 1 }));
       } catch (e: any) {
         if (e.name === "ResourceNotFoundException" || e.name === "UnrecognizedClientException") {
-          console.error(`DynamoDB Error: ${e.name}. Falling back to MemStorage.`);
-          throw e;
+          console.error(`DynamoDB Error: ${e.name}. Ensure table "${TABLE_NAME}" exists and credentials are correct.`);
+          throw new Error(`Database table "${TABLE_NAME}" not found. Please wait a moment if it was just created.`);
         }
         throw e;
       }
