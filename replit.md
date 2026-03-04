@@ -1,13 +1,13 @@
 # Project Overview
 
-A full-stack TypeScript web application with user authentication built on Express.js and React.
+PERSONA — a full-stack TypeScript web application for managing profiles and data cards (pitch, reel, revenue, product) with a modern mesh-styled dashboard UI.
 
 ## Architecture
 
-- **Frontend**: React 18 + Vite, using Tailwind CSS, shadcn/ui components, and Wouter for routing
+- **Frontend**: React 18 + Vite, Tailwind CSS, shadcn/ui components, Wouter for routing, TanStack Query for data fetching
 - **Backend**: Express.js server (TypeScript) with REST API
-- **Database**: PostgreSQL via Drizzle ORM
-- **Auth**: bcrypt password hashing, custom session-less auth (login/register endpoints)
+- **Database**: AWS DynamoDB via `@aws-sdk/lib-dynamodb`
+- **Auth**: bcrypt password hashing (12 rounds), custom session-less auth (login/register endpoints)
 
 ## Project Structure
 
@@ -17,12 +17,11 @@ client/         # React frontend (Vite)
 server/         # Express backend
   index.ts      # Server entry point
   routes.ts     # API route handlers
-  storage.ts    # Database access layer
-  db.ts         # Drizzle/pg connection
+  storage.ts    # DynamoDB access layer (DynamoDBStorage)
   vite.ts       # Vite dev middleware
   static.ts     # Static file serving (production)
 shared/         # Shared types and schemas
-  schema.ts     # Drizzle table definitions + Zod schemas
+  schema.ts     # Zod schemas and User types
   routes.ts     # Typed API route definitions
 script/         # Build scripts
 ```
@@ -32,25 +31,27 @@ script/         # Build scripts
 - Port: 5000 (mapped to external port 80)
 - `NODE_ENV=development` uses Vite dev middleware via Express
 - `NODE_ENV=production` serves static dist/public files
-- Database: Requires `DATABASE_URL` env variable (Replit PostgreSQL)
+
+## Required Environment Variables
+
+- `AWS_ACCESS_KEY_ID` — AWS credentials for DynamoDB
+- `AWS_SECRET_ACCESS_KEY` — AWS credentials for DynamoDB
+- `AWS_REGION` — AWS region (defaults to ap-south-1)
+- `DYNAMODB_TABLE_NAME` — DynamoDB table name (defaults to "Users")
+- `LIVEKIT_API_KEY` — LiveKit API key (optional, for LiveKit features)
+- `LIVEKIT_API_SECRET` — LiveKit API secret (optional, for LiveKit features)
 
 ## Running the App
 
 - **Dev**: `npm run dev` (tsx server/index.ts)
 - **Build**: `npm run build`
 - **Production**: `npm start`
-- **DB schema push**: `npm run db:push`
 
 ## Dependencies
 
-- Express 5, Drizzle ORM, Zod validation
+- Express 5, AWS DynamoDB SDK, Zod validation
 - React 18, TanStack Query, React Hook Form
 - shadcn/ui (Radix UI primitives + Tailwind)
 - bcrypt for password hashing
-
-## Migration Notes
-
-- Added missing `insertUserSchema` import to `server/routes.ts`
-- Added `useAuth` hook export to `client/src/hooks/use-auth.ts`
-- PostgreSQL database provisioned via Replit (DATABASE_URL set)
-- Schema already applied (`npm run db:push` confirmed no changes needed)
+- Framer Motion for animations
+- LiveKit for video features
