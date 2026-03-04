@@ -862,6 +862,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
   );
 
   const [showQRDialog, setShowQRDialog] = useState(false);
+  const [showScannerDialog, setShowScannerDialog] = useState(false);
+  const [scannerTab, setScannerTab] = useState<"scan" | "code">("scan");
   const [showHomeDialog, setShowHomeDialog] = useState(false);
   const [showPersonaDialog, setShowPersonaDialog] = useState(false);
   const [personaSlug, setPersonaSlug] = useState("");
@@ -1138,7 +1140,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
           animate={{ opacity: 1, scale: 1 }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          onClick={() => setShowPersonaDialog(true)}
+          onClick={() => setShowScannerDialog(true)}
           className="fixed bottom-8 right-8 z-50 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg border border-white/20"
         >
           <QrCode className="w-6 h-6 text-black" strokeWidth={2.5} />
@@ -1526,6 +1528,110 @@ export default function AuthPage({ slug }: { slug?: string }) {
             )}
           </div>
         </motion.div>
+
+        <AnimatePresence>
+          {showScannerDialog && (
+            <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowScannerDialog(false)}
+                className="absolute inset-0 bg-black/95 backdrop-blur-xl"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="relative w-full max-w-sm bg-[#0a0a0a] border border-white/10 rounded-[32px] overflow-hidden shadow-2xl"
+              >
+                {/* Tabs */}
+                <div className="flex p-2 bg-white/5 border-b border-white/10">
+                  <button
+                    onClick={() => setScannerTab("scan")}
+                    className={clsx(
+                      "flex-1 py-2.5 text-xs font-bold rounded-xl transition-all",
+                      scannerTab === "scan"
+                        ? "bg-white/10 text-white shadow-lg"
+                        : "text-white/40 hover:text-white/60"
+                    )}
+                  >
+                    Scan QR
+                  </button>
+                  <button
+                    onClick={() => setScannerTab("code")}
+                    className={clsx(
+                      "flex-1 py-2.5 text-xs font-bold rounded-xl transition-all",
+                      scannerTab === "code"
+                        ? "bg-white/10 text-white shadow-lg"
+                        : "text-white/40 hover:text-white/60"
+                    )}
+                  >
+                    Persona Code
+                  </button>
+                </div>
+
+                <div className="p-8 space-y-6">
+                  {scannerTab === "scan" ? (
+                    <div className="space-y-6 text-center">
+                      <div className="relative aspect-square max-w-[200px] mx-auto bg-white/5 rounded-3xl border border-white/10 flex items-center justify-center group overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <QrCode className="w-12 h-12 text-white/20" />
+                        <div className="absolute bottom-4 left-0 right-0">
+                          <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-bold">
+                            Scanner Active
+                          </p>
+                        </div>
+                        {/* Scanning Corners */}
+                        <div className="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-white/20 rounded-tl-lg" />
+                        <div className="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-white/20 rounded-tr-lg" />
+                        <div className="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-white/20 rounded-bl-lg" />
+                        <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-white/20 rounded-br-lg" />
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="text-xl font-bold text-white tracking-tight">Scan to Connect</h3>
+                        <p className="text-white/40 text-xs">Point your camera at a Persona QR code</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-6 text-center">
+                      <div className="space-y-2">
+                        <h3 className="text-xl font-bold text-white tracking-tight uppercase tracking-widest">Enter Code</h3>
+                        <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold">Connect with a unique persona code</p>
+                      </div>
+                      
+                      <div className="space-y-4 text-left">
+                        <div className="space-y-2">
+                          <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold ml-1">Persona Code</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. x8y2z"
+                            value={personaSlug}
+                            onChange={(e) => setPersonaSlug(e.target.value.toLowerCase())}
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-white/20 transition-all font-mono"
+                          />
+                        </div>
+                        <button
+                          onClick={handleVerifyPersona}
+                          className="w-full bg-white text-black rounded-xl py-4 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all active:scale-95"
+                        >
+                          Preview Persona <ArrowRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => setShowScannerDialog(false)}
+                  className="w-full py-4 text-[10px] text-white/20 hover:text-white/40 uppercase tracking-[0.3em] font-bold border-t border-white/5 transition-colors"
+                >
+                  Close Scanner
+                </button>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
 
         <AnimatePresence>
           {showPersonaDialog && (
