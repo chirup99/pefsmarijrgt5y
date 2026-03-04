@@ -871,7 +871,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
       const dataUrl = await htmlToImage.toPng(element, {
         quality: 1,
         pixelRatio: 3,
-        backgroundColor: null,
+        backgroundColor: "#000000",
       });
       const link = document.createElement("a");
       link.download = `persona-qr-${user?.name || "founder"}.png`;
@@ -1167,7 +1167,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       View Collaboration Portal{" "}
                       <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                     </a>
-                    {form.watch("cards")?.length > 0 && (
+                    {(form.watch("cards")?.length ?? 0) > 0 && (
                       <div className="pt-4 border-t border-white/10">
                          <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold mb-4">Quick Preview</p>
                          <div className="scale-75 origin-top -mb-20">
@@ -1409,21 +1409,23 @@ export default function AuthPage({ slug }: { slug?: string }) {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                if (mode === "login") {
-                  setMode("register");
-                } else {
-                  setMode("login");
-                }
-              }}
-              className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg"
-            >
-              {mode === "login"
-                ? "create your persona"
-                : "Back to Persona"}
-            </button>
+            {!user && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (mode === "login") {
+                    setMode("register");
+                  } else {
+                    setMode("login");
+                  }
+                }}
+                className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg"
+              >
+                {mode === "login"
+                  ? "create your persona"
+                  : "Back to Persona"}
+              </button>
+            )}
           </div>
         </motion.div>
 

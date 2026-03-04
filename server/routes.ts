@@ -31,6 +31,7 @@ export async function registerRoutes(
       const { password: _, ...safeUser } = user;
       res.status(200).json(safeUser);
     } catch (err) {
+      console.error("Auth error:", err);
       res.status(400).json({ message: "Invalid request" });
     }
   });
@@ -58,13 +59,13 @@ export async function registerRoutes(
   app.post(api.auth.login.path, async (req, res) => {
     try {
       const input = api.auth.login.input.parse(req.body);
-      const user = await storage.getUserByEmail(input.email);
+      const user = await storage.getUserByEmail(input.email || "");
       
-      if (!user) {
+      if (!user || !user.password) {
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
-      const passwordMatch = await bcrypt.compare(input.password, user.password);
+      const passwordMatch = await bcrypt.compare(input.password || "", user.password);
       if (!passwordMatch) {
         return res.status(401).json({ message: "Invalid email or password" });
       }
@@ -174,7 +175,6 @@ export async function registerRoutes(
   app.get("/api/user/slug/:slug", async (req, res) => {
     try {
       const { slug } = req.params;
-      if (!storage.getUserBySlug) throw new Error("Method not implemented");
       const user = await storage.getUserBySlug(slug);
       if (!user) {
         return res.status(404).json({ message: "User not found" });

@@ -16,7 +16,7 @@ const TABLE_NAME = process.env.DYNAMODB_TABLE_NAME || "Users";
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
-  getUserBySlug?(slug: string): Promise<User | undefined>;
+  getUserBySlug(slug: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: string, user: Partial<InsertUser>): Promise<User>;
 }

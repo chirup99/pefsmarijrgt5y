@@ -10,7 +10,9 @@ import Dashboard from "@/pages/Dashboard";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={AuthPage} />
+      <Route path="/">
+        {(params) => <AuthPage {...params} />}
+      </Route>
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/:slug">
         {(params) => <AuthPage slug={params.slug} />}
