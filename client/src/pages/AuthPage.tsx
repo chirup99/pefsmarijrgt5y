@@ -1090,6 +1090,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
     }
   }, [user, publicUser]);
 
+  const [isPersonaExpanded, setIsPersonaExpanded] = useState(false);
+
   return (
     <div className="min-h-screen bg-[#050505] overflow-hidden relative">
       <div className="absolute inset-0 flex flex-col justify-start items-end p-12 pt-24 pointer-events-none">
@@ -1099,27 +1101,101 @@ export default function AuthPage({ slug }: { slug?: string }) {
           className="space-y-4 pointer-events-auto mb-8"
         >
           {user ? (
-            <button
-              onClick={logout}
-              className="flex items-center gap-4 p-1.5 pr-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-white transition-all group ml-auto backdrop-blur-md"
-            >
-              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/10 group-hover:border-purple-500/30 transition-colors">
-                <User className="w-5 h-5 text-purple-400/80 group-hover:text-purple-400 transition-colors" />
-              </div>
-              <div className="flex flex-col items-start">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-bold text-sm tracking-tight">
-                    {user.name || "Persona User"}
-                  </span>
-                  <div className="w-3.5 h-3.5 bg-yellow-400 rounded-full flex items-center justify-center">
-                    <Check className="w-2.5 h-2.5 text-black" strokeWidth={4} />
-                  </div>
+            <div className="flex flex-col items-end gap-2">
+              <button
+                onClick={logout}
+                className="flex items-center gap-4 p-1.5 pr-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-white transition-all group ml-auto backdrop-blur-md"
+              >
+                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/10 group-hover:border-purple-500/30 transition-colors">
+                  <User className="w-5 h-5 text-purple-400/80 group-hover:text-purple-400 transition-colors" />
                 </div>
-                <span className="text-[9px] text-white/40 uppercase tracking-[0.2em] font-bold">
-                  Logout
-                </span>
+                <div className="flex flex-col items-start">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-bold text-sm tracking-tight">
+                      {user.name || "Persona User"}
+                    </span>
+                    <div className="w-3.5 h-3.5 bg-yellow-400 rounded-full flex items-center justify-center">
+                      <Check className="w-2.5 h-2.5 text-black" strokeWidth={4} />
+                    </div>
+                  </div>
+                  <span className="text-[9px] text-white/40 uppercase tracking-[0.2em] font-bold">
+                    Logout
+                  </span>
+                </div>
+              </button>
+
+              <div className="w-full mt-2">
+                <button
+                  onClick={() => setIsPersonaExpanded(!isPersonaExpanded)}
+                  className="w-full flex items-center justify-between px-6 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <User className="w-5 h-5 text-purple-400" />
+                    <span className="font-bold text-sm tracking-widest uppercase">
+                      Persona
+                    </span>
+                  </div>
+                  {isPersonaExpanded ? (
+                    <ChevronDown className="w-4 h-4 text-white/40 rotate-180 transition-transform" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-white/40 transition-transform" />
+                  )}
+                </button>
+
+                <AnimatePresence>
+                  {isPersonaExpanded && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-2 p-6 bg-white/5 border border-white/10 rounded-2xl space-y-6">
+                        <div className="space-y-2">
+                          <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                            Persona Code
+                          </label>
+                          <div className="flex items-center justify-between group/item">
+                            <span className="text-sm font-mono text-white">
+                              {user.uniqueSlug || "---"}
+                            </span>
+                            <button 
+                              onClick={() => {
+                                setMode("register");
+                                setIsMenuOpen(false);
+                              }}
+                              className="p-1.5 bg-white/5 rounded-lg text-white/40 hover:text-white transition-colors opacity-0 group-hover/item:opacity-100"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                            Change PIN
+                          </label>
+                          <div className="flex items-center justify-between group/item">
+                            <span className="text-sm tracking-[0.3em] text-white/60">
+                              •••••
+                            </span>
+                            <button 
+                              onClick={() => {
+                                setMode("register");
+                                setIsMenuOpen(false);
+                              }}
+                              className="p-1.5 bg-white/5 rounded-lg text-white/40 hover:text-white transition-colors opacity-0 group-hover/item:opacity-100"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            </button>
+            </div>
           ) : (
             <button
               onClick={() => {
