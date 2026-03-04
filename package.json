@@ -7,12 +7,11 @@
     "dev": "NODE_ENV=development tsx server/index.ts",
     "build": "tsx script/build.ts",
     "start": "NODE_ENV=production node dist/index.cjs",
-    "check": "tsc",
-    "db:push": "drizzle-kit push"
+    "check": "tsc"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.1000.0",
-    "@aws-sdk/lib-dynamodb": "^3.1000.0",
+    "@aws-sdk/client-dynamodb": "^3.1001.0",
+    "@aws-sdk/lib-dynamodb": "^3.1001.0",
     "@hookform/resolvers": "^3.10.0",
     "@jridgewell/trace-mapping": "^0.3.31",
     "@radix-ui/react-accordion": "^1.2.12",
@@ -48,9 +47,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
-    "connect-pg-simple": "^10.0.0",
     "date-fns": "^3.6.0",
-    "drizzle-orm": "^0.39.3",
     "drizzle-zod": "^0.7.1",
     "embla-carousel-react": "^8.6.0",
     "express": "^5.2.1",
@@ -65,7 +62,6 @@
     "next-themes": "^0.4.6",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
-    "pg": "^8.19.0",
     "qrcode.react": "^4.2.0",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
@@ -89,7 +85,6 @@
     "@replit/vite-plugin-runtime-error-modal": "^0.0.3",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.2.1",
-    "@types/connect-pg-simple": "^7.0.3",
     "@types/express": "^5.0.6",
     "@types/express-session": "^1.18.2",
     "@types/node": "^20.19.35",
@@ -100,7 +95,6 @@
     "@types/ws": "^8.18.1",
     "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.27",
-    "drizzle-kit": "^0.31.9",
     "esbuild": "^0.25.12",
     "postcss": "^8.5.8",
     "tailwindcss": "^3.4.19",
@@ -109,9 +103,7 @@
     "vite": "^7.3.1"
   },
   "overrides": {
-    "drizzle-kit": {
-      "@esbuild-kit/esm-loader": "npm:tsx@^4.20.4"
-    }
+    "@esbuild-kit/esm-loader": "npm:tsx@^4.20.4"
   },
   "optionalDependencies": {
     "bufferutil": "^4.1.0"
