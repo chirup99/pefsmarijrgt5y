@@ -32,12 +32,15 @@ export class DynamoDBStorage implements IStorage {
 
   async getUserByEmail(email: string): Promise<User | undefined> {
     try {
+      console.log("Searching user by email:", email);
       const { Items } = await ddbDocClient.send(new ScanCommand({
         TableName: TABLE_NAME,
         FilterExpression: "email = :email",
         ExpressionAttributeValues: { ":email": email },
       }));
-      return (Items && Items.length > 0) ? (Items[0] as User) : undefined;
+      const user = (Items && Items.length > 0) ? (Items[0] as User) : undefined;
+      console.log("User found by email:", user ? user.id : "none");
+      return user;
     } catch (error) {
       console.error("Error getting user by email from DynamoDB:", error);
       throw error;
@@ -46,12 +49,15 @@ export class DynamoDBStorage implements IStorage {
 
   async getUserBySlug(slug: string): Promise<User | undefined> {
     try {
+      console.log("Searching user by slug:", slug);
       const { Items } = await ddbDocClient.send(new ScanCommand({
         TableName: TABLE_NAME,
         FilterExpression: "uniqueSlug = :slug",
         ExpressionAttributeValues: { ":slug": slug },
       }));
-      return (Items && Items.length > 0) ? (Items[0] as User) : undefined;
+      const user = (Items && Items.length > 0) ? (Items[0] as User) : undefined;
+      console.log("User found by slug:", user ? user.id : "none");
+      return user;
     } catch (error) {
       console.error("Error getting user by slug from DynamoDB:", error);
       throw error;
