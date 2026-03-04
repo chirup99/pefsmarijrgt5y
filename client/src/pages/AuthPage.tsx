@@ -1793,27 +1793,24 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="relative w-full max-w-sm bg-[#0a0a0a] border border-white/10 rounded-[32px] p-8 shadow-2xl text-center space-y-8 overflow-hidden"
+                className="relative w-full max-w-sm bg-[#0a0a0a] border border-white/10 rounded-[32px] p-6 shadow-2xl text-center space-y-6 overflow-hidden"
               >
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 opacity-50" />
 
-                <div className="space-y-2">
-                  <div className="w-16 h-16 bg-white/5 rounded-2xl mx-auto flex items-center justify-center mb-4 border border-white/10">
-                    <User className="w-8 h-8 text-white/80" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-white tracking-tight">
-                    Welcome Home
+                <div className="space-y-1">
+                  <h3 className="text-xl font-bold text-white tracking-tight">
+                    Great, {form.getValues("name")}
                   </h3>
-                  <p className="text-white/40 text-sm">
+                  <p className="text-white/40 text-xs">
                     Your persona is live and ready.
                   </p>
                 </div>
 
-                <div className="bg-white/5 rounded-2xl p-6 border border-white/10 space-y-3">
+                <div className="bg-white/5 rounded-2xl p-4 border border-white/10 space-y-2">
                   <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">
                     Persona Code
                   </p>
-                  <div className="text-3xl font-mono font-black text-white tracking-[0.3em]">
+                  <div className="text-2xl font-mono font-black text-white tracking-[0.3em]">
                     {user?.uniqueSlug}
                   </div>
                 </div>
@@ -1833,7 +1830,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                           const val = e.target.value.replace(/\D/g, "");
                           if (val.length <= 5) setPin(val);
                         }}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-center text-2xl font-mono tracking-[1em] text-white focus:outline-none focus:border-white/20 transition-all placeholder:text-white/10"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-center text-xl font-mono tracking-[1em] text-white focus:outline-none focus:border-white/20 transition-all placeholder:text-white/10"
                       />
                     </div>
                   </div>
@@ -1864,7 +1861,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         });
                       }
                     }}
-                    className="w-full bg-white text-black rounded-xl py-4 font-bold text-sm hover:bg-white/90 transition-all active:scale-95 flex items-center justify-center gap-2"
+                    className="w-full bg-white text-black rounded-xl py-3 font-bold text-sm hover:bg-white/90 transition-all active:scale-95 flex items-center justify-center gap-2"
                   >
                     {updateProfileMutation.isPending ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
