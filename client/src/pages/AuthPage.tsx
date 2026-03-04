@@ -1799,7 +1799,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
                 <div className="space-y-1">
                   <h3 className="text-xl font-bold text-white tracking-tight">
-                    Great, {form.getValues("name")}
+                    {form.getValues("name")}
                   </h3>
                   <p className="text-white/40 text-xs">
                     Your persona is live and ready.
