@@ -1614,7 +1614,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                onClick={() => setShowQRDialog(false)}
                 className="absolute inset-0 bg-black/90 backdrop-blur-md"
               />
               <motion.div
@@ -1812,7 +1811,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                onClick={() => setShowHomeDialog(false)}
                 className="absolute inset-0 bg-black/95 backdrop-blur-xl"
               />
               <motion.div
