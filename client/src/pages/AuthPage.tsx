@@ -1845,6 +1845,34 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     </div>
                     <div className="space-y-1">
                       <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                        Industry
+                      </label>
+                      <div className="relative">
+                        <select
+                          {...form.register("industry")}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white appearance-none"
+                        >
+                          <option value="" className="bg-[#1a1a1a]">Select Industry</option>
+                          {[
+                            "Fintech", "Healthtech", "Edtech", "Ecommerce & Retail", 
+                            "Agritech", "SaaS", "Cleantech & Greentech", "Logistics", 
+                            "🌱 Sustainability & Energy (EVs)", "DeepTech", "Spacetech", 
+                            "Robotics & Automation", "Cybersecurity", "AR/VR", "Media & Entertainment"
+                          ].map((industry) => (
+                            <option
+                              key={industry}
+                              value={industry}
+                              className="bg-[#1a1a1a]"
+                            >
+                              {industry}
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
                         Startup / Business
                       </label>
                       <input

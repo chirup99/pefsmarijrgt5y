@@ -39,6 +39,7 @@ export const users = {
   whatsapp: "whatsapp",
   website: "website",
   uniqueSlug: "uniqueSlug",
+  industry: "industry",
   cards: "cards",
   createdAt: "createdAt"
 };
@@ -50,6 +51,7 @@ export type User = {
   name: string | null;
   role: string | null;
   bio: string | null;
+  industry: string | null;
   instagram: string | null;
   linkedin: string | null;
   whatsapp: string | null;
@@ -67,6 +69,7 @@ export const insertUserSchema = z.object({
   name: z.string().optional().nullable(),
   role: z.string().optional().nullable(),
   bio: z.string().optional().nullable(),
+  industry: z.string().optional().nullable(),
   instagram: z.string().optional().nullable(),
   linkedin: z.string().optional().nullable(),
   whatsapp: z.string().optional().nullable(),
