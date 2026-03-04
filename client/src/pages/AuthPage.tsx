@@ -1138,6 +1138,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
           animate={{ opacity: 1, scale: 1 }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
+          onClick={() => setShowPersonaDialog(true)}
           className="fixed bottom-8 right-8 z-50 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg border border-white/20"
         >
           <QrCode className="w-6 h-6 text-black" strokeWidth={2.5} />
@@ -1978,6 +1979,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                           // Set user and sync form
                           queryClient.setQueryData(["/api/me"], userData);
                           setLocalUser(userData);
+                          setShowPersonaDialog(false);
                           form.reset({
                             email: userData.email || "",
                             name: userData.name || "",
