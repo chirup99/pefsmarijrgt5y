@@ -1262,36 +1262,57 @@ export default function AuthPage({ slug }: { slug?: string }) {
     setLocation("/");
   };
   const downloadQR = async () => {
-    const element = document.getElementById("qr-download-area");
+    const element = document.getElementById("iphone-screen-preview");
     if (!element) {
       toast({
         title: "Error",
-        description: "QR element not found",
+        description: "Preview element not found",
         variant: "destructive",
       });
       return;
     }
 
     try {
+      // Hide elements that shouldn't be in the download
+      const statusBar = element.querySelector(".status-bar-container") as HTMLElement;
+      const homeIndicator = element.querySelector(".home-indicator") as HTMLElement;
+      const bottomControls = element.querySelector(".bottom-controls") as HTMLElement;
+      const editButton = element.querySelector(".edit-avatar-button") as HTMLElement;
+
+      if (statusBar) statusBar.style.display = "none";
+      if (homeIndicator) homeIndicator.style.display = "none";
+      if (bottomControls) bottomControls.style.display = "none";
+      if (editButton) editButton.style.display = "none";
+
+      // Give a tiny moment for layout shift if any
+      await new Promise(resolve => setTimeout(resolve, 50));
+
       const dataUrl = await htmlToImage.toPng(element, {
         quality: 1,
         pixelRatio: 3,
-        backgroundColor: "#ffffff",
+        backgroundColor: "#050505",
         cacheBust: true,
       });
+
+      // Restore elements
+      if (statusBar) statusBar.style.display = "flex";
+      if (homeIndicator) homeIndicator.style.display = "block";
+      if (bottomControls) bottomControls.style.display = "flex";
+      if (editButton) editButton.style.display = "flex";
+
       const link = document.createElement("a");
-      link.download = `persona-qr-${user?.uniqueSlug || "code"}.png`;
+      link.download = `persona-${user?.uniqueSlug || "code"}.png`;
       link.href = dataUrl;
       link.click();
       toast({
         title: "Success",
-        description: "QR Code downloaded successfully",
+        description: "Persona Image downloaded successfully",
       });
     } catch (err) {
       console.error("Download error:", err);
       toast({
         title: "Download failed",
-        description: "Could not generate the QR image. Please try again.",
+        description: "Could not generate the Persona image. Please try again.",
         variant: "destructive",
       });
     }
@@ -2437,9 +2458,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   </div>
 
                   {/* iPhone Screen Content */}
-                  <div className="w-full h-full bg-[#050505] rounded-[36px] relative overflow-hidden flex flex-col items-center p-4">
+                  <div id="iphone-screen-preview" className="w-full h-full bg-[#050505] rounded-[36px] relative overflow-hidden flex flex-col items-center p-4">
                     {/* Status Bar */}
-                    <div className="w-full flex justify-between items-center px-6 pt-2 pb-1 z-50">
+                    <div className="status-bar-container w-full flex justify-between items-center px-6 pt-2 pb-1 z-50">
                       <span className="text-white text-[10px] font-medium">{currentTime}</span>
                       <div className="flex items-center gap-1">
                         <div className="w-3 h-3 rounded-full border border-white/20" />
@@ -2460,7 +2481,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                           </div>
                           <button 
                             onClick={() => setShowAvatarDialog(true)}
-                            className="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg border border-black/5 hover:scale-110 transition-transform"
+                            className="edit-avatar-button absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg border border-black/5 hover:scale-110 transition-transform"
                           >
                             <Pencil className="w-3 h-3 text-black" />
                           </button>
@@ -2479,7 +2500,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       </div>
 
                       {/* QR Code Section - More Compact */}
-                      <div id="qr-download-area" className="p-4 bg-white rounded-[24px] shadow-2xl">
+                      <div id="qr-download-area" className="p-4 bg-white rounded-[24px] shadow-2xl flex flex-col items-center">
                         <QRCodeSVG
                           value={window.location.origin + "/" + user?.uniqueSlug}
                           size={140}
@@ -2490,15 +2511,18 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         />
                       </div>
 
-                      <div className="text-center">
+                      <div className="text-center space-y-1">
                         <p className="text-[8px] text-white/20 uppercase tracking-[0.3em] font-black">
                           Scan to Connect
+                        </p>
+                        <p className="text-[10px] font-mono font-bold text-white/70 tracking-[0.2em] uppercase">
+                          Code: {user?.uniqueSlug}
                         </p>
                       </div>
                     </div>
 
                     {/* Home Indicator */}
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-16 h-1 bg-white/10 rounded-full" />
+                    <div className="home-indicator absolute bottom-2 left-1/2 -translate-x-1/2 w-16 h-1 bg-white/10 rounded-full" />
 
                     {/* Avatar Selection Dialog */}
                     <AnimatePresence>
@@ -2555,7 +2579,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     </AnimatePresence>
 
                     {/* Tiny Controls */}
-                    <div className="w-full flex justify-between items-center px-3 opacity-30 mt-auto">
+                    <div className="bottom-controls w-full flex justify-between items-center px-3 opacity-30 mt-auto">
                       <div className="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center">
                         <Save className="w-3 h-3 text-white" />
                       </div>
