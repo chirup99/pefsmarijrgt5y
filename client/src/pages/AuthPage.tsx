@@ -778,7 +778,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const user = isOtherPersona ? publicUser : loggedInUser;
 
   useEffect(() => {
-    if (slug) {
+    if (slug && (!publicUser || publicUser.uniqueSlug !== slug)) {
       fetch(`/api/user/slug/${slug}`)
         .then((res) => res.json())
         .then((data) => {
@@ -796,13 +796,13 @@ export default function AuthPage({ slug }: { slug?: string }) {
             }
           }
         });
-    } else if (user && window.location.pathname === "/") {
+    } else if (user && window.location.pathname === "/" && !slug) {
       // If we are logged in but at root, go to our own slug
       if (user.uniqueSlug) {
         setLocation(`/${user.uniqueSlug}`);
       }
     }
-  }, [slug, user, setLocation]);
+  }, [slug, user, setLocation, publicUser]);
 
   const onSubmit = async (values: InsertUser) => {
     try {
