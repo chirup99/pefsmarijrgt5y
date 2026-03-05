@@ -784,7 +784,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
         .then((data) => {
           if (data.id) {
             setPublicUser(data);
-            setMode("swipe");
+            setMode("login");
             // If viewing a public profile, update form to show its data
             Object.entries(data).forEach(([key, value]) => {
               if (value !== null && value !== undefined && key !== 'password') {
@@ -833,6 +833,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
         localStorage.setItem("persona_user", JSON.stringify(result));
         localStorage.setItem("persona_user_id", result.id);
         
+        // Ensure we stay on Persona tab after update
+        setMode("login");
+
         // If it's a new registration or missing uniqueSlug, show the QR/Pin flow
         if (mode === "register" || !result.pin) {
           setShowHomeDialog(true);
