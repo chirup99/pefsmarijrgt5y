@@ -939,20 +939,22 @@ export default function AuthPage({ slug }: { slug?: string }) {
   });
 
   useEffect(() => {
-    if (isOtherPersona && user && otherPersona) {
+    // Only save connections for logged-in users visiting someone else's profile
+    // authUser check ensures we only save if the current user is logged in
+    if (authUser && isOtherPersona && publicUser && authUser.uniqueSlug !== publicUser.uniqueSlug) {
       setConnections(prev => {
-        const exists = prev.some(c => c.slug === otherPersona.uniqueSlug);
+        const exists = prev.some(c => c.slug === publicUser.uniqueSlug);
         if (exists) return prev;
         const newConnections = [...prev, {
-          name: otherPersona.name || "Unknown",
-          industry: otherPersona.industry || "General",
-          slug: otherPersona.uniqueSlug || ""
+          name: publicUser.name || "Unknown",
+          industry: publicUser.industry || "General",
+          slug: publicUser.uniqueSlug || ""
         }];
         localStorage.setItem("persona_connections", JSON.stringify(newConnections));
         return newConnections;
       });
     }
-  }, [isOtherPersona, user, otherPersona]);
+  }, [isOtherPersona, authUser, publicUser]);
   const [isEditingSlug, setIsEditingSlug] = useState(false);
   const [slugValue, setSlugValue] = useState(user?.uniqueSlug || "");
 
