@@ -933,26 +933,28 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [showScannerDialog, setShowScannerDialog] = useState(false);
   const [scannerTab, setScannerTab] = useState<"scan" | "code">("scan");
   const [activeTab, setActiveTab] = useState<"notes" | "events" | "connect">("notes");
-  const [connections, setConnections] = useState<{ name: string; industry: string; slug: string }[]>(() => {
-    const saved = localStorage.getItem("persona_connections");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [connections, setConnections] = useState<{ name: string; industry: string; slug: string }[]>([]);
+
+  useEffect(() => {
+    if (user?.id) {
+      fetch(`/api/user/${user.id}/connections`)
+        .then(res => res.json())
+        .then(data => setConnections(data))
+        .catch(console.error);
+    }
+  }, [user?.id]);
 
   useEffect(() => {
     // Only save connections for logged-in users visiting someone else's profile
-    // authUser check ensures we only save if the current user is logged in
     if (authUser && isOtherPersona && publicUser && authUser.uniqueSlug !== publicUser.uniqueSlug) {
-      setConnections(prev => {
-        const exists = prev.some(c => c.slug === publicUser.uniqueSlug);
-        if (exists) return prev;
-        const newConnections = [...prev, {
-          name: publicUser.name || "Unknown",
-          industry: publicUser.industry || "General",
-          slug: publicUser.uniqueSlug || ""
-        }];
-        localStorage.setItem("persona_connections", JSON.stringify(newConnections));
-        return newConnections;
-      });
+      apiRequest("POST", "/api/user/connect", {
+        userId: authUser.id,
+        targetSlug: publicUser.uniqueSlug
+      }).then(() => {
+        fetch(`/api/user/${authUser.id}/connections`)
+          .then(res => res.json())
+          .then(data => setConnections(data));
+      }).catch(console.error);
     }
   }, [isOtherPersona, authUser, publicUser]);
   const [isEditingSlug, setIsEditingSlug] = useState(false);
@@ -1082,6 +1084,38 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [pin, setPin] = useState("");
   const [verifyPin, setVerifyPin] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
+  const handleScan = async (data: string | null) => {
+    if (data) {
+      // The QR code contains the URL like "https://domain.com/slug" or just "slug"
+      const slug = data.split("/").pop() || data;
+      
+      if (user?.id) {
+        try {
+          // Connect first
+          await apiRequest("POST", "/api/user/connect", {
+            userId: user.id,
+            targetSlug: slug
+          });
+          
+          // Then refresh connections
+          const res = await fetch(`/api/user/${user.id}/connections`);
+          const updatedConnections = await res.json();
+          setConnections(updatedConnections);
+          
+          toast({
+            title: "Connected!",
+            description: `Added ${slug} to your connections.`,
+          });
+        } catch (err) {
+          console.error("Connect error during scan:", err);
+        }
+      }
+      
+      setLocation(`/${slug}`);
+      setShowScannerDialog(false);
+    }
+  };
+
   const qrRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 

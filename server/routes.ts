@@ -242,5 +242,55 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/user/connect", async (req, res) => {
+    try {
+      const { userId, targetSlug } = z.object({
+        userId: z.string(),
+        targetSlug: z.string()
+      }).parse(req.body);
+
+      const user = await storage.getUser(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      const connections = user.connections || [];
+      if (!connections.includes(targetSlug)) {
+        await storage.updateUser(userId, {
+          connections: [...connections, targetSlug]
+        });
+      }
+
+      res.json({ success: true });
+    } catch (err) {
+      console.error("Connect error:", err);
+      res.status(400).json({ message: "Invalid request" });
+    }
+  });
+
+  app.get("/api/user/:id/connections", async (req, res) => {
+    try {
+      const user = await storage.getUser(req.params.id);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      const connectionSlugs = user.connections || [];
+      const connectionProfiles = await Promise.all(
+        connectionSlugs.map(async (slug) => {
+          const profile = await storage.getUserBySlug(slug);
+          if (profile) {
+            return {
+              name: profile.name || "Anonymous",
+              industry: profile.industry || "Unknown",
+              slug: profile.uniqueSlug
+            };
+          }
+          return null;
+        })
+      );
+
+      res.json(connectionProfiles.filter(Boolean));
+    } catch (err) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   return httpServer;
 }

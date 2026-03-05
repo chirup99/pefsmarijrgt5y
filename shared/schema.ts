@@ -58,6 +58,7 @@ export type User = {
   website: string | null;
   uniqueSlug: string | null;
   pin: string | null;
+  connections: string[]; // array of uniqueSlugs
   cards: string[]; // JSON strings
   notes: { id: string; text: string; completed: boolean; expiresAt: string }[];
   createdAt: Date;
@@ -75,6 +76,7 @@ export const insertUserSchema = z.object({
   whatsapp: z.string().optional().nullable(),
   website: z.string().optional().nullable(),
   cards: z.array(z.string()).optional(),
+  connections: z.array(z.string()).optional(),
   notes: z.array(z.object({
     id: z.string(),
     text: z.string(),
