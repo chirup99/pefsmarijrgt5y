@@ -933,6 +933,26 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [showScannerDialog, setShowScannerDialog] = useState(false);
   const [scannerTab, setScannerTab] = useState<"scan" | "code">("scan");
   const [activeTab, setActiveTab] = useState<"notes" | "events" | "connect">("notes");
+  const [connections, setConnections] = useState<{ name: string; industry: string; slug: string }[]>(() => {
+    const saved = localStorage.getItem("persona_connections");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    if (isOtherPersona && user && otherPersona) {
+      setConnections(prev => {
+        const exists = prev.some(c => c.slug === otherPersona.uniqueSlug);
+        if (exists) return prev;
+        const newConnections = [...prev, {
+          name: otherPersona.name || "Unknown",
+          industry: otherPersona.industry || "General",
+          slug: otherPersona.uniqueSlug || ""
+        }];
+        localStorage.setItem("persona_connections", JSON.stringify(newConnections));
+        return newConnections;
+      });
+    }
+  }, [isOtherPersona, user, otherPersona]);
   const [isEditingSlug, setIsEditingSlug] = useState(false);
   const [slugValue, setSlugValue] = useState(user?.uniqueSlug || "");
 
@@ -1832,11 +1852,34 @@ export default function AuthPage({ slug }: { slug?: string }) {
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: -10 }}
-                              className="h-[120px] flex items-center justify-center border border-dashed border-white/10 rounded-2xl bg-gradient-to-tr from-blue-500/5 to-purple-500/5"
+                              className="space-y-3"
                             >
-                              <div className="text-center space-y-2">
-                                <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">Exclusive Connect</p>
-                                <p className="text-xs text-white/20 font-medium">Coming Soon</p>
+                              <div className="space-y-2 max-h-[120px] overflow-y-auto custom-scrollbar">
+                                {connections.map((conn, idx) => (
+                                  <div 
+                                    key={idx} 
+                                    onClick={() => setLocation(`/${conn.slug}`)}
+                                    className="flex items-center justify-between p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all cursor-pointer group"
+                                  >
+                                    <div className="flex flex-col">
+                                      <span className="text-xs font-bold text-white group-hover:text-blue-400 transition-colors">
+                                        {conn.name}
+                                      </span>
+                                      <span className="text-[8px] uppercase tracking-widest text-white/40">
+                                        {conn.industry}
+                                      </span>
+                                    </div>
+                                    <ArrowRight className="w-3 h-3 text-white/20 group-hover:text-white/60 group-hover:translate-x-0.5 transition-all" />
+                                  </div>
+                                ))}
+                                {connections.length === 0 && (
+                                  <div className="h-[100px] flex items-center justify-center border border-dashed border-white/10 rounded-2xl bg-gradient-to-tr from-blue-500/5 to-purple-500/5">
+                                    <div className="text-center space-y-2">
+                                      <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">Exclusive Connect</p>
+                                      <p className="text-xs text-white/20 font-medium">No connections yet</p>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             </motion.div>
                           )}
