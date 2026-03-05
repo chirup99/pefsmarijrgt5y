@@ -2136,7 +2136,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 }}
                 className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg"
               >
-                {mode === "login" ? "create your persona" : "Back to Persona"}
+                create your persona
               </button>
             )}
           </div>
