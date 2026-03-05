@@ -1905,7 +1905,12 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                         {conn.industry}
                                       </span>
                                     </div>
-                                    <ArrowRight className="w-3 h-3 text-white/20 group-hover:text-white/60 group-hover:translate-x-0.5 transition-all" />
+                                    <div className="flex items-center gap-3">
+                                      <span className="text-[10px] font-bold text-blue-400/80 bg-blue-400/10 px-1.5 py-0.5 rounded border border-blue-400/20">
+                                        48H
+                                      </span>
+                                      <ArrowRight className="w-3 h-3 text-white/20 group-hover:text-white/60 group-hover:translate-x-0.5 transition-all" />
+                                    </div>
                                   </div>
                                 ))}
                                 {connections.length === 0 && (
