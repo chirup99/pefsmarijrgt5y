@@ -2258,7 +2258,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       View Collaboration Portal{" "}
                       <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                     </a>
-                    {!isOtherPersona && user && (
+                    {loggedInUser && user && loggedInUser.id === user.id && (
                       <div className="pt-4 border-t border-white/10">
                         {/* Tabs Navigation */}
                         <div className="flex p-1 bg-white/5 border border-white/10 rounded-xl mb-4">
@@ -2679,7 +2679,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
               >
                 Back to My Persona
               </button>
-            ) : user && mode === "login" && (
+            ) : loggedInUser && user && loggedInUser.id === user.id && mode === "login" && (
               <button
                 type="button"
                 onClick={() => setMode("register")}
