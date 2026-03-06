@@ -1051,7 +1051,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
   }, [user]);
 
   const addNote = () => {
-    if (!newNote.trim()) return;
+    if (!newNote.trim() || notes.length >= 5) return;
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
     const note = {
       id: Math.random().toString(36).substr(2, 9),
@@ -1863,13 +1863,15 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                   value={newNote}
                                   onChange={(e) => setNewNote(e.target.value)}
                                   onKeyPress={(e) => e.key === "Enter" && addNote()}
-                                  placeholder="Add a quick note..."
-                                  className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
+                                  placeholder={notes.length >= 5 ? "Limit of 5 notes reached" : "Add a quick note..."}
+                                  disabled={notes.length >= 5}
+                                  className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
                                 />
                                 <button
                                   type="button"
                                   onClick={addNote}
-                                  className="bg-white/10 hover:bg-white/20 text-white p-2 rounded-lg transition-colors"
+                                  disabled={notes.length >= 5}
+                                  className="bg-white/10 hover:bg-white/20 text-white p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                   <Plus className="w-4 h-4" />
                                 </button>
