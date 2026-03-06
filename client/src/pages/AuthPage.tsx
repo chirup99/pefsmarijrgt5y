@@ -1458,132 +1458,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   )}
                 </button>
 
-                  {/* Reach & Click Stats Display */}
-                <div className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-3 shrink-0">
-                  <div className="flex flex-col items-center gap-0.5">
-                    <span className="text-[8px] text-white/40 uppercase tracking-[0.2em] font-bold">
-                      Reach Count
-                    </span>
-                    <span className="text-xl font-display font-bold text-white">
-                      {user.reachCount || 0}
-                    </span>
-                  </div>
-
-                  {/* Reach Trend Chart */}
-                  {user.reachHistory && user.reachHistory.length > 0 && (
-                    <div className="h-12 w-full pt-1">
-                      <div className="flex items-end justify-between h-full gap-0.5">
-                        {(() => {
-                          const history = [...user.reachHistory].sort((a, b) => a.date.localeCompare(b.date));
-                          const maxCount = Math.max(...history.map(h => h.count), 1);
-                          return history.map((day, i) => (
-                            <div key={day.date} className="flex-1 flex flex-col items-center gap-0.5 group relative">
-                              <motion.div
-                                initial={{ height: 0 }}
-                                animate={{ height: `${(day.count / maxCount) * 100}%` }}
-                                className="w-full bg-gradient-to-t from-purple-500/20 to-purple-500/80 rounded-t-sm min-h-[1px]"
-                              />
-                              <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-white text-black text-[7px] font-bold px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                                {day.count}
-                              </div>
-                            </div>
-                          ));
-                        })()}
-                      </div>
-                      <div className="flex justify-between mt-1 px-0.5">
-                         <span className="text-[5px] text-white/20 uppercase font-bold">7d ago</span>
-                         <span className="text-[5px] text-white/20 uppercase font-bold">Today</span>
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className="grid grid-cols-2 gap-2 pt-3 border-t border-white/10">
-                    <div className="flex flex-col items-center gap-0.5">
-                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">Insta</span>
-                      <span className="text-xs font-bold text-white/80">{user.instaClicks || 0}</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-0.5">
-                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">LinkedIn</span>
-                      <span className="text-xs font-bold text-white/80">{user.linkedinClicks || 0}</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-0.5">
-                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">WhatsApp</span>
-                      <span className="text-xs font-bold text-white/80">{user.whatsappClicks || 0}</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-0.5">
-                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">Portal</span>
-                      <span className="text-xs font-bold text-white/80">{user.portalClicks || 0}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* AI Analysis Window */}
-                <div className="p-4 bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-white/10 rounded-xl space-y-3 backdrop-blur-md relative overflow-hidden group shrink-0">
-                  <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <TrendingUp className="w-6 h-6 text-purple-400" />
-                  </div>
-                  
-                  <div className="flex flex-col gap-0.5">
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
-                      <span className="text-[8px] text-purple-400 uppercase tracking-[0.2em] font-bold">
-                        AI Analysis
-                      </span>
-                    </div>
-                    <h4 className="text-white font-bold text-xs">Growth Insights</h4>
-                  </div>
-
-                  <div className="space-y-2 relative z-10">
-                    {(() => {
-                      const history = user.reachHistory || [];
-                      const today = history.find(h => h.date === new Date().toISOString().split('T')[0])?.count || 0;
-                      const yesterday = history.find(h => h.date === new Date(Date.now() - 86400000).toISOString().split('T')[0])?.count || 0;
-                      const isDecreasing = today < yesterday;
-                      const industry = user.industry || "General";
-                      
-                      return (
-                        <>
-                          <div className="p-2 bg-white/5 rounded-lg border border-white/5 space-y-1.5">
-                            <div className="flex items-center justify-between">
-                              <span className="text-[8px] text-white/40 uppercase font-bold tracking-tight">Status</span>
-                              {isDecreasing ? (
-                                <span className="text-[8px] text-red-400 font-bold flex items-center gap-1">
-                                  <ChevronDown className="w-2 h-2" /> Decreasing
-                                </span>
-                              ) : (
-                                <span className="text-[8px] text-green-400 font-bold flex items-center gap-1">
-                                  <TrendingUp className="w-2 h-2" /> Growing
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-[9px] text-white/70 leading-tight">
-                              {isDecreasing 
-                                ? `Reach down. In ${industry}, consistency is key.`
-                                : `Profile gaining traction in ${industry}.`}
-                            </p>
-                          </div>
-
-                          <div className="space-y-1.5">
-                            <span className="text-[8px] text-white/40 uppercase font-bold tracking-[0.1em]">AI Suggestions</span>
-                            <ul className="space-y-1.5">
-                              {[
-                                `Update ${industry} pitch card.`,
-                                "Share QR on LinkedIn.",
-                                "Evening peaks observed."
-                              ].map((s, i) => (
-                                <li key={i} className="flex items-start gap-1.5 text-[9px] text-white/60">
-                                  <div className="w-0.5 h-0.5 rounded-full bg-purple-500 mt-1.5 shrink-0" />
-                                  {s}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </>
-                      );
-                    })()}
-                  </div>
-                </div>
-
                 <AnimatePresence>
                   {isPersonaExpanded && (
                     <motion.div
@@ -1713,6 +1587,134 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     </motion.div>
                   )}
                 </AnimatePresence>
+
+                  {/* Reach & Click Stats Display */}
+                <div className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-3 shrink-0">
+                  <div className="flex flex-col items-center gap-0.5">
+                    <span className="text-[8px] text-white/40 uppercase tracking-[0.2em] font-bold">
+                      Reach Count
+                    </span>
+                    <span className="text-xl font-display font-bold text-white">
+                      {user.reachCount || 0}
+                    </span>
+                  </div>
+
+                  {/* Reach Trend Chart */}
+                  {user.reachHistory && user.reachHistory.length > 0 && (
+                    <div className="h-12 w-full pt-1">
+                      <div className="flex items-end justify-between h-full gap-0.5">
+                        {(() => {
+                          const history = [...user.reachHistory].sort((a, b) => a.date.localeCompare(b.date));
+                          const maxCount = Math.max(...history.map(h => h.count), 1);
+                          return history.map((day, i) => (
+                            <div key={day.date} className="flex-1 flex flex-col items-center gap-0.5 group relative">
+                              <motion.div
+                                initial={{ height: 0 }}
+                                animate={{ height: `${(day.count / maxCount) * 100}%` }}
+                                className="w-full bg-gradient-to-t from-purple-500/20 to-purple-500/80 rounded-t-sm min-h-[1px]"
+                              />
+                              <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-white text-black text-[7px] font-bold px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                                {day.count}
+                              </div>
+                            </div>
+                          ));
+                        })()}
+                      </div>
+                      <div className="flex justify-between mt-1 px-0.5">
+                         <span className="text-[5px] text-white/20 uppercase font-bold">7d ago</span>
+                         <span className="text-[5px] text-white/20 uppercase font-bold">Today</span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="grid grid-cols-2 gap-2 pt-3 border-t border-white/10">
+                    <div className="flex flex-col items-center gap-0.5">
+                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">Insta</span>
+                      <span className="text-xs font-bold text-white/80">{user.instaClicks || 0}</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-0.5">
+                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">LinkedIn</span>
+                      <span className="text-xs font-bold text-white/80">{user.linkedinClicks || 0}</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-0.5">
+                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">WhatsApp</span>
+                      <span className="text-xs font-bold text-white/80">{user.whatsappClicks || 0}</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-0.5">
+                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">Portal</span>
+                      <span className="text-xs font-bold text-white/80">{user.portalClicks || 0}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* AI Analysis Window */}
+                <div className="p-4 bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-white/10 rounded-xl space-y-3 backdrop-blur-md relative overflow-hidden group shrink-0">
+                  <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <TrendingUp className="w-6 h-6 text-purple-400" />
+                  </div>
+                  
+                  <div className="flex flex-col gap-0.5">
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
+                      <span className="text-[8px] text-purple-400 uppercase tracking-[0.2em] font-bold">
+                        AI Analysis
+                      </span>
+                    </div>
+                    <h4 className="text-white font-bold text-xs">Growth Insights</h4>
+                  </div>
+
+                  <div className="space-y-2 relative z-10">
+                    {(() => {
+                      const history = user.reachHistory || [];
+                      const today = history.find(h => h.date === new Date().toISOString().split('T')[0])?.count || 0;
+                      const yesterday = history.find(h => h.date === new Date(Date.now() - 86400000).toISOString().split('T')[0])?.count || 0;
+                      const isDecreasing = today < yesterday;
+                      const industry = user.industry || "General";
+                      
+                      return (
+                        <>
+                          <div className="p-2 bg-white/5 rounded-lg border border-white/5 space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[8px] text-white/40 uppercase font-bold tracking-tight">Status</span>
+                              {isDecreasing ? (
+                                <span className="text-[8px] text-red-400 font-bold flex items-center gap-1">
+                                  <ChevronDown className="w-2 h-2" /> Decreasing
+                                </span>
+                              ) : (
+                                <span className="text-[8px] text-green-400 font-bold flex items-center gap-1">
+                                  <TrendingUp className="w-2 h-2" /> Growing
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[9px] text-white/70 leading-tight">
+                              {isDecreasing 
+                                ? `Reach down. In ${industry}, consistency is key.`
+                                : `Profile gaining traction in ${industry}.`}
+                            </p>
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <span className="text-[8px] text-white/40 uppercase font-bold tracking-[0.1em]">AI Suggestions</span>
+                            <ul className="space-y-1.5">
+                              {[
+                                `Update ${industry} pitch card.`,
+                                "Share QR on LinkedIn.",
+                                "Evening peaks observed."
+                              ].map((s, i) => (
+                                <li key={i} className="flex items-start gap-1.5 text-[9px] text-white/60">
+                                  <div className="w-0.5 h-0.5 rounded-full bg-purple-500 mt-1.5 shrink-0" />
+                                  {s}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
+
+                </div>
               </div>
             </div>
           ) : (
