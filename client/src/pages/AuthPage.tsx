@@ -2049,7 +2049,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       <input
                         {...form.register("bio")}
                         className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
-                        placeholder="e.g. Collaborate & Grow your Startup"
+                        placeholder=""
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -2108,8 +2108,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     </div>
                     <button
                       type="button"
+                      disabled={!form.watch("name") || !form.watch("role")}
                       onClick={() => setMode("customize")}
-                      className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 mt-4"
+                      className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Next <ArrowRight className="w-4 h-4" />
                     </button>
