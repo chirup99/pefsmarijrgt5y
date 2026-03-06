@@ -274,7 +274,10 @@ const SwipeCard = ({ cards, user: propsUser }: { cards: string[]; user?: any }) 
         }
       });
     }
-    if (propsUser) {
+    
+    // If we are viewing another persona (isOtherPersona) or we are a logged in user with no cards
+    // and cards array is empty, show the "NO CARDS" state instead of demo cards.
+    if (propsUser || cards.length === 0 && window.location.pathname !== "/") {
       return [
         {
           title: "NO CARDS",
@@ -286,6 +289,7 @@ const SwipeCard = ({ cards, user: propsUser }: { cards: string[]; user?: any }) 
         },
       ];
     }
+
     return CARDS.map((c) => ({
       ...c,
       name: c.name.toUpperCase(),
