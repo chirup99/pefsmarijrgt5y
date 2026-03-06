@@ -195,6 +195,9 @@ const SwipeCardContent = ({
 }: SwipeCardProps) => {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-30, 30]);
+  const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
+  const [isPlaying, setIsPlaying] = useState(false);
+
   const thumbnailUrl = useMemo(() => {
     if (card.type !== "reel") return null;
     const url = (card as any).url;
