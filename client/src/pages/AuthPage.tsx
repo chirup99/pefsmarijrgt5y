@@ -284,11 +284,22 @@ const SwipeCard = ({ cards }: { cards: string[] }) => {
             return CARDS[0];
           }
         })
-      : CARDS.map(c => ({
-          ...c,
-          name: c.name.toUpperCase(),
-          subname: c.subname.toUpperCase(),
-        }));
+      : user
+        ? [
+            {
+              title: "NO CARDS",
+              name: "EMPTY",
+              subname: "PERSONA",
+              color: "from-gray-800 to-gray-900",
+              bgStack1: "bg-black/20",
+              bgStack2: "bg-black/10",
+            },
+          ]
+        : CARDS.map((c) => ({
+            ...c,
+            name: c.name.toUpperCase(),
+            subname: c.subname.toUpperCase(),
+          }));
 
   const currentCard = displayCards[currentIndex];
 
