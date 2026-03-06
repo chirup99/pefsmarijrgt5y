@@ -405,7 +405,7 @@ const MiniCard = ({
     const igMatch = url.match(
       /(?:instagram\.com\/(?:reels|reel|p|tv)\/)([\w-]+)/,
     );
-    if (igMatch) return `https://www.instagram.com/reels/${igMatch[1]}/embed/`;
+    if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed/`;
     return null;
   };
 
