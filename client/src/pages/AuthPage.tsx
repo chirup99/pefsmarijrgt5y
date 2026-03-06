@@ -2199,7 +2199,15 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     onSubmit={form.handleSubmit(onSubmit)}
                     className="space-y-4"
                   >
-                    <div className="flex flex-col items-center text-center space-y-4 py-2">
+                    <div className="flex flex-col items-center text-center space-y-4 py-2 relative">
+                      <button
+                        type="button"
+                        onClick={() => setShowQRDialog(true)}
+                        className="absolute top-0 right-0 p-2 bg-white/5 hover:bg-white/10 rounded-lg text-white/40 hover:text-white transition-all z-10"
+                        title="View QR Code"
+                      >
+                        <QrCode className="w-4 h-4" />
+                      </button>
                       <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-blue-400 mx-auto flex items-center justify-center text-white text-2xl font-bold shadow-lg">
                         {form.watch("name")?.[0] || "P"}
                       </div>
