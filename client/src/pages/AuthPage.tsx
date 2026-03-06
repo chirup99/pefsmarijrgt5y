@@ -284,38 +284,16 @@ const SwipeCard = ({ cards }: { cards: string[] }) => {
             return CARDS[0];
           }
         })
-      : [
-          {
-            title: "NO CARDS YET",
-            name: "START",
-            subname: "SWIPE TO ADD",
-            color: "from-gray-800 to-gray-900",
-            bgStack1: "bg-black/20",
-            bgStack2: "bg-black/10",
-          }
-        ];
+      : CARDS.map(c => ({
+          ...c,
+          name: c.name.toUpperCase(),
+          subname: c.subname.toUpperCase(),
+        }));
 
   const currentCard = displayCards[currentIndex];
-  const nextCard = displayCards[(currentIndex + 1) % displayCards.length];
-  const nextNextCard = displayCards[(currentIndex + 2) % displayCards.length];
 
   return (
     <div className="relative w-full max-w-[240px] aspect-[3/4] mx-auto perspective-1000">
-      <div
-        key={`stack2-${(currentIndex + 2) % displayCards.length}`}
-        className={clsx(
-          "absolute inset-0 translate-y-4 translate-x-2 rounded-[24px] -z-20 transition-all duration-700 opacity-40 scale-95",
-          nextNextCard.bgStack2,
-        )}
-      />
-      <div
-        key={`stack1-${(currentIndex + 1) % displayCards.length}`}
-        className={clsx(
-          "absolute inset-0 translate-y-2 translate-x-1 rounded-[24px] -z-10 transition-all duration-700 opacity-70 scale-[0.98]",
-          nextCard.bgStack1,
-        )}
-      />
-
       <AnimatePresence mode="popLayout" initial={false}>
         <SwipeCardContent
           key={currentIndex}
@@ -2192,14 +2170,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 ) : (
                   <div className="py-2">
                     <SwipeCard cards={selectedCards} />
-                    <div className="text-center mt-4 space-y-0.5">
-                      <p className="text-xs font-semibold text-white">
-                        Swipe to explore
-                      </p>
-                      <p className="text-[10px] text-white/40">
-                        Left to back • Right to next
-                      </p>
-                    </div>
                   </div>
                 )}
               </motion.div>
