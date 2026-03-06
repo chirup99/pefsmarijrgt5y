@@ -178,6 +178,15 @@ interface SwipeCardProps {
   onSwipeRight: () => void;
 }
 
+const getThumbnailUrl = (url: string) => {
+  if (!url) return null;
+  const ytMatch = url.match(
+    /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/|reels\/))([\w-]{11})/,
+  );
+  if (ytMatch) return `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`;
+  return null;
+};
+
 const SwipeCardContent = ({
   card,
   currentIndex,
@@ -229,13 +238,28 @@ const SwipeCardContent = ({
           <Mic className="w-3.5 h-3.5 text-white/90" />
         </div>
 
-        <div className="text-center space-y-0.5">
-          <h3 className="text-white text-2xl font-bold leading-tight">
-            {card.name}
-          </h3>
-          <h3 className="text-white text-2xl font-bold leading-tight">
-            {card.subname}
-          </h3>
+        <div className="flex-1 flex flex-col items-center justify-center w-full space-y-3">
+          {card.type === "reel" && card.thumbnailUrl ? (
+            <div className="w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-white/10">
+              <img 
+                src={card.thumbnailUrl} 
+                className="w-full h-full object-cover" 
+                alt="Thumbnail"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = card.thumbnailUrl.replace('maxresdefault', 'hqdefault');
+                }}
+              />
+            </div>
+          ) : (
+            <div className="text-center space-y-0.5">
+              <h3 className="text-white text-2xl font-bold leading-tight">
+                {card.name}
+              </h3>
+              <h3 className="text-white text-sm opacity-60 font-medium leading-tight line-clamp-2 px-2">
+                {card.subname}
+              </h3>
+            </div>
+          )}
         </div>
 
         <div className="w-full">
@@ -262,9 +286,11 @@ const SwipeCard = ({ cards, user: propsUser }: { cards: string[]; user?: any }) 
           if (!card || !card.type) return CARDS[0];
           const typeInfo = CARD_TYPES.find((t) => t.type === card.type);
           return {
+            type: card.type,
             title: card.title || "Untitled",
             name: card.title || card.type.toUpperCase(),
             subname: card.value || card.url || "Persona",
+            thumbnailUrl: card.type === "reel" ? getThumbnailUrl(card.url) : null,
             color: typeInfo?.color || "from-gray-700 to-gray-800",
             bgStack1: "bg-black/20",
             bgStack2: "bg-black/10",
