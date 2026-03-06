@@ -1610,7 +1610,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                             <div key={day.date} className="flex-1 flex flex-col items-center gap-0.5 group relative">
                               <motion.div
                                 initial={{ height: 0 }}
-                                animate={{ height: `${(day.count / maxCount) * 100}%` }}
+                                animate={{ height: String((day.count / maxCount) * 100) + "%" }}
                                 className="w-full bg-gradient-to-t from-purple-500/20 to-purple-500/80 rounded-t-sm min-h-[1px]"
                               />
                               <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-white text-black text-[7px] font-bold px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
@@ -1666,8 +1666,10 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   <div className="space-y-2 relative z-10">
                     {(() => {
                       const history = user.reachHistory || [];
-                      const today = history.find(h => h.date === new Date().toISOString().split('T')[0])?.count || 0;
-                      const yesterday = history.find(h => h.date === new Date(Date.now() - 86400000).toISOString().split('T')[0])?.count || 0;
+                      const todayDate = new Date().toISOString().split('T')[0];
+                      const yesterdayDate = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+                      const today = (history.find(h => h.date === todayDate) || { count: 0 }).count;
+                      const yesterday = (history.find(h => h.date === yesterdayDate) || { count: 0 }).count;
                       const isDecreasing = today < yesterday;
                       const industry = user.industry || "General";
                       
@@ -1714,7 +1716,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   </div>
                 </div>
 
-                </div>
               </div>
             </div>
           ) : (
