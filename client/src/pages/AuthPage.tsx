@@ -183,7 +183,8 @@ const getThumbnailUrl = (url: string) => {
   const ytMatch = url.match(
     /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/|reels\/))([\w-]{11})/,
   );
-  if (ytMatch) return `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`;
+  if (ytMatch)
+    return `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`;
   return null;
 };
 
@@ -205,7 +206,8 @@ const SwipeCardContent = ({
     const ytMatch = url.match(
       /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/|reels\/))([\w-]{11})/,
     );
-    if (ytMatch) return `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`;
+    if (ytMatch)
+      return `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`;
     return null;
   }, [card.type, (card as any).url]);
 
@@ -288,22 +290,27 @@ const SwipeCardContent = ({
             <span className="text-white/90 text-[9px] font-bold tracking-[0.2em] uppercase">
               {card.title}
             </span>
-            {card.type !== "product" && <Mic className="w-3.5 h-3.5 text-white/90" />}
+            {card.type !== "product" && (
+              <Mic className="w-3.5 h-3.5 text-white/90" />
+            )}
           </div>
 
           <div className="flex-1 flex flex-col items-center justify-center w-full space-y-3">
             {card.type === "reel" ? (
               thumbnailUrl ? (
-                <div 
+                <div
                   className="w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-white/10 cursor-pointer group/thumb relative"
                   onClick={() => setIsPlaying(true)}
                 >
-                  <img 
-                    src={thumbnailUrl} 
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover/thumb:scale-110" 
+                  <img
+                    src={thumbnailUrl}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover/thumb:scale-110"
                     alt="Thumbnail"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = thumbnailUrl.replace('maxresdefault', 'hqdefault');
+                      (e.target as HTMLImageElement).src = thumbnailUrl.replace(
+                        "maxresdefault",
+                        "hqdefault",
+                      );
                     }}
                   />
                   <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
@@ -313,7 +320,7 @@ const SwipeCardContent = ({
                   </div>
                 </div>
               ) : (
-                <div 
+                <div
                   className="flex flex-col items-center justify-center space-y-3 py-4 cursor-pointer"
                   onClick={() => setIsPlaying(true)}
                 >
@@ -321,17 +328,21 @@ const SwipeCardContent = ({
                     <Video className="w-8 h-8 text-white" />
                   </div>
                   <div className="text-center">
-                    <h3 className="text-white text-xl font-bold">{card.name}</h3>
-                    <p className="text-white/60 text-[10px] uppercase tracking-widest font-bold">Watch Reel</p>
+                    <h3 className="text-white text-xl font-bold">
+                      {card.name}
+                    </h3>
+                    <p className="text-white/60 text-[10px] uppercase tracking-widest font-bold">
+                      Watch Reel
+                    </p>
                   </div>
                 </div>
               )
             ) : card.type === "product" ? (
               (card as any).imageUrl ? (
                 <div className="w-full aspect-square rounded-xl overflow-hidden shadow-lg border border-white/10 mb-4">
-                  <img 
-                    src={(card as any).imageUrl} 
-                    className="w-full h-full object-cover" 
+                  <img
+                    src={(card as any).imageUrl}
+                    className="w-full h-full object-cover"
                     alt={card.name}
                   />
                 </div>
@@ -348,9 +359,9 @@ const SwipeCardContent = ({
             ) : card.type === "product" ? (
               (card as any).imageUrl ? (
                 <div className="w-full aspect-square rounded-xl overflow-hidden shadow-lg border border-white/10 mb-4">
-                  <img 
-                    src={(card as any).imageUrl} 
-                    className="w-full h-full object-cover" 
+                  <img
+                    src={(card as any).imageUrl}
+                    className="w-full h-full object-cover"
                     alt={card.name}
                   />
                 </div>
@@ -395,7 +406,13 @@ const SwipeCardContent = ({
   );
 };
 
-const SwipeCard = ({ cards, user: propsUser }: { cards: string[]; user?: any }) => {
+const SwipeCard = ({
+  cards,
+  user: propsUser,
+}: {
+  cards: string[];
+  user?: any;
+}) => {
   const displayCards = useMemo(() => {
     if (cards.length > 0) {
       return cards.map((c) => {
@@ -409,7 +426,8 @@ const SwipeCard = ({ cards, user: propsUser }: { cards: string[]; user?: any }) 
             title: card.title || "Untitled",
             name: card.title || card.type.toUpperCase(),
             subname: card.value || card.url || "Persona",
-            thumbnailUrl: card.type === "reel" ? getThumbnailUrl(card.url) : null,
+            thumbnailUrl:
+              card.type === "reel" ? getThumbnailUrl(card.url) : null,
             color: typeInfo?.color || "from-gray-700 to-gray-800",
             bgStack1: "bg-black/20",
             bgStack2: "bg-black/10",
@@ -419,10 +437,10 @@ const SwipeCard = ({ cards, user: propsUser }: { cards: string[]; user?: any }) 
         }
       });
     }
-    
+
     // If we are viewing another persona (isOtherPersona) or we are a logged in user with no cards
     // and cards array is empty, show the "NO CARDS" state instead of demo cards.
-    if (propsUser || cards.length === 0 && window.location.pathname !== "/") {
+    if (propsUser || (cards.length === 0 && window.location.pathname !== "/")) {
       return [
         {
           title: "NO CARDS",
@@ -458,7 +476,9 @@ const SwipeCard = ({ cards, user: propsUser }: { cards: string[]; user?: any }) 
 
   const handleSwipeRight = () => {
     if (displayCards.length === 0) return;
-    setCurrentIndex((prev) => (prev - 1 + displayCards.length) % displayCards.length);
+    setCurrentIndex(
+      (prev) => (prev - 1 + displayCards.length) % displayCards.length,
+    );
   };
 
   const currentCard = displayCards[currentIndex];
@@ -524,12 +544,19 @@ const MiniCard = ({
     const ytMatch = url.match(
       /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/|reels\/))([\w-]{11})/,
     );
-    if (ytMatch) return `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`;
+    if (ytMatch)
+      return `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`;
     return null;
   };
 
-  const embedUrl = useMemo(() => card.type === "reel" ? getEmbedUrl((card as any).url) : null, [card.type, (card as any).url]);
-  const thumbnailUrl = useMemo(() => card.type === "reel" ? getThumbnailUrl((card as any).url) : null, [card.type, (card as any).url]);
+  const embedUrl = useMemo(
+    () => (card.type === "reel" ? getEmbedUrl((card as any).url) : null),
+    [card.type, (card as any).url],
+  );
+  const thumbnailUrl = useMemo(
+    () => (card.type === "reel" ? getThumbnailUrl((card as any).url) : null),
+    [card.type, (card as any).url],
+  );
 
   if (!card) return null;
 
@@ -745,11 +772,10 @@ const MiniCard = ({
             >
               <X className="w-4 h-4" />
             </button>
-            <div className="absolute bottom-4 left-4 right-4 z-40 pointer-events-none">
-            </div>
+            <div className="absolute bottom-4 left-4 right-4 z-40 pointer-events-none"></div>
           </div>
         ) : card.type === "reel" && !isEditing && !isPlaying ? (
-          <div 
+          <div
             className="w-full h-full cursor-pointer group relative overflow-hidden rounded-xl"
             onClick={() => {
               if ((card as any).url) {
@@ -760,13 +786,16 @@ const MiniCard = ({
             }}
           >
             {thumbnailUrl ? (
-              <img 
-                src={thumbnailUrl} 
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+              <img
+                src={thumbnailUrl}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 alt="Video thumbnail"
                 onError={(e) => {
                   // Fallback to hqdefault if maxres isn't available
-                  (e.target as HTMLImageElement).src = thumbnailUrl.replace('maxresdefault', 'hqdefault');
+                  (e.target as HTMLImageElement).src = thumbnailUrl.replace(
+                    "maxresdefault",
+                    "hqdefault",
+                  );
                 }}
               />
             ) : (
@@ -790,16 +819,19 @@ const MiniCard = ({
           </div>
         ) : card.type === "pitch" ? (
           <div className="w-full h-full flex flex-col items-center justify-center p-2 overflow-hidden">
-            <div 
+            <div
               className="w-full h-full overflow-y-auto custom-scrollbar flex items-start pt-2"
               onScroll={(e) => {
                 const element = e.currentTarget;
                 // If we've scrolled near the bottom, show more words
-                if (element.scrollHeight - element.scrollTop <= element.clientHeight + 20) {
+                if (
+                  element.scrollHeight - element.scrollTop <=
+                  element.clientHeight + 20
+                ) {
                   const content = (card as any).content || "";
                   const totalWords = content.split(/\s+/).length;
                   if (visibleWords < totalWords) {
-                    setVisibleWords(prev => prev + 18);
+                    setVisibleWords((prev) => prev + 18);
                   }
                 }
               }}
@@ -809,10 +841,11 @@ const MiniCard = ({
                 className="text-white/90 text-sm text-center italic leading-relaxed cursor-pointer hover:bg-white/5 p-4 rounded-lg transition-colors w-full break-words"
               >
                 {(() => {
-                  const content = (card as any).content || "No pitch content yet...";
+                  const content =
+                    (card as any).content || "No pitch content yet...";
                   const words = content.split(/\s+/);
                   if (words.length <= 18) return `"${content}"`;
-                  
+
                   const displayed = words.slice(0, visibleWords).join(" ");
                   return `"${displayed}${visibleWords < words.length ? "..." : ""}"`;
                 })()}
@@ -888,9 +921,7 @@ const MiniCard = ({
       </div>
 
       <div className="pt-2">
-        {card.type === "reel" ? (
-          null
-        ) : card.type === "pitch" ? (
+        {card.type === "reel" ? null : card.type === "pitch" ? (
           <button
             onClick={() => handleSpeak((card as any).content || "")}
             className={clsx(
@@ -1011,14 +1042,15 @@ export default function AuthPage({ slug }: { slug?: string }) {
       return null;
     }
   });
-  
+
   // Use authUser if available, otherwise fallback to localUser
   // This ensures that as soon as the useQuery finishes, it takes precedence
   const loggedInUser = authUser || localUser;
   const [publicUser, setPublicUser] = useState<any>(null);
 
   const user = slug ? publicUser : loggedInUser;
-  const isOtherPersona = slug && loggedInUser && loggedInUser.uniqueSlug !== slug;
+  const isOtherPersona =
+    slug && loggedInUser && loggedInUser.uniqueSlug !== slug;
 
   useEffect(() => {
     if (slug && (!publicUser || publicUser.uniqueSlug !== slug)) {
@@ -1031,7 +1063,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
             setMode("login");
             // If viewing a public profile, update form to show its data
             Object.entries(data).forEach(([key, value]) => {
-              if (value !== null && value !== undefined && key !== 'password') {
+              if (value !== null && value !== undefined && key !== "password") {
                 form.setValue(key as any, value);
               }
             });
@@ -1048,7 +1080,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
     }
   }, [slug, user, setLocation, publicUser]);
 
-  const trackClick = async (type: "insta" | "linkedin" | "whatsapp" | "portal") => {
+  const trackClick = async (
+    type: "insta" | "linkedin" | "whatsapp" | "portal",
+  ) => {
     if (!publicUser?.id) return;
     try {
       await apiRequest("POST", `/api/user/${publicUser.id}/click`, { type });
@@ -1063,7 +1097,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
       let result;
       if (user?.id) {
         // If logged in, overwrite data
-        const { id, password, createdAt, uniqueSlug, ...updateData } = values as any;
+        const { id, password, createdAt, uniqueSlug, ...updateData } =
+          values as any;
         const payload = {
           ...updateData,
           cards: selectedCards,
@@ -1085,7 +1120,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
         setLocalUser(result);
         localStorage.setItem("persona_user", JSON.stringify(result));
         localStorage.setItem("persona_user_id", result.id);
-        
+
         // Ensure we stay on Persona tab after update
         setMode("login");
 
@@ -1131,7 +1166,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
   const updatePinMutation = useMutation({
     mutationFn: async (newPin: string) => {
-      const res = await apiRequest("PATCH", `/api/user/${user?.id}`, { pin: newPin });
+      const res = await apiRequest("PATCH", `/api/user/${user?.id}`, {
+        pin: newPin,
+      });
       return res.json();
     },
     onSuccess: (updatedUser) => {
@@ -1165,10 +1202,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
   };
   const [qrColor, setQrColor] = useState("#000000");
   const [qrBgColor, setQrBgColor] = useState("#ffffff");
-  const professionalAvatars = [
-    avatarWoman,
-    avatarMan,
-  ];
+  const professionalAvatars = [avatarWoman, avatarMan];
 
   const [avatarUrl, setAvatarUrl] = useState(professionalAvatars[0]);
   const [showAvatarDialog, setShowAvatarDialog] = useState(false);
@@ -1180,7 +1214,10 @@ export default function AuthPage({ slug }: { slug?: string }) {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(
-        new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
       );
     }, 60000);
     return () => clearInterval(timer);
@@ -1192,29 +1229,40 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [showQRDialog, setShowQRDialog] = useState(false);
   const [showScannerDialog, setShowScannerDialog] = useState(false);
   const [scannerTab, setScannerTab] = useState<"scan" | "code">("scan");
-  const [activeTab, setActiveTab] = useState<"notes" | "events" | "connect">("notes");
-  const [connections, setConnections] = useState<{ name: string; industry: string; slug: string; expiresAt: string }[]>([]);
+  const [activeTab, setActiveTab] = useState<"notes" | "events" | "connect">(
+    "notes",
+  );
+  const [connections, setConnections] = useState<
+    { name: string; industry: string; slug: string; expiresAt: string }[]
+  >([]);
 
   useEffect(() => {
     if (user?.id) {
       fetch(`/api/user/${user.id}/connections`)
-        .then(res => res.json())
-        .then(data => setConnections(data))
+        .then((res) => res.json())
+        .then((data) => setConnections(data))
         .catch(console.error);
     }
   }, [user?.id]);
 
   useEffect(() => {
     // Only save connections for logged-in users visiting someone else's profile
-    if (authUser && isOtherPersona && publicUser && authUser.uniqueSlug !== publicUser.uniqueSlug) {
+    if (
+      authUser &&
+      isOtherPersona &&
+      publicUser &&
+      authUser.uniqueSlug !== publicUser.uniqueSlug
+    ) {
       apiRequest("POST", "/api/user/connect", {
         userId: authUser.id,
-        targetSlug: publicUser.uniqueSlug
-      }).then(() => {
-        fetch(`/api/user/${authUser.id}/connections`)
-          .then(res => res.json())
-          .then(data => setConnections(data));
-      }).catch(console.error);
+        targetSlug: publicUser.uniqueSlug,
+      })
+        .then(() => {
+          fetch(`/api/user/${authUser.id}/connections`)
+            .then((res) => res.json())
+            .then((data) => setConnections(data));
+        })
+        .catch(console.error);
     }
   }, [isOtherPersona, authUser, publicUser]);
 
@@ -1244,9 +1292,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
   const updateSlugMutation = useMutation({
     mutationFn: async (newSlug: string) => {
-      const res = await apiRequest("PATCH", "/api/user/slug", { 
+      const res = await apiRequest("PATCH", "/api/user/slug", {
         uniqueSlug: newSlug,
-        userId: user?.id 
+        userId: user?.id,
       });
       return res.json();
     },
@@ -1280,7 +1328,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
       console.error("Failed to update persona code:", error);
     }
   };
-  const [notes, setNotes] = useState<{ id: string; text: string; completed: boolean; expiresAt: string }[]>([]);
+  const [notes, setNotes] = useState<
+    { id: string; text: string; completed: boolean; expiresAt: string }[]
+  >([]);
   const [newNote, setNewNote] = useState("");
 
   // Sync notes from user object
@@ -1294,8 +1344,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date();
-      setNotes(prev => {
-        const filtered = prev.filter(note => new Date(note.expiresAt) > now);
+      setNotes((prev) => {
+        const filtered = prev.filter((note) => new Date(note.expiresAt) > now);
         if (filtered.length !== prev.length && user) {
           updateProfileMutation.mutate({ notes: filtered });
         }
@@ -1312,7 +1362,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
       id: Math.random().toString(36).substr(2, 9),
       text: newNote,
       completed: false,
-      expiresAt
+      expiresAt,
     };
     const updatedNotes = [...notes, note];
     setNotes(updatedNotes);
@@ -1324,7 +1374,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
   const toggleNote = (id: string) => {
     const updatedNotes = notes.map((n) =>
-      n.id === id ? { ...n, completed: !n.completed } : n
+      n.id === id ? { ...n, completed: !n.completed } : n,
     );
     setNotes(updatedNotes);
     if (user) {
@@ -1333,7 +1383,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
   };
 
   const getTimerColor = (expiresAt: string) => {
-    const hoursLeft = (new Date(expiresAt).getTime() - Date.now()) / (1000 * 60 * 60);
+    const hoursLeft =
+      (new Date(expiresAt).getTime() - Date.now()) / (1000 * 60 * 60);
     if (hoursLeft > 12) return "text-green-400";
     if (hoursLeft > 3) return "text-white";
     return "text-red-500 font-bold";
@@ -1358,20 +1409,20 @@ export default function AuthPage({ slug }: { slug?: string }) {
     if (data) {
       // The QR code contains the URL like "https://domain.com/slug" or just "slug"
       const slug = data.split("/").pop() || data;
-      
+
       if (user?.id) {
         try {
           // Connect first
           await apiRequest("POST", "/api/user/connect", {
             userId: user.id,
-            targetSlug: slug
+            targetSlug: slug,
           });
-          
+
           // Then refresh connections
           const res = await fetch(`/api/user/${user.id}/connections`);
           const updatedConnections = await res.json();
           setConnections(updatedConnections);
-          
+
           toast({
             title: "Connected!",
             description: `Added ${slug} to your connections.`,
@@ -1380,7 +1431,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
           console.error("Connect error during scan:", err);
         }
       }
-      
+
       setLocation(`/${slug}`);
       setShowScannerDialog(false);
     }
@@ -1415,9 +1466,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
               }
             },
           );
-          
+
           if (!isMounted || !showScannerDialog || scannerTab !== "scan") {
-            if (ctrl && typeof ctrl.stop === 'function') {
+            if (ctrl && typeof ctrl.stop === "function") {
               ctrl.stop();
             }
           } else {
@@ -1434,7 +1485,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
     return () => {
       isMounted = false;
       if (controls) {
-        if (typeof controls.stop === 'function') {
+        if (typeof controls.stop === "function") {
           controls.stop();
         }
       }
@@ -1446,19 +1497,22 @@ export default function AuthPage({ slug }: { slug?: string }) {
     if (user && !publicUser) {
       // Check if we need to update form values from the authenticated user
       const currentValues = form.getValues();
-      
+
       Object.entries(user).forEach(([key, value]) => {
-        if (value !== null && value !== undefined && key !== 'password') {
+        if (value !== null && value !== undefined && key !== "password") {
           if (currentValues[key as keyof InsertUser] !== value) {
             form.setValue(key as any, value);
           }
         }
       });
-      
-      if (user.cards && JSON.stringify(user.cards) !== JSON.stringify(selectedCards)) {
+
+      if (
+        user.cards &&
+        JSON.stringify(user.cards) !== JSON.stringify(selectedCards)
+      ) {
         setSelectedCards(user.cards);
       }
-      
+
       // Keep local storage in sync with the latest auth data
       if (!isOtherPersona) {
         localStorage.setItem("persona_user", JSON.stringify(user));
@@ -1483,7 +1537,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
       whatsapp: user?.whatsapp || "",
       website: user?.website || "",
       cards: user?.cards || [],
-      email: user?.email && !user.email.endsWith("@persona.local") ? user.email : "",
+      email:
+        user?.email && !user.email.endsWith("@persona.local") ? user.email : "",
     },
   });
 
@@ -1512,14 +1567,14 @@ export default function AuthPage({ slug }: { slug?: string }) {
         pin: personaPin,
       });
       const userData = await res.json();
-      
+
       // Update local state and cache
       setLocalUser(userData);
       queryClient.setQueryData(["/api/me"], userData);
-      
+
       localStorage.setItem("persona_user", JSON.stringify(userData));
       localStorage.setItem("persona_user_id", userData.id);
-      
+
       toast({
         title: "Success",
         description: `Verified persona: ${userData.name}`,
@@ -1557,10 +1612,18 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
     try {
       // Hide elements that shouldn't be in the download
-      const statusBar = element.querySelector(".status-bar-container") as HTMLElement;
-      const homeIndicator = element.querySelector(".home-indicator") as HTMLElement;
-      const bottomControls = element.querySelector(".bottom-controls") as HTMLElement;
-      const editButton = element.querySelector(".edit-avatar-button") as HTMLElement;
+      const statusBar = element.querySelector(
+        ".status-bar-container",
+      ) as HTMLElement;
+      const homeIndicator = element.querySelector(
+        ".home-indicator",
+      ) as HTMLElement;
+      const bottomControls = element.querySelector(
+        ".bottom-controls",
+      ) as HTMLElement;
+      const editButton = element.querySelector(
+        ".edit-avatar-button",
+      ) as HTMLElement;
 
       if (statusBar) statusBar.style.display = "none";
       if (homeIndicator) homeIndicator.style.display = "none";
@@ -1568,7 +1631,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
       if (editButton) editButton.style.display = "none";
 
       // Give a tiny moment for layout shift if any
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       const dataUrl = await htmlToImage.toPng(element, {
         quality: 1,
@@ -1613,14 +1676,17 @@ export default function AuthPage({ slug }: { slug?: string }) {
       localStorage.setItem("persona_user", JSON.stringify(updatedUser));
       localStorage.setItem("persona_user_id", updatedUser.id);
       queryClient.invalidateQueries({ queryKey: ["/api/me"] });
-      
+
       // If we just set the pin, show QR
       if (updatedUser.pin && variables.pin) {
         setShowQRDialog(true);
       }
-      
+
       // Silent update for notes or completed (checklist)
-      const isSilentUpdate = 'notes' in variables || 'cards' in variables || 'completed' in variables;
+      const isSilentUpdate =
+        "notes" in variables ||
+        "cards" in variables ||
+        "completed" in variables;
       if (!isSilentUpdate) {
         toast({
           title: "Success",
@@ -1629,7 +1695,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
       }
     },
     onError: (error: Error, variables) => {
-      const isSilentUpdate = 'notes' in variables || 'cards' in variables;
+      const isSilentUpdate = "notes" in variables || "cards" in variables;
       if (!isSilentUpdate) {
         toast({
           title: "Error",
@@ -1644,19 +1710,22 @@ export default function AuthPage({ slug }: { slug?: string }) {
     if (user && !publicUser) {
       // Check if we need to update form values from the authenticated user
       const currentValues = form.getValues();
-      
+
       Object.entries(user).forEach(([key, value]) => {
-        if (value !== null && value !== undefined && key !== 'password') {
+        if (value !== null && value !== undefined && key !== "password") {
           if (currentValues[key as keyof InsertUser] !== value) {
             form.setValue(key as any, value);
           }
         }
       });
-      
-      if (user.cards && JSON.stringify(user.cards) !== JSON.stringify(selectedCards)) {
+
+      if (
+        user.cards &&
+        JSON.stringify(user.cards) !== JSON.stringify(selectedCards)
+      ) {
         setSelectedCards(user.cards);
       }
-      
+
       // Keep local storage in sync with the latest auth data
       if (!isOtherPersona) {
         localStorage.setItem("persona_user", JSON.stringify(user));
@@ -1746,7 +1815,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                   value={slugValue}
                                   onChange={(e) => {
                                     setSlugValue(e.target.value);
-                                    if (e.target.value !== loggedInUser.uniqueSlug) {
+                                    if (
+                                      e.target.value !== loggedInUser.uniqueSlug
+                                    ) {
                                       checkSlugMutation.mutate(e.target.value);
                                     } else {
                                       setIsSlugTaken(false);
@@ -1758,10 +1829,15 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                 <div className="flex flex-col items-end gap-0.5">
                                   <button
                                     onClick={handleSaveSlug}
-                                    disabled={updateSlugMutation.isPending || isSlugTaken}
+                                    disabled={
+                                      updateSlugMutation.isPending ||
+                                      isSlugTaken
+                                    }
                                     className={clsx(
                                       "p-0.5 rounded-full transition-colors disabled:opacity-50",
-                                      isSlugTaken ? "bg-red-500/20 text-red-400 cursor-not-allowed" : "bg-white/10 text-green-400 hover:text-green-300"
+                                      isSlugTaken
+                                        ? "bg-red-500/20 text-red-400 cursor-not-allowed"
+                                        : "bg-white/10 text-green-400 hover:text-green-300",
                                     )}
                                   >
                                     {updateSlugMutation.isPending ? (
@@ -1784,7 +1860,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                 <span className="text-xs font-mono text-white">
                                   {loggedInUser.uniqueSlug || "---"}
                                 </span>
-                                <button 
+                                <button
                                   onClick={() => {
                                     setSlugValue(loggedInUser.uniqueSlug || "");
                                     setIsEditingSlug(true);
@@ -1809,7 +1885,11 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                   type="text"
                                   maxLength={5}
                                   value={newPinValue}
-                                  onChange={(e) => setNewPinValue(e.target.value.replace(/\D/g, ""))}
+                                  onChange={(e) =>
+                                    setNewPinValue(
+                                      e.target.value.replace(/\D/g, ""),
+                                    )
+                                  }
                                   placeholder="New PIN"
                                   className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-purple-500/50"
                                   autoFocus
@@ -1840,7 +1920,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                 <span className="text-xs tracking-[0.3em] text-white/60">
                                   •••••
                                 </span>
-                                <button 
+                                <button
                                   onClick={() => setIsEditingPin(true)}
                                   className="p-1 bg-white/5 rounded-lg text-white/40 hover:text-white transition-colors opacity-0 group-hover/item:opacity-100"
                                 >
@@ -1855,7 +1935,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   )}
                 </AnimatePresence>
 
-                  {/* Reach & Click Stats Display */}
+                {/* Reach & Click Stats Display */}
                 <div className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-3 shrink-0">
                   <div className="flex flex-col items-center gap-0.5">
                     <span className="text-[8px] text-white/40 uppercase tracking-[0.2em] font-bold">
@@ -1867,107 +1947,167 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   </div>
 
                   {/* Reach Trend Chart */}
-                  {loggedInUser.reachHistory && loggedInUser.reachHistory.length > 0 && (
-                    <div className="h-12 w-full pt-1">
-                      <div className="flex items-end justify-between h-full gap-0.5">
-                        {(() => {
-                          const history = [...loggedInUser.reachHistory].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
-                          const counts = history.map(h => h.count);
-                          const maxCount = Math.max(...counts, 1);
-                          
-                          return (
-                            <div className="w-full h-full relative flex items-end">
-                              <svg 
-                                className="w-full h-full overflow-visible"
-                                viewBox="0 0 100 100"
-                                preserveAspectRatio="none"
-                              >
-                                <defs>
-                                  <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="rgb(168, 85, 247)" stopOpacity="0.8" />
-                                    <stop offset="100%" stopColor="rgb(168, 85, 247)" stopOpacity="0.1" />
-                                  </linearGradient>
-                                </defs>
-                                {(() => {
-                                  if (history.length < 2) return null;
-                                  
-                                  const points = history.map((h, i) => {
-                                    const x = (i / (history.length - 1)) * 100;
-                                    const y = 100 - (h.count / maxCount) * 80 - 10; // Margin top/bottom
-                                    return `${x},${y}`;
-                                  });
-                                  
-                                  const pathData = points.reduce((acc, point, i, arr) => {
-                                    if (i === 0) return `M ${point}`;
-                                    // Cubic bezier for smooth curve
-                                    const prev = arr[i-1].split(',');
-                                    const curr = point.split(',');
-                                    const cp1x = Number(prev[0]) + (Number(curr[0]) - Number(prev[0])) / 2;
-                                    return `${acc} C ${cp1x},${prev[1]} ${cp1x},${curr[1]} ${curr[0]},${curr[1]}`;
-                                  }, "");
+                  {loggedInUser.reachHistory &&
+                    loggedInUser.reachHistory.length > 0 && (
+                      <div className="h-12 w-full pt-1">
+                        <div className="flex items-end justify-between h-full gap-0.5">
+                          {(() => {
+                            const history = [...loggedInUser.reachHistory].sort(
+                              (a, b) => a.timestamp.localeCompare(b.timestamp),
+                            );
+                            const counts = history.map((h) => h.count);
+                            const maxCount = Math.max(...counts, 1);
 
-                                  const areaData = `${pathData} L 100,100 L 0,100 Z`;
+                            return (
+                              <div className="w-full h-full relative flex items-end">
+                                <svg
+                                  className="w-full h-full overflow-visible"
+                                  viewBox="0 0 100 100"
+                                  preserveAspectRatio="none"
+                                >
+                                  <defs>
+                                    <linearGradient
+                                      id="chartGradient"
+                                      x1="0"
+                                      y1="0"
+                                      x2="0"
+                                      y2="1"
+                                    >
+                                      <stop
+                                        offset="0%"
+                                        stopColor="rgb(168, 85, 247)"
+                                        stopOpacity="0.8"
+                                      />
+                                      <stop
+                                        offset="100%"
+                                        stopColor="rgb(168, 85, 247)"
+                                        stopOpacity="0.1"
+                                      />
+                                    </linearGradient>
+                                  </defs>
+                                  {(() => {
+                                    if (history.length < 2) return null;
 
-                                  return (
-                                    <>
-                                      <motion.path
-                                        initial={{ pathLength: 0, opacity: 0 }}
-                                        animate={{ pathLength: 1, opacity: 1 }}
-                                        transition={{ duration: 1, ease: "easeOut" }}
-                                        d={pathData}
-                                        fill="none"
-                                        stroke="rgb(168, 85, 247)"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                      />
-                                      <motion.path
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ duration: 1.5, delay: 0.5 }}
-                                        d={areaData}
-                                        fill="url(#chartGradient)"
-                                      />
-                                    </>
-                                  );
-                                })()}
-                              </svg>
-                              {/* Points for tooltips */}
-                              <div className="absolute inset-0 flex justify-between">
-                                {history.map((day, i) => (
-                                  <div key={i} className="flex-1 group relative h-full">
-                                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-white text-black text-[7px] font-bold px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                                      {day.count}
+                                    const points = history.map((h, i) => {
+                                      const x =
+                                        (i / (history.length - 1)) * 100;
+                                      const y =
+                                        100 - (h.count / maxCount) * 80 - 10; // Margin top/bottom
+                                      return `${x},${y}`;
+                                    });
+
+                                    const pathData = points.reduce(
+                                      (acc, point, i, arr) => {
+                                        if (i === 0) return `M ${point}`;
+                                        // Cubic bezier for smooth curve
+                                        const prev = arr[i - 1].split(",");
+                                        const curr = point.split(",");
+                                        const cp1x =
+                                          Number(prev[0]) +
+                                          (Number(curr[0]) - Number(prev[0])) /
+                                            2;
+                                        return `${acc} C ${cp1x},${prev[1]} ${cp1x},${curr[1]} ${curr[0]},${curr[1]}`;
+                                      },
+                                      "",
+                                    );
+
+                                    const areaData = `${pathData} L 100,100 L 0,100 Z`;
+
+                                    return (
+                                      <>
+                                        <motion.path
+                                          initial={{
+                                            pathLength: 0,
+                                            opacity: 0,
+                                          }}
+                                          animate={{
+                                            pathLength: 1,
+                                            opacity: 1,
+                                          }}
+                                          transition={{
+                                            duration: 1,
+                                            ease: "easeOut",
+                                          }}
+                                          d={pathData}
+                                          fill="none"
+                                          stroke="rgb(168, 85, 247)"
+                                          strokeWidth="2"
+                                          strokeLinecap="round"
+                                        />
+                                        <motion.path
+                                          initial={{ opacity: 0 }}
+                                          animate={{ opacity: 1 }}
+                                          transition={{
+                                            duration: 1.5,
+                                            delay: 0.5,
+                                          }}
+                                          d={areaData}
+                                          fill="url(#chartGradient)"
+                                        />
+                                      </>
+                                    );
+                                  })()}
+                                </svg>
+                                {/* Points for tooltips */}
+                                <div className="absolute inset-0 flex justify-between">
+                                  {history.map((day, i) => (
+                                    <div
+                                      key={i}
+                                      className="flex-1 group relative h-full"
+                                    >
+                                      <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-white text-black text-[7px] font-bold px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                                        {day.count}
+                                      </div>
                                     </div>
-                                  </div>
-                                ))}
+                                  ))}
+                                </div>
                               </div>
-                            </div>
-                          );
-                        })()}
+                            );
+                          })()}
+                        </div>
+                        <div className="flex justify-between mt-1 px-0.5">
+                          <span className="text-[5px] text-white/20 uppercase font-bold">
+                            7d ago
+                          </span>
+                          <span className="text-[5px] text-white/20 uppercase font-bold">
+                            Today
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex justify-between mt-1 px-0.5">
-                         <span className="text-[5px] text-white/20 uppercase font-bold">7d ago</span>
-                         <span className="text-[5px] text-white/20 uppercase font-bold">Today</span>
-                      </div>
-                    </div>
-                  )}
-                  
+                    )}
+
                   <div className="grid grid-cols-2 gap-2 pt-3 border-t border-white/10">
                     <div className="flex flex-col items-center gap-0.5">
-                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">Insta</span>
-                      <span className="text-xs font-bold text-white/80">{loggedInUser.instaClicks || 0}</span>
+                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">
+                        Insta
+                      </span>
+                      <span className="text-xs font-bold text-white/80">
+                        {loggedInUser.instaClicks || 0}
+                      </span>
                     </div>
                     <div className="flex flex-col items-center gap-0.5">
-                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">LinkedIn</span>
-                      <span className="text-xs font-bold text-white/80">{loggedInUser.linkedinClicks || 0}</span>
+                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">
+                        LinkedIn
+                      </span>
+                      <span className="text-xs font-bold text-white/80">
+                        {loggedInUser.linkedinClicks || 0}
+                      </span>
                     </div>
                     <div className="flex flex-col items-center gap-0.5">
-                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">WhatsApp</span>
-                      <span className="text-xs font-bold text-white/80">{loggedInUser.whatsappClicks || 0}</span>
+                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">
+                        WhatsApp
+                      </span>
+                      <span className="text-xs font-bold text-white/80">
+                        {loggedInUser.whatsappClicks || 0}
+                      </span>
                     </div>
                     <div className="flex flex-col items-center gap-0.5">
-                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">Portal</span>
-                      <span className="text-xs font-bold text-white/80">{loggedInUser.portalClicks || 0}</span>
+                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">
+                        Portal
+                      </span>
+                      <span className="text-xs font-bold text-white/80">
+                        {loggedInUser.portalClicks || 0}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -1977,7 +2117,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
                     <TrendingUp className="w-6 h-6 text-purple-400" />
                   </div>
-                  
+
                   <div className="flex flex-col gap-0.5">
                     <div className="flex items-center gap-1.5">
                       <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
@@ -1985,26 +2125,38 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         AI Analysis
                       </span>
                     </div>
-                    <h4 className="text-white font-bold text-xs">Growth Insights</h4>
+                    <h4 className="text-white font-bold text-xs">
+                      Growth Insights
+                    </h4>
                   </div>
 
                   <div className="space-y-2 relative z-10">
                     {(() => {
                       const history = loggedInUser.reachHistory || [];
                       const todayDate = new Date().toISOString();
-                      const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString();
-                      
-                      const lastEntry = history.length > 0 ? history[history.length - 1] : { count: 0 };
-                      const prevEntry = history.length > 1 ? history[history.length - 2] : { count: 0 };
-                      
+                      const twelveHoursAgo = new Date(
+                        Date.now() - 12 * 60 * 60 * 1000,
+                      ).toISOString();
+
+                      const lastEntry =
+                        history.length > 0
+                          ? history[history.length - 1]
+                          : { count: 0 };
+                      const prevEntry =
+                        history.length > 1
+                          ? history[history.length - 2]
+                          : { count: 0 };
+
                       const isDecreasing = lastEntry.count < prevEntry.count;
                       const industry = loggedInUser.industry || "General";
-                      
+
                       return (
                         <>
                           <div className="p-2 bg-white/5 rounded-lg border border-white/5 space-y-1.5">
                             <div className="flex items-center justify-between">
-                              <span className="text-[8px] text-white/40 uppercase font-bold tracking-tight">Status</span>
+                              <span className="text-[8px] text-white/40 uppercase font-bold tracking-tight">
+                                Status
+                              </span>
                               {isDecreasing ? (
                                 <span className="text-[8px] text-red-400 font-bold flex items-center gap-1">
                                   <ChevronDown className="w-2 h-2" /> Decreasing
@@ -2016,22 +2168,27 @@ export default function AuthPage({ slug }: { slug?: string }) {
                               )}
                             </div>
                             <p className="text-[9px] text-white/70 leading-tight">
-                              {isDecreasing 
+                              {isDecreasing
                                 ? `Reach down. In ${industry}, consistency is key.`
                                 : `Profile gaining traction in ${industry}.`}
                             </p>
                           </div>
 
                           <div className="space-y-1.5">
-                            <span className="text-[8px] text-white/40 uppercase font-bold tracking-[0.1em]">AI Suggestions</span>
+                            <span className="text-[8px] text-white/40 uppercase font-bold tracking-[0.1em]">
+                              AI Suggestions
+                            </span>
                             <ul className="space-y-1.5">
                               {[
                                 `Update ${industry} pitch card.`,
                                 "Share QR on LinkedIn.",
                                 "Set QR as wallpaper for easy networking.",
-                                "Write notes & todo list."
+                                "Write notes & todo list.",
                               ].map((s, i) => (
-                                <li key={i} className="flex items-start gap-1.5 text-[9px] text-white/60">
+                                <li
+                                  key={i}
+                                  className="flex items-start gap-1.5 text-[9px] text-white/60"
+                                >
                                   <div className="w-0.5 h-0.5 rounded-full bg-purple-500 mt-1.5 shrink-0" />
                                   {s}
                                 </li>
@@ -2043,7 +2200,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     })()}
                   </div>
                 </div>
-
               </div>
             </div>
           ) : (
@@ -2171,11 +2327,15 @@ export default function AuthPage({ slug }: { slug?: string }) {
           <div className="flex items-center justify-center gap-6 mb-4">
             <div className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
-              <span className="text-[11px] font-medium text-emerald-500/90 uppercase tracking-wider">Smart Networking</span>
+              <span className="text-[11px] font-medium text-emerald-500/90 uppercase tracking-wider">
+                Smart Networking
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
-              <span className="text-[11px] font-medium text-emerald-500/90 uppercase tracking-wider">Startup Exposure</span>
+              <span className="text-[11px] font-medium text-emerald-500/90 uppercase tracking-wider">
+                Startup Exposure
+              </span>
             </div>
           </div>
         </motion.div>
@@ -2314,7 +2474,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
                             onClick={() => setActiveTab("notes")}
                             className={clsx(
                               "flex-1 py-2 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider",
-                              activeTab === "notes" ? "bg-white/10 text-white shadow-lg" : "text-white/40 hover:text-white/60"
+                              activeTab === "notes"
+                                ? "bg-white/10 text-white shadow-lg"
+                                : "text-white/40 hover:text-white/60",
                             )}
                           >
                             Notes
@@ -2324,7 +2486,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
                             onClick={() => setActiveTab("events")}
                             className={clsx(
                               "flex-1 py-2 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider",
-                              activeTab === "events" ? "bg-white/10 text-white shadow-lg" : "text-white/40 hover:text-white/60"
+                              activeTab === "events"
+                                ? "bg-white/10 text-white shadow-lg"
+                                : "text-white/40 hover:text-white/60",
                             )}
                           >
                             Upcoming Events
@@ -2334,7 +2498,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
                             onClick={() => setActiveTab("connect")}
                             className={clsx(
                               "flex-1 py-2 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider flex items-center justify-center gap-1.5",
-                              activeTab === "connect" ? "bg-white/10 text-white shadow-lg" : "text-white/40 hover:text-white/60"
+                              activeTab === "connect"
+                                ? "bg-white/10 text-white shadow-lg"
+                                : "text-white/40 hover:text-white/60",
                             )}
                           >
                             <div className="w-3 h-3 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/40">
@@ -2359,8 +2525,14 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                   type="text"
                                   value={newNote}
                                   onChange={(e) => setNewNote(e.target.value)}
-                                  onKeyPress={(e) => e.key === "Enter" && addNote()}
-                                  placeholder={notes.length >= 5 ? "Limit of 5 notes reached" : "Add a quick note..."}
+                                  onKeyPress={(e) =>
+                                    e.key === "Enter" && addNote()
+                                  }
+                                  placeholder={
+                                    notes.length >= 5
+                                      ? "Limit of 5 notes reached"
+                                      : "Add a quick note..."
+                                  }
                                   disabled={notes.length >= 5}
                                   className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
                                 />
@@ -2375,32 +2547,51 @@ export default function AuthPage({ slug }: { slug?: string }) {
                               </div>
                               <div className="space-y-2 max-h-[120px] overflow-y-auto custom-scrollbar">
                                 {notes.map((note) => (
-                                  <div key={note.id} className="flex items-center gap-3 group">
+                                  <div
+                                    key={note.id}
+                                    className="flex items-center gap-3 group"
+                                  >
                                     <button
                                       type="button"
                                       onClick={() => toggleNote(note.id)}
                                       className={clsx(
                                         "w-4 h-4 rounded-full border transition-all flex items-center justify-center",
-                                        note.completed ? "bg-purple-500 border-purple-500" : "border-white/20 hover:border-white/40"
+                                        note.completed
+                                          ? "bg-purple-500 border-purple-500"
+                                          : "border-white/20 hover:border-white/40",
                                       )}
                                     >
-                                      {note.completed && <Check className="w-2.5 h-2.5 text-white" />}
+                                      {note.completed && (
+                                        <Check className="w-2.5 h-2.5 text-white" />
+                                      )}
                                     </button>
                                     <div className="flex flex-col flex-1">
-                                      <span className={clsx(
-                                        "text-xs transition-all",
-                                        note.completed ? "text-white/20 line-through" : "text-white/70"
-                                      )}>
+                                      <span
+                                        className={clsx(
+                                          "text-xs transition-all",
+                                          note.completed
+                                            ? "text-white/20 line-through"
+                                            : "text-white/70",
+                                        )}
+                                      >
                                         {note.text}
                                       </span>
-                                      <span className={clsx("text-[8px] uppercase tracking-tighter", getTimerColor(note.expiresAt))}>
-                                        Expires in {formatTimeLeft(note.expiresAt)}
+                                      <span
+                                        className={clsx(
+                                          "text-[8px] uppercase tracking-tighter",
+                                          getTimerColor(note.expiresAt),
+                                        )}
+                                      >
+                                        Expires in{" "}
+                                        {formatTimeLeft(note.expiresAt)}
                                       </span>
                                     </div>
                                   </div>
                                 ))}
                                 {notes.length === 0 && (
-                                  <p className="text-[10px] text-white/20 uppercase tracking-widest text-center py-4">No notes yet</p>
+                                  <p className="text-[10px] text-white/20 uppercase tracking-widest text-center py-4">
+                                    No notes yet
+                                  </p>
                                 )}
                               </div>
                             </motion.div>
@@ -2413,8 +2604,12 @@ export default function AuthPage({ slug }: { slug?: string }) {
                               className="h-[120px] flex items-center justify-center border border-dashed border-white/10 rounded-2xl"
                             >
                               <div className="text-center space-y-2">
-                                <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">Upcoming Events</p>
-                                <p className="text-xs text-white/20 font-medium">Coming Soon</p>
+                                <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">
+                                  Upcoming Events
+                                </p>
+                                <p className="text-xs text-white/20 font-medium">
+                                  Coming Soon
+                                </p>
                               </div>
                             </motion.div>
                           ) : (
@@ -2427,8 +2622,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
                             >
                               <div className="space-y-2 max-h-[120px] overflow-y-auto custom-scrollbar">
                                 {connections.map((conn, idx) => (
-                                  <div 
-                                    key={idx} 
+                                  <div
+                                    key={idx}
                                     onClick={() => setLocation(`/${conn.slug}`)}
                                     className="flex items-center justify-between p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all cursor-pointer group"
                                   >
@@ -2451,8 +2646,12 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                 {connections.length === 0 && (
                                   <div className="h-[100px] flex items-center justify-center border border-dashed border-white/10 rounded-2xl bg-gradient-to-tr from-blue-500/5 to-purple-500/5">
                                     <div className="text-center space-y-2">
-                                      <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">Exclusive Connect</p>
-                                      <p className="text-xs text-white/20 font-medium">No connections yet</p>
+                                      <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">
+                                        Exclusive Connect
+                                      </p>
+                                      <p className="text-xs text-white/20 font-medium">
+                                        No connections yet
+                                      </p>
                                     </div>
                                   </div>
                                 )}
@@ -2509,12 +2708,25 @@ export default function AuthPage({ slug }: { slug?: string }) {
                           {...form.register("industry")}
                           className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white appearance-none"
                         >
-                          <option value="" className="bg-[#1a1a1a]">Select Industry</option>
+                          <option value="" className="bg-[#1a1a1a]">
+                            Select Industry
+                          </option>
                           {[
-                            "Fintech", "Healthtech", "Edtech", "Ecommerce & Retail", 
-                            "Agritech", "SaaS", "Cleantech & Greentech", "Logistics", 
-                            "🌱 Sustainability & Energy (EVs)", "DeepTech", "Spacetech", 
-                            "Robotics & Automation", "Cybersecurity", "AR/VR", "Media & Entertainment"
+                            "Fintech",
+                            "Healthtech",
+                            "Edtech",
+                            "Ecommerce & Retail",
+                            "Agritech",
+                            "SaaS",
+                            "Cleantech & Greentech",
+                            "Logistics",
+                            "🌱 Sustainability & Energy (EVs)",
+                            "DeepTech",
+                            "Spacetech",
+                            "Robotics & Automation",
+                            "Cybersecurity",
+                            "AR/VR",
+                            "Media & Entertainment",
                           ].map((industry) => (
                             <option
                               key={industry}
@@ -2726,29 +2938,37 @@ export default function AuthPage({ slug }: { slug?: string }) {
               >
                 Back to My Persona
               </button>
-            ) : loggedInUser && user && loggedInUser.id === user.id && mode === "login" && (
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("register");
-                  form.reset({
-                    password: "",
-                    name: user?.name || "",
-                    role: user?.role || "founder",
-                    bio: user?.bio || "Collaborate & Grow your Startup",
-                    instagram: user?.instagram || "",
-                    linkedin: user?.linkedin || "",
-                    whatsapp: user?.whatsapp || "",
-                    website: user?.website || "",
-                    cards: user?.cards || [],
-                    email: user?.email && !user.email.endsWith("@persona.local") ? user.email : "",
-                  });
-                  setSelectedCards(user?.cards || []);
-                }}
-                className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg mt-2"
-              >
-                <Pencil className="w-4 h-4" /> Edit Persona
-              </button>
+            ) : (
+              loggedInUser &&
+              user &&
+              loggedInUser.id === user.id &&
+              mode === "login" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("register");
+                    form.reset({
+                      password: "",
+                      name: user?.name || "",
+                      role: user?.role || "founder",
+                      bio: user?.bio || "",
+                      instagram: user?.instagram || "",
+                      linkedin: user?.linkedin || "",
+                      whatsapp: user?.whatsapp || "",
+                      website: user?.website || "",
+                      cards: user?.cards || [],
+                      email:
+                        user?.email && !user.email.endsWith("@persona.local")
+                          ? user.email
+                          : "",
+                    });
+                    setSelectedCards(user?.cards || []);
+                  }}
+                  className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg mt-2"
+                >
+                  <Pencil className="w-4 h-4" /> Edit Persona
+                </button>
+              )
             )}
 
             {!loggedInUser && (
@@ -2761,7 +2981,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       password: "",
                       name: "",
                       role: "founder",
-                      bio: "Collaborate & Grow your Startup",
+                      bio: "",
                       instagram: "",
                       linkedin: "",
                       whatsapp: "",
@@ -2806,7 +3026,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       "flex-1 py-2.5 text-xs font-bold rounded-xl transition-all",
                       scannerTab === "scan"
                         ? "bg-white/10 text-white shadow-lg"
-                        : "text-white/40 hover:text-white/60"
+                        : "text-white/40 hover:text-white/60",
                     )}
                   >
                     Scan QR
@@ -2817,7 +3037,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       "flex-1 py-2.5 text-xs font-bold rounded-xl transition-all",
                       scannerTab === "code"
                         ? "bg-white/10 text-white shadow-lg"
-                        : "text-white/40 hover:text-white/60"
+                        : "text-white/40 hover:text-white/60",
                     )}
                   >
                     Persona Code
@@ -2846,25 +3066,37 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-white/20 rounded-br-lg" />
                       </div>
                       <div className="space-y-2">
-                        <h3 className="text-xl font-bold text-white tracking-tight">Scan to Connect</h3>
-                        <p className="text-white/40 text-xs">Point your camera at a Persona QR code</p>
+                        <h3 className="text-xl font-bold text-white tracking-tight">
+                          Scan to Connect
+                        </h3>
+                        <p className="text-white/40 text-xs">
+                          Point your camera at a Persona QR code
+                        </p>
                       </div>
                     </div>
                   ) : (
                     <div className="space-y-6 text-center">
                       <div className="space-y-2">
-                        <h3 className="text-xl font-bold text-white tracking-tight uppercase tracking-widest">Enter Code</h3>
-                        <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold">Connect with a unique persona code</p>
+                        <h3 className="text-xl font-bold text-white tracking-tight uppercase tracking-widest">
+                          Enter Code
+                        </h3>
+                        <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold">
+                          Connect with a unique persona code
+                        </p>
                       </div>
-                      
+
                       <div className="space-y-4 text-left">
                         <div className="space-y-2">
-                          <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold ml-1">Persona Code</label>
+                          <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold ml-1">
+                            Persona Code
+                          </label>
                           <input
                             type="text"
                             placeholder="e.g. x8y2z"
                             value={personaSlug}
-                            onChange={(e) => setPersonaSlug(e.target.value.toLowerCase())}
+                            onChange={(e) =>
+                              setPersonaSlug(e.target.value.toLowerCase())
+                            }
                             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-white/20 transition-all font-mono"
                           />
                         </div>
@@ -2985,6 +3217,14 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
                 className="relative w-full max-w-[240px] mx-auto"
               >
+                {/* Close Button on Top Right */}
+                <button
+                  onClick={() => setShowQRDialog(false)}
+                  className="absolute -top-12 right-0 p-2.5 bg-white/10 hover:bg-white/20 rounded-full text-white/70 hover:text-white transition-all backdrop-blur-md border border-white/20 shadow-2xl z-[150] active:scale-90"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+
                 {/* iPhone Frame - Ultra Compact & Minimalist */}
                 <div className="relative aspect-[9/19.5] bg-[#050505] rounded-[42px] p-1.5 shadow-[0_0_0_1px_#1a1a1a,0_0_0_4px_#000,0_15px_40px_rgba(0,0,0,0.6)] overflow-hidden border-[1px] border-white/5">
                   {/* Tiny Dynamic Island */}
@@ -2993,10 +3233,15 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   </div>
 
                   {/* iPhone Screen Content */}
-                  <div id="iphone-screen-preview" className="w-full h-full bg-[#050505] rounded-[36px] relative overflow-hidden flex flex-col items-center p-4">
+                  <div
+                    id="iphone-screen-preview"
+                    className="w-full h-full bg-[#050505] rounded-[36px] relative overflow-hidden flex flex-col items-center p-4"
+                  >
                     {/* Status Bar */}
                     <div className="status-bar-container w-full flex justify-between items-center px-6 pt-2 pb-1 z-50">
-                      <span className="text-white text-[10px] font-medium">{currentTime}</span>
+                      <span className="text-white text-[10px] font-medium">
+                        {currentTime}
+                      </span>
                       <div className="flex items-center gap-1">
                         <div className="w-3 h-3 rounded-full border border-white/20" />
                         <div className="w-4 h-2 rounded-sm border border-white/20" />
@@ -3014,7 +3259,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                               className="w-full h-full rounded-full object-cover"
                             />
                           </div>
-                          <button 
+                          <button
                             onClick={() => setShowAvatarDialog(true)}
                             className="edit-avatar-button absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg border border-black/5 hover:scale-110 transition-transform"
                           >
@@ -3035,9 +3280,18 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       </div>
 
                       {/* QR Code Section - More Compact */}
-                      <div id="qr-download-area" className="p-4 bg-white rounded-[24px] shadow-2xl flex flex-col items-center">
+                      <div
+                        id="qr-download-area"
+                        className="p-4 bg-white rounded-[24px] shadow-2xl flex flex-col items-center"
+                      >
                         <QRCodeSVG
-                          value={window.location.origin + "/" + (user?.uniqueSlug || window.location.pathname.split("/")[1] || "")}
+                          value={
+                            window.location.origin +
+                            "/" +
+                            (user?.uniqueSlug ||
+                              window.location.pathname.split("/")[1] ||
+                              "")
+                          }
                           size={140}
                           level="H"
                           includeMargin={false}
@@ -3085,11 +3339,11 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                   <motion.button
                                     key={i}
                                     initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                                    animate={{ 
-                                      opacity: 1, 
-                                      scale: 1, 
+                                    animate={{
+                                      opacity: 1,
+                                      scale: 1,
                                       y: 0,
-                                      transition: { delay: i * 0.05 } 
+                                      transition: { delay: i * 0.05 },
                                     }}
                                     whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.95 }}
@@ -3133,14 +3387,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   >
                     <Save className="w-3.5 h-3.5" />
                     Download
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowQRDialog(false);
-                    }}
-                    className="w-full text-white/30 hover:text-white/50 py-1.5 font-bold text-[9px] uppercase tracking-widest transition-all"
-                  >
-                    Close
                   </button>
                 </div>
               </motion.div>
@@ -3320,8 +3566,13 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
                           // Set user and sync form
                           localStorage.setItem("persona_user_id", userData.id);
-                          localStorage.setItem("persona_user", JSON.stringify(userData));
-                          await queryClient.invalidateQueries({ queryKey: ["/api/me"] });
+                          localStorage.setItem(
+                            "persona_user",
+                            JSON.stringify(userData),
+                          );
+                          await queryClient.invalidateQueries({
+                            queryKey: ["/api/me"],
+                          });
                           setLocalUser(userData);
                           setShowPersonaDialog(false);
                           form.reset({
@@ -3336,11 +3587,11 @@ export default function AuthPage({ slug }: { slug?: string }) {
                             cards: userData.cards || [],
                           });
                           setSelectedCards(userData.cards || []);
-                          
+
                           if (userData.uniqueSlug) {
                             setLocation(`/${userData.uniqueSlug}`);
                           }
-                          
+
                           setMode("login");
                           toast({
                             title: "Welcome back!",
