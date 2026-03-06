@@ -2729,7 +2729,22 @@ export default function AuthPage({ slug }: { slug?: string }) {
             ) : loggedInUser && user && loggedInUser.id === user.id && mode === "login" && (
               <button
                 type="button"
-                onClick={() => setMode("register")}
+                onClick={() => {
+                  setMode("register");
+                  form.reset({
+                    password: "",
+                    name: user?.name || "",
+                    role: user?.role || "founder",
+                    bio: user?.bio || "Collaborate & Grow your Startup",
+                    instagram: user?.instagram || "",
+                    linkedin: user?.linkedin || "",
+                    whatsapp: user?.whatsapp || "",
+                    website: user?.website || "",
+                    cards: user?.cards || [],
+                    email: user?.email && !user.email.endsWith("@persona.local") ? user.email : "",
+                  });
+                  setSelectedCards(user?.cards || []);
+                }}
                 className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg mt-2"
               >
                 <Pencil className="w-4 h-4" /> Edit Persona
@@ -2742,6 +2757,19 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 onClick={() => {
                   if (mode === "login") {
                     setMode("register");
+                    form.reset({
+                      password: "",
+                      name: "",
+                      role: "founder",
+                      bio: "Collaborate & Grow your Startup",
+                      instagram: "",
+                      linkedin: "",
+                      whatsapp: "",
+                      website: "",
+                      cards: [],
+                      email: "",
+                    });
+                    setSelectedCards([]);
                   } else {
                     setMode("login");
                   }
