@@ -1729,31 +1729,27 @@ export default function AuthPage({ slug }: { slug?: string }) {
               </span>
             </button>
           )}
-        </motion.div>
-      </div>
 
-      <div className="absolute inset-0 flex flex-col justify-end items-end p-12 pb-12 pointer-events-none">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: isMenuOpen ? 1 : 0, y: isMenuOpen ? 0 : 20 }}
-          className="text-right space-y-2 max-w-[200px] pointer-events-auto"
-        >
-          <p className="text-white/40 text-[8px] leading-relaxed uppercase tracking-widest text-center">
-            copyright : persona UI/UX is inspired by
-          </p>
-          <div className="space-y-2">
-            <a
-              href="https://perala.in"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block group"
-            >
-              <img
-                src={peralaLogo}
-                alt="Perala"
-                className="w-full h-auto opacity-80 group-hover:opacity-100 transition-opacity rounded-lg"
-              />
-            </a>
+          <div className="pt-4 mt-auto">
+            <div className="text-right space-y-2 max-w-[200px] ml-auto">
+              <p className="text-white/40 text-[8px] leading-relaxed uppercase tracking-widest text-center">
+                copyright : persona UI/UX is inspired by
+              </p>
+              <div className="space-y-2">
+                <a
+                  href="https://perala.in"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block group"
+                >
+                  <img
+                    src={peralaLogo}
+                    alt="Perala"
+                    className="w-full h-auto opacity-80 group-hover:opacity-100 transition-opacity rounded-lg"
+                  />
+                </a>
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>
