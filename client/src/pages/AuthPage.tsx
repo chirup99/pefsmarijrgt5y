@@ -233,20 +233,21 @@ const TrendLine = () => (
         </linearGradient>
       </defs>
       <motion.path
-        d="M 0 80 Q 25 90 50 70 T 100 60 T 150 80 T 200 20"
+        d="M 0 80 C 20 85, 40 60, 60 75 S 100 50, 120 70 S 160 30, 200 20"
         fill="none"
         stroke="url(#lineGradient)"
         strokeWidth="3"
+        strokeLinecap="round"
         initial={{ pathLength: 0, opacity: 0 }}
         animate={{ pathLength: 1, opacity: 1 }}
-        transition={{ duration: 2, ease: "easeInOut", repeat: Infinity, repeatDelay: 1 }}
+        transition={{ duration: 3, ease: "linear", repeat: Infinity }}
       />
       <motion.path
-        d="M 0 80 Q 25 90 50 70 T 100 60 T 150 80 T 200 20 L 200 100 L 0 100 Z"
+        d="M 0 80 C 20 85, 40 60, 60 75 S 100 50, 120 70 S 160 30, 200 20 L 200 100 L 0 100 Z"
         fill="url(#fillGradient)"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.5, ease: "easeOut" }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: [0, 1, 1, 0] }}
+        transition={{ duration: 3, ease: "linear", repeat: Infinity }}
       />
     </svg>
   </div>
