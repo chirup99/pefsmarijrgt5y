@@ -288,7 +288,7 @@ const SwipeCardContent = ({
             <span className="text-white/90 text-[9px] font-bold tracking-[0.2em] uppercase">
               {card.title}
             </span>
-            <Mic className="w-3.5 h-3.5 text-white/90" />
+            {card.type !== "product" && <Mic className="w-3.5 h-3.5 text-white/90" />}
           </div>
 
           <div className="flex-1 flex flex-col items-center justify-center w-full space-y-3">
@@ -376,16 +376,18 @@ const SwipeCardContent = ({
             )}
           </div>
 
-          <div className="w-full">
-            <button
-              type="button"
-              onClick={() => setIsPlaying(true)}
-              className="w-full bg-white text-black rounded-full py-3 flex items-center justify-center gap-2 font-bold shadow-xl hover:scale-105 transition-transform text-sm"
-            >
-              <Play className="w-3.5 h-3.5 fill-current" />
-              Play Now
-            </button>
-          </div>
+          {card.type !== "product" && (
+            <div className="w-full">
+              <button
+                type="button"
+                onClick={() => setIsPlaying(true)}
+                className="w-full bg-white text-black rounded-full py-3 flex items-center justify-center gap-2 font-bold shadow-xl hover:scale-105 transition-transform text-sm"
+              >
+                <Play className="w-3.5 h-3.5 fill-current" />
+                Play Now
+              </button>
+            </div>
+          )}
         </div>
       )}
       <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
