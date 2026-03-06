@@ -77,6 +77,12 @@ const CARD_TYPES = [
     color: "from-emerald-500 to-emerald-600",
   },
   {
+    type: "traction",
+    label: "Traction / Growth",
+    icon: TrendingUp,
+    color: "from-amber-500 to-amber-600",
+  },
+  {
     type: "product",
     label: "Product Show",
     icon: Package,
@@ -161,6 +167,26 @@ const CARDS = [
     bgStack1: "bg-rose-900/40",
     bgStack2: "bg-rose-900/40",
   },
+  {
+    id: 6,
+    title: "Revenue",
+    name: "$1.2M",
+    subname: "Annual Revenue",
+    type: "revenue",
+    color: "from-emerald-600 to-teal-700",
+    bgStack1: "bg-emerald-900/40",
+    bgStack2: "bg-teal-900/40",
+  },
+  {
+    id: 7,
+    title: "Traction",
+    name: "50k+",
+    subname: "Active Users",
+    type: "traction",
+    color: "from-amber-500 to-orange-600",
+    bgStack1: "bg-amber-900/40",
+    bgStack2: "bg-orange-900/40",
+  },
 ];
 
 interface SwipeCardProps {
@@ -187,6 +213,44 @@ const getThumbnailUrl = (url: string) => {
     return `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`;
   return null;
 };
+
+const TrendLine = () => (
+  <div className="w-full h-24 relative mt-4 overflow-hidden rounded-lg bg-black/10 backdrop-blur-sm border border-white/10">
+    <svg
+      viewBox="0 0 200 100"
+      className="w-full h-full preserve-3d"
+      preserveAspectRatio="none"
+    >
+      <defs>
+        <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="rgba(255,255,255,0.2)" />
+          <stop offset="50%" stopColor="rgba(255,255,255,0.5)" />
+          <stop offset="100%" stopColor="rgba(255,255,255,0.8)" />
+        </linearGradient>
+        <linearGradient id="fillGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="rgba(255,255,255,0.2)" />
+          <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+        </linearGradient>
+      </defs>
+      <motion.path
+        d="M 0 80 Q 25 90 50 70 T 100 60 T 150 80 T 200 20"
+        fill="none"
+        stroke="url(#lineGradient)"
+        strokeWidth="3"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ pathLength: 1, opacity: 1 }}
+        transition={{ duration: 2, ease: "easeInOut", repeat: Infinity, repeatDelay: 1 }}
+      />
+      <motion.path
+        d="M 0 80 Q 25 90 50 70 T 100 60 T 150 80 T 200 20 L 200 100 L 0 100 Z"
+        fill="url(#fillGradient)"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
+      />
+    </svg>
+  </div>
+);
 
 const SwipeCardContent = ({
   card,
@@ -408,6 +472,18 @@ const SwipeCardContent = ({
                   </h3>
                 </div>
               )
+            ) : card.type === "revenue" || card.type === "traction" ? (
+              <div className="w-full flex flex-col items-center">
+                <div className="text-center space-y-0.5 mb-2">
+                  <h3 className="text-white text-3xl font-bold leading-tight">
+                    {card.name}
+                  </h3>
+                  <h3 className="text-white text-sm opacity-60 font-medium leading-tight uppercase tracking-wider">
+                    {card.subname}
+                  </h3>
+                </div>
+                <TrendLine />
+              </div>
             ) : (
               <div className="text-center space-y-0.5">
                 <h3 className="text-white text-2xl font-bold leading-tight">
@@ -961,6 +1037,21 @@ const MiniCard = ({
               >
                 {(card as any).value}
               </motion.div>
+            </div>
+          </div>
+        ) : (card.type === "revenue" || card.type === "traction") ? (
+          <div className="w-full h-full flex flex-col items-center justify-center p-4">
+            <div className="text-center mb-4">
+              <div className="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1">
+                {card.type === "revenue" ? "Live Revenue" : "User Growth"}
+              </div>
+              <div className="text-white text-3xl font-bold tracking-tight">
+                {(card as any).value || (card.type === "revenue" ? "$1.2M" : "50k+")}
+              </div>
+            </div>
+            <div className="w-full h-32 relative group/chart">
+              <TrendLine />
+              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover/chart:opacity-100 transition-opacity rounded-xl -m-2" />
             </div>
           </div>
         ) : (
