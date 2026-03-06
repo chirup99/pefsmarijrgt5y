@@ -398,12 +398,12 @@ const MiniCard = ({
   const getEmbedUrl = (url: string) => {
     if (!url) return null;
     const ytMatch = url.match(
-      /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/))([\w-]{11})/,
+      /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/|reels\/))([\w-]{11})/,
     );
     if (ytMatch)
       return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${ytMatch[1]}`;
     const igMatch = url.match(
-      /(?:instagram\.com\/(?:reels|reel|p)\/)([\w-]{11})/,
+      /(?:instagram\.com\/(?:reels|reel|p)\/)([\w-]+)/,
     );
     if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed`;
     return null;
@@ -653,6 +653,14 @@ const MiniCard = ({
               </motion.div>
             </div>
           </div>
+        ) : card.type === "reel" ? (
+          <button
+            type="button"
+            onClick={() => setIsPlaying(true)}
+            className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all group"
+          >
+            <Video className="w-8 h-8 text-white group-hover:scale-110 transition-transform" />
+          </button>
         ) : (
           <button
             type="button"
@@ -666,7 +674,10 @@ const MiniCard = ({
 
       <div className="pt-2">
         {card.type === "reel" ? (
-          <button className="w-full bg-white text-black rounded-full py-2 text-xs font-bold flex items-center justify-center gap-2">
+          <button 
+            onClick={() => setIsPlaying(true)}
+            className="w-full bg-white text-black rounded-full py-2 text-xs font-bold flex items-center justify-center gap-2"
+          >
             <Play className="w-3 h-3 fill-current" /> Play Now
           </button>
         ) : card.type === "pitch" ? (
