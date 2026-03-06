@@ -984,8 +984,15 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const { user: authUser, isLoading: isAuthLoading } = useAuth();
   const [localUser, setLocalUser] = useState<any>(() => {
     const saved = localStorage.getItem("persona_user");
-    return saved ? JSON.parse(saved) : null;
+    try {
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
   });
+  
+  // Use authUser if available, otherwise fallback to localUser
+  // This ensures that as soon as the useQuery finishes, it takes precedence
   const loggedInUser = authUser || localUser;
   const [publicUser, setPublicUser] = useState<any>(null);
 
@@ -1409,16 +1416,28 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
   useEffect(() => {
     if (user && !publicUser) {
+      // Check if we need to update form values from the authenticated user
+      const currentValues = form.getValues();
+      
       Object.entries(user).forEach(([key, value]) => {
         if (value !== null && value !== undefined && key !== 'password') {
-          form.setValue(key as any, value);
+          if (currentValues[key as keyof InsertUser] !== value) {
+            form.setValue(key as any, value);
+          }
         }
       });
-      if (user.cards) {
+      
+      if (user.cards && JSON.stringify(user.cards) !== JSON.stringify(selectedCards)) {
         setSelectedCards(user.cards);
       }
+      
+      // Keep local storage in sync with the latest auth data
+      if (!isOtherPersona) {
+        localStorage.setItem("persona_user", JSON.stringify(user));
+        localStorage.setItem("persona_user_id", user.id);
+      }
     }
-  }, [user, publicUser]);
+  }, [user, publicUser, isOtherPersona]);
 
   const loginMutation = useLogin();
   const registerMutation = useRegister();
@@ -1595,16 +1614,28 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
   useEffect(() => {
     if (user && !publicUser) {
+      // Check if we need to update form values from the authenticated user
+      const currentValues = form.getValues();
+      
       Object.entries(user).forEach(([key, value]) => {
         if (value !== null && value !== undefined && key !== 'password') {
-          form.setValue(key as any, value);
+          if (currentValues[key as keyof InsertUser] !== value) {
+            form.setValue(key as any, value);
+          }
         }
       });
-      if (user.cards) {
+      
+      if (user.cards && JSON.stringify(user.cards) !== JSON.stringify(selectedCards)) {
         setSelectedCards(user.cards);
       }
+      
+      // Keep local storage in sync with the latest auth data
+      if (!isOtherPersona) {
+        localStorage.setItem("persona_user", JSON.stringify(user));
+        localStorage.setItem("persona_user_id", user.id);
+      }
     }
-  }, [user, publicUser]);
+  }, [user, publicUser, isOtherPersona]);
 
   const [isPersonaExpanded, setIsPersonaExpanded] = useState(false);
 
