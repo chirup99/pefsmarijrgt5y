@@ -364,6 +364,7 @@ const SwipeCard = ({ cards, user: propsUser }: { cards: string[]; user?: any }) 
           if (!card || !card.type) return CARDS[0];
           const typeInfo = CARD_TYPES.find((t) => t.type === card.type);
           return {
+            ...card,
             type: card.type,
             title: card.title || "Untitled",
             name: card.title || card.type.toUpperCase(),
