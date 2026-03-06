@@ -217,7 +217,7 @@ const SwipeCardContent = ({
       /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/|reels\/))([\w-]{11})/,
     );
     if (ytMatch)
-      return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${ytMatch[1]}&modestbranding=1&rel=0`;
+      return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=0&loop=1&playlist=${ytMatch[1]}&modestbranding=1&rel=0`;
     const igMatch = url.match(
       /(?:instagram\.com\/(?:reels|reel|p|tv)\/)([\w-]+)/,
     );
@@ -470,7 +470,7 @@ const MiniCard = ({
       /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/|reels\/))([\w-]{11})/,
     );
     if (ytMatch)
-      return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${ytMatch[1]}&modestbranding=1&rel=0`;
+      return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=0&loop=1&playlist=${ytMatch[1]}&modestbranding=1&rel=0`;
     const igMatch = url.match(
       /(?:instagram\.com\/(?:reels|reel|p|tv)\/)([\w-]+)/,
     );
