@@ -62,6 +62,10 @@ export class MemStorage implements IStorage {
       notes: insertUser.notes || [],
       pin: insertUser.pin || null,
       reachCount: 0,
+      instaClicks: 0,
+      linkedinClicks: 0,
+      whatsappClicks: 0,
+      portalClicks: 0,
     };
     this.users.set(id, newUser);
     return newUser;
@@ -148,6 +152,10 @@ export class DynamoDBStorage implements IStorage {
       notes: insertUser.notes || [],
       pin: insertUser.pin || null,
       reachCount: 0,
+      instaClicks: 0,
+      linkedinClicks: 0,
+      whatsappClicks: 0,
+      portalClicks: 0,
     };
     try {
       // Attempt to describe table to check if it exists

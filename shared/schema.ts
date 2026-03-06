@@ -59,6 +59,10 @@ export type User = {
   uniqueSlug: string | null;
   pin: string | null;
   reachCount: number; // Total number of scans/views
+  instaClicks: number;
+  linkedinClicks: number;
+  whatsappClicks: number;
+  portalClicks: number;
   connections: { slug: string; connectedAt: string }[]; // array of uniqueSlugs with timestamp
   cards: string[]; // JSON strings
   notes: { id: string; text: string; completed: boolean; expiresAt: string }[];
@@ -90,6 +94,10 @@ export const insertUserSchema = z.object({
   uniqueSlug: z.string().optional().nullable(),
   pin: z.string().length(5).optional().nullable(),
   reachCount: z.number().optional(),
+  instaClicks: z.number().optional(),
+  linkedinClicks: z.number().optional(),
+  whatsappClicks: z.number().optional(),
+  portalClicks: z.number().optional(),
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

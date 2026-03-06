@@ -819,6 +819,15 @@ export default function AuthPage({ slug }: { slug?: string }) {
     }
   }, [slug, user, setLocation, publicUser]);
 
+  const trackClick = async (type: "insta" | "linkedin" | "whatsapp" | "portal") => {
+    if (!publicUser?.id) return;
+    try {
+      await apiRequest("POST", `/api/user/${publicUser.id}/click`, { type });
+    } catch (err) {
+      console.error("Failed to track click:", err);
+    }
+  };
+
   const onSubmit = async (values: InsertUser) => {
     try {
       console.log("Submitting values:", values, "Mode:", mode);
@@ -1400,24 +1409,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
   return (
     <div className="min-h-screen bg-[#050505] overflow-hidden relative">
-      {/* Reach Count Display at Top Center */}
-      {user && (
-        <div className="absolute top-8 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center gap-1 px-6 py-2 bg-white/5 border border-white/10 rounded-full backdrop-blur-md"
-          >
-            <span className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">
-              Reach Count
-            </span>
-            <span className="text-xl font-display font-bold text-white">
-              {user.reachCount || 0}
-            </span>
-          </motion.div>
-        </div>
-      )}
-
       <div className="absolute inset-0 flex flex-col justify-start items-end p-12 pt-24 pointer-events-none">
         <motion.div
           initial={{ opacity: 0, x: 20 }}
@@ -1465,6 +1456,37 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     <ChevronDown className="w-4 h-4 text-white/40 transition-transform" />
                   )}
                 </button>
+
+                {/* Reach & Click Stats Display */}
+                <div className="mt-4 p-6 bg-white/5 border border-white/10 rounded-2xl space-y-4">
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">
+                      Reach Count
+                    </span>
+                    <span className="text-2xl font-display font-bold text-white">
+                      {user.reachCount || 0}
+                    </span>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-[8px] text-white/30 uppercase tracking-widest font-bold">Insta</span>
+                      <span className="text-sm font-bold text-white/80">{user.instaClicks || 0}</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-[8px] text-white/30 uppercase tracking-widest font-bold">LinkedIn</span>
+                      <span className="text-sm font-bold text-white/80">{user.linkedinClicks || 0}</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-[8px] text-white/30 uppercase tracking-widest font-bold">WhatsApp</span>
+                      <span className="text-sm font-bold text-white/80">{user.whatsappClicks || 0}</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-[8px] text-white/30 uppercase tracking-widest font-bold">Portal</span>
+                      <span className="text-sm font-bold text-white/80">{user.portalClicks || 0}</span>
+                    </div>
+                  </div>
+                </div>
 
                 <AnimatePresence>
                   {isPersonaExpanded && (
@@ -1791,6 +1813,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                             href={form.watch("linkedin")}
                             target="_blank"
                             rel="noreferrer"
+                            onClick={() => trackClick("linkedin")}
                             className="p-2.5 bg-white/5 rounded-lg text-white/70 hover:text-white"
                           >
                             <Linkedin className="w-4 h-4" />
@@ -1801,6 +1824,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                             href={form.watch("instagram")}
                             target="_blank"
                             rel="noreferrer"
+                            onClick={() => trackClick("insta")}
                             className="p-2.5 bg-white/5 rounded-lg text-white/70 hover:text-white"
                           >
                             <SiInstagram className="w-4 h-4" />
@@ -1811,6 +1835,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                             href={form.watch("whatsapp")}
                             target="_blank"
                             rel="noreferrer"
+                            onClick={() => trackClick("whatsapp")}
                             className="p-2.5 bg-white/5 rounded-lg text-white/70 hover:text-white"
                           >
                             <SiWhatsapp className="w-4 h-4" />
@@ -1832,6 +1857,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       href={form.watch("website") || "#"}
                       target="_blank"
                       rel="noreferrer"
+                      onClick={() => trackClick("portal")}
                       className="w-full bg-primary text-white rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 group no-underline"
                     >
                       View Collaboration Portal{" "}
