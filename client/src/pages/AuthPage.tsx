@@ -195,9 +195,32 @@ const SwipeCardContent = ({
 }: SwipeCardProps) => {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-30, 30]);
-  const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
+  const thumbnailUrl = useMemo(() => {
+    if (card.type !== "reel") return null;
+    const url = (card as any).url;
+    if (!url) return null;
+    const ytMatch = url.match(
+      /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/|reels\/))([\w-]{11})/,
+    );
+    if (ytMatch) return `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`;
+    return null;
+  }, [card.type, (card as any).url]);
 
-  if (!card) return null;
+  const embedUrl = useMemo(() => {
+    if (card.type !== "reel") return null;
+    const url = (card as any).url;
+    if (!url) return null;
+    const ytMatch = url.match(
+      /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/|reels\/))([\w-]{11})/,
+    );
+    if (ytMatch)
+      return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${ytMatch[1]}&modestbranding=1&rel=0`;
+    const igMatch = url.match(
+      /(?:instagram\.com\/(?:reels|reel|p|tv)\/)([\w-]+)/,
+    );
+    if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed/`;
+    return null;
+  }, [card.type, (card as any).url]);
 
   return (
     <motion.div
@@ -230,60 +253,100 @@ const SwipeCardContent = ({
         card.color,
       )}
     >
-      <div className="flex flex-col h-full items-center justify-between relative z-10">
-        <div className="flex items-center gap-1.5">
-          <span className="text-white/90 text-[9px] font-bold tracking-[0.2em] uppercase">
-            {card.title}
-          </span>
-          <Mic className="w-3.5 h-3.5 text-white/90" />
-        </div>
-
-        <div className="flex-1 flex flex-col items-center justify-center w-full space-y-3">
-          {card.type === "reel" ? (
-            card.thumbnailUrl ? (
-              <div className="w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-white/10">
-                <img 
-                  src={card.thumbnailUrl} 
-                  className="w-full h-full object-cover" 
-                  alt="Thumbnail"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = card.thumbnailUrl.replace('maxresdefault', 'hqdefault');
-                  }}
-                />
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center space-y-3 py-4">
-                <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
-                  <Video className="w-8 h-8 text-white" />
-                </div>
-                <div className="text-center">
-                  <h3 className="text-white text-xl font-bold">{card.name}</h3>
-                  <p className="text-white/60 text-[10px] uppercase tracking-widest font-bold">Watch Reel</p>
-                </div>
-              </div>
-            )
+      {isPlaying && card.type === "reel" ? (
+        <div className="absolute inset-0 z-50 bg-black">
+          {embedUrl ? (
+            <div className="w-full h-full overflow-hidden flex items-center justify-center">
+              <iframe
+                src={embedUrl}
+                className="w-full h-[calc(100%+80px)] -mt-[40px] border-0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
           ) : (
-            <div className="text-center space-y-0.5">
-              <h3 className="text-white text-2xl font-bold leading-tight">
-                {card.name}
-              </h3>
-              <h3 className="text-white text-sm opacity-60 font-medium leading-tight line-clamp-2 px-2">
-                {card.subname}
-              </h3>
+            <div className="text-white text-xs p-4 text-center h-full flex items-center justify-center">
+              Invalid Video URL
             </div>
           )}
-        </div>
-
-        <div className="w-full">
           <button
-            type="button"
-            className="w-full bg-white text-black rounded-full py-3 flex items-center justify-center gap-2 font-bold shadow-xl hover:scale-105 transition-transform text-sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsPlaying(false);
+            }}
+            className="absolute top-4 right-4 p-2 bg-black/50 rounded-full text-white z-[60]"
           >
-            <Play className="w-3.5 h-3.5 fill-current" />
-            Play Now
+            <X className="w-4 h-4" />
           </button>
         </div>
-      </div>
+      ) : (
+        <div className="flex flex-col h-full items-center justify-between relative z-10">
+          <div className="flex items-center gap-1.5">
+            <span className="text-white/90 text-[9px] font-bold tracking-[0.2em] uppercase">
+              {card.title}
+            </span>
+            <Mic className="w-3.5 h-3.5 text-white/90" />
+          </div>
+
+          <div className="flex-1 flex flex-col items-center justify-center w-full space-y-3">
+            {card.type === "reel" ? (
+              thumbnailUrl ? (
+                <div 
+                  className="w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-white/10 cursor-pointer group/thumb relative"
+                  onClick={() => setIsPlaying(true)}
+                >
+                  <img 
+                    src={thumbnailUrl} 
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover/thumb:scale-110" 
+                    alt="Thumbnail"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = thumbnailUrl.replace('maxresdefault', 'hqdefault');
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                    <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                      <Play className="w-6 h-6 text-white fill-current" />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div 
+                  className="flex flex-col items-center justify-center space-y-3 py-4 cursor-pointer"
+                  onClick={() => setIsPlaying(true)}
+                >
+                  <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
+                    <Video className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="text-center">
+                    <h3 className="text-white text-xl font-bold">{card.name}</h3>
+                    <p className="text-white/60 text-[10px] uppercase tracking-widest font-bold">Watch Reel</p>
+                  </div>
+                </div>
+              )
+            ) : (
+              <div className="text-center space-y-0.5">
+                <h3 className="text-white text-2xl font-bold leading-tight">
+                  {card.name}
+                </h3>
+                <h3 className="text-white text-sm opacity-60 font-medium leading-tight line-clamp-2 px-2">
+                  {card.subname}
+                </h3>
+              </div>
+            )}
+          </div>
+
+          <div className="w-full">
+            <button
+              type="button"
+              onClick={() => setIsPlaying(true)}
+              className="w-full bg-white text-black rounded-full py-3 flex items-center justify-center gap-2 font-bold shadow-xl hover:scale-105 transition-transform text-sm"
+            >
+              <Play className="w-3.5 h-3.5 fill-current" />
+              Play Now
+            </button>
+          </div>
+        </div>
+      )}
       <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
     </motion.div>
   );
@@ -393,9 +456,35 @@ const MiniCard = ({
     }
   }, [cardJson]);
 
-  const [isEditing, setIsEditing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const getEmbedUrl = (url: string) => {
+    if (!url) return null;
+    const ytMatch = url.match(
+      /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/|reels\/))([\w-]{11})/,
+    );
+    if (ytMatch)
+      return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${ytMatch[1]}&modestbranding=1&rel=0`;
+    const igMatch = url.match(
+      /(?:instagram\.com\/(?:reels|reel|p|tv)\/)([\w-]+)/,
+    );
+    if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed/`;
+    return null;
+  };
+
+  const getThumbnailUrl = (url: string) => {
+    if (!url) return null;
+    const ytMatch = url.match(
+      /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/|reels\/))([\w-]{11})/,
+    );
+    if (ytMatch) return `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`;
+    return null;
+  };
+
+  const embedUrl = useMemo(() => card.type === "reel" ? getEmbedUrl((card as any).url) : null, [card.type, (card as any).url]);
+  const thumbnailUrl = useMemo(() => card.type === "reel" ? getThumbnailUrl((card as any).url) : null, [card.type, (card as any).url]);
 
   if (!card) return null;
 
@@ -432,32 +521,6 @@ const MiniCard = ({
   };
 
   const cardTypeInfo = CARD_TYPES.find((t) => t.type === card.type);
-
-  const getEmbedUrl = (url: string) => {
-    if (!url) return null;
-    const ytMatch = url.match(
-      /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/|reels\/))([\w-]{11})/,
-    );
-    if (ytMatch)
-      return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${ytMatch[1]}&modestbranding=1&rel=0`;
-    const igMatch = url.match(
-      /(?:instagram\.com\/(?:reels|reel|p|tv)\/)([\w-]+)/,
-    );
-    if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed/`;
-    return null;
-  };
-
-  const getThumbnailUrl = (url: string) => {
-    if (!url) return null;
-    const ytMatch = url.match(
-      /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/|reels\/))([\w-]{11})/,
-    );
-    if (ytMatch) return `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`;
-    return null;
-  };
-
-  const embedUrl = card.type === "reel" ? getEmbedUrl((card as any).url) : null;
-  const thumbnailUrl = card.type === "reel" ? getThumbnailUrl((card as any).url) : null;
 
   return (
     <motion.div
@@ -668,16 +731,6 @@ const MiniCard = ({
                 ) : (
                   <Plus className="w-12 h-12 text-white/40 group-hover:scale-110 transition-transform" />
                 )}
-              </div>
-            ) || (
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform">
-                  {(card as any).url ? (
-                    <Play className="w-8 h-8 text-white fill-current" />
-                  ) : (
-                    <Plus className="w-8 h-8 text-white" />
-                  )}
-                </div>
               </div>
             )}
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
