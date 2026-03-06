@@ -2108,11 +2108,11 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     <div className="flex items-center justify-between">
                       <h4 className="text-xs font-bold text-white uppercase tracking-wider">
                         Your Mini-Cards ({selectedCards.length}
-                        /5)
+                        /4)
                       </h4>
                     </div>
                     <div className="flex gap-4 overflow-x-auto pb-4 px-1 custom-scrollbar snap-x">
-                      {[0, 1, 2, 3, 4].map((idx) => (
+                      {[0, 1, 2, 3].map((idx) => (
                         <div
                           key={idx}
                           className="min-w-[220px] aspect-[3/4] snap-center"
