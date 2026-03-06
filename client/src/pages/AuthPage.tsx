@@ -797,31 +797,21 @@ const MiniCard = ({
               <div className="space-y-1">
                 <input
                   className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
-                  placeholder="Value (e.g. $10k)"
-                  defaultValue={(card as any).value}
+                  placeholder="Title"
+                  defaultValue={card.title}
                   onBlur={(e) => {
                     onUpdate(
-                      JSON.stringify({ ...card, value: e.target.value }),
+                      JSON.stringify({ ...card, title: e.target.value }),
                     );
                   }}
                 />
                 <input
                   className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
-                  placeholder="Revenue Number (e.g. 10000)"
-                  defaultValue={(card as any).revenue}
+                  placeholder="Value (e.g. $10k)"
+                  defaultValue={(card as any).value}
                   onBlur={(e) => {
                     onUpdate(
-                      JSON.stringify({ ...card, revenue: e.target.value }),
-                    );
-                  }}
-                />
-                <input
-                  className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-[10px] text-white"
-                  placeholder="Image URL"
-                  defaultValue={(card as any).imageUrl}
-                  onBlur={(e) => {
-                    onUpdate(
-                      JSON.stringify({ ...card, imageUrl: e.target.value }),
+                      JSON.stringify({ ...card, value: e.target.value }),
                     );
                   }}
                 />
@@ -831,31 +821,21 @@ const MiniCard = ({
               <div className="space-y-1">
                 <input
                   className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
-                  placeholder="Value (e.g. +20%)"
-                  defaultValue={(card as any).value}
+                  placeholder="Title"
+                  defaultValue={card.title}
                   onBlur={(e) => {
                     onUpdate(
-                      JSON.stringify({ ...card, value: e.target.value }),
+                      JSON.stringify({ ...card, title: e.target.value }),
                     );
                   }}
                 />
                 <input
                   className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
-                  placeholder="User Count (e.g. 500)"
-                  defaultValue={(card as any).traction}
+                  placeholder="Value (e.g. +20%)"
+                  defaultValue={(card as any).value}
                   onBlur={(e) => {
                     onUpdate(
-                      JSON.stringify({ ...card, traction: e.target.value }),
-                    );
-                  }}
-                />
-                <input
-                  className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-[10px] text-white"
-                  placeholder="Image URL"
-                  defaultValue={(card as any).imageUrl}
-                  onBlur={(e) => {
-                    onUpdate(
-                      JSON.stringify({ ...card, imageUrl: e.target.value }),
+                      JSON.stringify({ ...card, value: e.target.value }),
                     );
                   }}
                 />
