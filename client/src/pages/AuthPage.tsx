@@ -1765,7 +1765,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                           ?.label || "Founder"}
                       </p>
                       <p className="text-white/40 text-[10px] italic">
-                        {form.watch("bio")}
+                        {form.watch("bio") || ""}
                       </p>
                       <div className="flex items-center justify-center gap-3 w-full pt-1">
                         {form.watch("linkedin") && (
@@ -2515,7 +2515,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                             {user?.role || "FOUNDER"}
                           </p>
                           <p className="text-white/30 text-[8px] uppercase tracking-wider line-clamp-1 px-4">
-                            {user?.bio || "COLLABORATE & GROW YOUR STARTUP"}
+                            {user?.bio || ""}
                           </p>
                         </div>
                       </div>
