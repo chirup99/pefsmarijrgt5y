@@ -797,16 +797,6 @@ const MiniCard = ({
               <div className="space-y-1">
                 <input
                   className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
-                  placeholder="Title"
-                  defaultValue={card.title}
-                  onBlur={(e) => {
-                    onUpdate(
-                      JSON.stringify({ ...card, title: e.target.value }),
-                    );
-                  }}
-                />
-                <input
-                  className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
                   placeholder="Value (e.g. $10k)"
                   defaultValue={(card as any).value}
                   onBlur={(e) => {
@@ -821,16 +811,6 @@ const MiniCard = ({
               <div className="space-y-1">
                 <input
                   className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
-                  placeholder="Title"
-                  defaultValue={card.title}
-                  onBlur={(e) => {
-                    onUpdate(
-                      JSON.stringify({ ...card, title: e.target.value }),
-                    );
-                  }}
-                />
-                <input
-                  className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
                   placeholder="Value (e.g. +20%)"
                   defaultValue={(card as any).value}
                   onBlur={(e) => {
@@ -843,16 +823,6 @@ const MiniCard = ({
             )}
             {card.type === "product" && (
               <div className="space-y-1">
-                <input
-                  className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
-                  placeholder="User Count / Traction"
-                  defaultValue={(card as any).traction}
-                  onBlur={(e) => {
-                    onUpdate(
-                      JSON.stringify({ ...card, traction: e.target.value }),
-                    );
-                  }}
-                />
                 <input
                   type="file"
                   accept="image/*"
