@@ -66,6 +66,7 @@ export class MemStorage implements IStorage {
       linkedinClicks: 0,
       whatsappClicks: 0,
       portalClicks: 0,
+      reachHistory: [],
     };
     this.users.set(id, newUser);
     return newUser;
@@ -156,6 +157,7 @@ export class DynamoDBStorage implements IStorage {
       linkedinClicks: 0,
       whatsappClicks: 0,
       portalClicks: 0,
+      reachHistory: [],
     };
     try {
       // Attempt to describe table to check if it exists

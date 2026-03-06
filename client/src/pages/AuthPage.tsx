@@ -794,7 +794,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
   useEffect(() => {
     if (slug && (!publicUser || publicUser.uniqueSlug !== slug)) {
-      fetch(`/api/user/slug/${slug}`)
+      const isSelf = loggedInUser?.uniqueSlug === slug;
+      fetch(`/api/user/slug/${slug}${isSelf ? "?self=true" : ""}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.id) {
@@ -1457,7 +1458,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   )}
                 </button>
 
-                {/* Reach & Click Stats Display */}
+                  {/* Reach & Click Stats Display */}
                 <div className="mt-4 p-6 bg-white/5 border border-white/10 rounded-2xl space-y-4">
                   <div className="flex flex-col items-center gap-1">
                     <span className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">
@@ -1467,6 +1468,34 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       {user.reachCount || 0}
                     </span>
                   </div>
+
+                  {/* Reach Trend Chart */}
+                  {user.reachHistory && user.reachHistory.length > 0 && (
+                    <div className="h-16 w-full pt-2">
+                      <div className="flex items-end justify-between h-full gap-1">
+                        {(() => {
+                          const history = [...user.reachHistory].sort((a, b) => a.date.localeCompare(b.date));
+                          const maxCount = Math.max(...history.map(h => h.count), 1);
+                          return history.map((day, i) => (
+                            <div key={day.date} className="flex-1 flex flex-col items-center gap-1 group relative">
+                              <motion.div
+                                initial={{ height: 0 }}
+                                animate={{ height: `${(day.count / maxCount) * 100}%` }}
+                                className="w-full bg-gradient-to-t from-purple-500/20 to-purple-500/80 rounded-t-sm min-h-[2px]"
+                              />
+                              <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-white text-black text-[8px] font-bold px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                                {day.count}
+                              </div>
+                            </div>
+                          ));
+                        })()}
+                      </div>
+                      <div className="flex justify-between mt-1 px-0.5">
+                         <span className="text-[6px] text-white/20 uppercase font-bold">7d ago</span>
+                         <span className="text-[6px] text-white/20 uppercase font-bold">Today</span>
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
                     <div className="flex flex-col items-center gap-1">

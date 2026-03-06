@@ -238,7 +238,33 @@ export async function registerRoutes(
 
       // Increment reachCount when someone views a profile that isn't their own
       // We'll just increment it for every GET request to this endpoint
-      await storage.updateUser(user.id, { reachCount: (user.reachCount || 0) + 1 });
+      
+      const isSelf = req.query.self === 'true';
+      if (!isSelf) {
+        const now = new Date();
+        const todayStr = now.toISOString().split('T')[0];
+        const reachHistory = user.reachHistory || [];
+        const existingDay = reachHistory.find(h => h.date === todayStr);
+        
+        let newHistory = [...reachHistory];
+        if (existingDay) {
+          newHistory = reachHistory.map(h => 
+            h.date === todayStr ? { ...h, count: h.count + 1 } : h
+          );
+        } else {
+          newHistory.push({ date: todayStr, count: 1 });
+        }
+        
+        // Keep only last 7 days
+        if (newHistory.length > 7) {
+          newHistory = newHistory.slice(-7);
+        }
+
+        await storage.updateUser(user.id, { 
+          reachCount: (user.reachCount || 0) + 1,
+          reachHistory: newHistory
+        });
+      }
 
       const { password: _, ...safeUser } = user;
       res.json(safeUser);

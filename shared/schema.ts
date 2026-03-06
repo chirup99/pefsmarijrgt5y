@@ -63,6 +63,7 @@ export type User = {
   linkedinClicks: number;
   whatsappClicks: number;
   portalClicks: number;
+  reachHistory: { date: string; count: number }[]; // last 7 days reach
   connections: { slug: string; connectedAt: string }[]; // array of uniqueSlugs with timestamp
   cards: string[]; // JSON strings
   notes: { id: string; text: string; completed: boolean; expiresAt: string }[];
@@ -98,6 +99,10 @@ export const insertUserSchema = z.object({
   linkedinClicks: z.number().optional(),
   whatsappClicks: z.number().optional(),
   portalClicks: z.number().optional(),
+  reachHistory: z.array(z.object({
+    date: z.string(),
+    count: z.number()
+  })).optional(),
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
