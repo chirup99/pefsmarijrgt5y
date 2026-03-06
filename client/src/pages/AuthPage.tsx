@@ -503,6 +503,7 @@ const MiniCard = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [visibleWords, setVisibleWords] = useState(18);
 
   const getEmbedUrl = (url: string) => {
     if (!url) return null;
@@ -789,12 +790,32 @@ const MiniCard = ({
           </div>
         ) : card.type === "pitch" ? (
           <div className="w-full h-full flex flex-col items-center justify-center p-2 overflow-hidden">
-            <div className="w-full h-full overflow-y-auto custom-scrollbar flex items-center">
+            <div 
+              className="w-full h-full overflow-y-auto custom-scrollbar flex items-start pt-2"
+              onScroll={(e) => {
+                const element = e.currentTarget;
+                // If we've scrolled near the bottom, show more words
+                if (element.scrollHeight - element.scrollTop <= element.clientHeight + 20) {
+                  const content = (card as any).content || "";
+                  const totalWords = content.split(/\s+/).length;
+                  if (visibleWords < totalWords) {
+                    setVisibleWords(prev => prev + 18);
+                  }
+                }
+              }}
+            >
               <p
                 onClick={() => setIsEditing(true)}
-                className="text-white/90 text-sm text-center italic leading-relaxed cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-colors w-full"
+                className="text-white/90 text-sm text-center italic leading-relaxed cursor-pointer hover:bg-white/5 p-4 rounded-lg transition-colors w-full break-words"
               >
-                "{(card as any).content || "No pitch content yet..."}"
+                {(() => {
+                  const content = (card as any).content || "No pitch content yet...";
+                  const words = content.split(/\s+/);
+                  if (words.length <= 18) return `"${content}"`;
+                  
+                  const displayed = words.slice(0, visibleWords).join(" ");
+                  return `"${displayed}${visibleWords < words.length ? "..." : ""}"`;
+                })()}
               </p>
             </div>
           </div>
