@@ -188,6 +188,8 @@ const SwipeCardContent = ({
   const rotate = useTransform(x, [-200, 200], [-30, 30]);
   const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
 
+  if (!card) return null;
+
   return (
     <motion.div
       key={currentIndex}
@@ -252,56 +254,67 @@ const SwipeCardContent = ({
 };
 
 const SwipeCard = ({ cards, user: propsUser }: { cards: string[]; user?: any }) => {
+  const displayCards = useMemo(() => {
+    if (cards.length > 0) {
+      return cards.map((c) => {
+        try {
+          const card = JSON.parse(c);
+          if (!card || !card.type) return CARDS[0];
+          const typeInfo = CARD_TYPES.find((t) => t.type === card.type);
+          return {
+            title: card.title || "Untitled",
+            name: card.type.toUpperCase(),
+            subname: card.value || card.url || "Persona",
+            color: typeInfo?.color || "from-gray-700 to-gray-800",
+            bgStack1: "bg-black/20",
+            bgStack2: "bg-black/10",
+          };
+        } catch (e) {
+          return CARDS[0];
+        }
+      });
+    }
+    if (propsUser) {
+      return [
+        {
+          title: "NO CARDS",
+          name: "EMPTY",
+          subname: "PERSONA",
+          color: "from-gray-800 to-gray-900",
+          bgStack1: "bg-black/20",
+          bgStack2: "bg-black/10",
+        },
+      ];
+    }
+    return CARDS.map((c) => ({
+      ...c,
+      name: c.name.toUpperCase(),
+      subname: c.subname.toUpperCase(),
+    }));
+  }, [cards, propsUser]);
+
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Reset index if displayCards changes and current index is out of bounds
+  useEffect(() => {
+    if (currentIndex >= displayCards.length) {
+      setCurrentIndex(0);
+    }
+  }, [displayCards.length, currentIndex]);
+
   const handleSwipeLeft = () => {
-    setCurrentIndex((prev) => (prev + 1) % (cards.length || CARDS.length));
+    if (displayCards.length === 0) return;
+    setCurrentIndex((prev) => (prev + 1) % displayCards.length);
   };
 
   const handleSwipeRight = () => {
-    setCurrentIndex(
-      (prev) =>
-        (prev - 1 + (cards.length || CARDS.length)) %
-        (cards.length || CARDS.length),
-    );
+    if (displayCards.length === 0) return;
+    setCurrentIndex((prev) => (prev - 1 + displayCards.length) % displayCards.length);
   };
 
-  const displayCards =
-    cards.length > 0
-      ? cards.map((c) => {
-          try {
-            const card = JSON.parse(c);
-            const typeInfo = CARD_TYPES.find((t) => t.type === card.type);
-            return {
-              title: card.title,
-              name: card.type.toUpperCase(),
-              subname: card.value || card.url || "Persona",
-              color: typeInfo?.color || "from-gray-700 to-gray-800",
-              bgStack1: "bg-black/20",
-              bgStack2: "bg-black/10",
-            };
-          } catch (e) {
-            return CARDS[0];
-          }
-        })
-      : propsUser
-        ? [
-            {
-              title: "NO CARDS",
-              name: "EMPTY",
-              subname: "PERSONA",
-              color: "from-gray-800 to-gray-900",
-              bgStack1: "bg-black/20",
-              bgStack2: "bg-black/10",
-            },
-          ]
-        : CARDS.map((c) => ({
-            ...c,
-            name: c.name.toUpperCase(),
-            subname: c.subname.toUpperCase(),
-          }));
-
   const currentCard = displayCards[currentIndex];
+
+  if (!currentCard) return null;
 
   return (
     <div className="relative w-full max-w-[240px] aspect-[3/4] mx-auto perspective-1000">
