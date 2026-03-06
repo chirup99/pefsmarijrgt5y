@@ -1414,76 +1414,76 @@ export default function AuthPage({ slug }: { slug?: string }) {
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: isMenuOpen ? 1 : 0, x: isMenuOpen ? 0 : 20 }}
-          className="space-y-4 pointer-events-auto mb-8"
+          className="space-y-3 pointer-events-auto mb-4 max-h-[calc(100vh-220px)] overflow-y-auto scrollbar-hide pr-2"
         >
           {user ? (
-            <div className="flex flex-col items-end gap-2">
+            <div className="flex flex-col items-end gap-1.5">
               <button
                 onClick={logout}
-                className="flex items-center gap-4 p-1.5 pr-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-white transition-all group ml-auto backdrop-blur-md"
+                className="flex items-center gap-3 p-1 pr-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-white transition-all group ml-auto backdrop-blur-md shrink-0"
               >
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/10 group-hover:border-purple-500/30 transition-colors">
-                  <User className="w-5 h-5 text-purple-400/80 group-hover:text-purple-400 transition-colors" />
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/10 group-hover:border-purple-500/30 transition-colors">
+                  <User className="w-4 h-4 text-purple-400/80 group-hover:text-purple-400 transition-colors" />
                 </div>
                 <div className="flex flex-col items-start">
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-sm tracking-tight">
+                  <div className="flex items-center gap-1">
+                    <span className="font-bold text-xs tracking-tight">
                       {user.name || "Persona User"}
                     </span>
-                    <div className="w-3.5 h-3.5 bg-yellow-400 rounded-full flex items-center justify-center">
-                      <Check className="w-2.5 h-2.5 text-black" strokeWidth={4} />
+                    <div className="w-3 h-3 bg-yellow-400 rounded-full flex items-center justify-center">
+                      <Check className="w-2 h-2 text-black" strokeWidth={4} />
                     </div>
                   </div>
-                  <span className="text-[9px] text-white/40 uppercase tracking-[0.2em] font-bold">
+                  <span className="text-[8px] text-white/40 uppercase tracking-[0.2em] font-bold">
                     Logout
                   </span>
                 </div>
               </button>
 
-              <div className="w-full mt-2">
+              <div className="w-full mt-1 space-y-3">
                 <button
                   onClick={() => setIsPersonaExpanded(!isPersonaExpanded)}
-                  className="w-full flex items-center justify-between px-6 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white transition-all group"
+                  className="w-full flex items-center justify-between px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white transition-all group shrink-0"
                 >
-                  <div className="flex items-center gap-3">
-                    <User className="w-5 h-5 text-purple-400" />
-                    <span className="font-bold text-sm tracking-widest uppercase">
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-purple-400" />
+                    <span className="font-bold text-[10px] tracking-widest uppercase">
                       Persona
                     </span>
                   </div>
                   {isPersonaExpanded ? (
-                    <ChevronDown className="w-4 h-4 text-white/40 rotate-180 transition-transform" />
+                    <ChevronDown className="w-3 h-3 text-white/40 rotate-180 transition-transform" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-white/40 transition-transform" />
+                    <ChevronDown className="w-3 h-3 text-white/40 transition-transform" />
                   )}
                 </button>
 
                   {/* Reach & Click Stats Display */}
-                <div className="mt-4 p-6 bg-white/5 border border-white/10 rounded-2xl space-y-4">
-                  <div className="flex flex-col items-center gap-1">
-                    <span className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">
+                <div className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-3 shrink-0">
+                  <div className="flex flex-col items-center gap-0.5">
+                    <span className="text-[8px] text-white/40 uppercase tracking-[0.2em] font-bold">
                       Reach Count
                     </span>
-                    <span className="text-2xl font-display font-bold text-white">
+                    <span className="text-xl font-display font-bold text-white">
                       {user.reachCount || 0}
                     </span>
                   </div>
 
                   {/* Reach Trend Chart */}
                   {user.reachHistory && user.reachHistory.length > 0 && (
-                    <div className="h-16 w-full pt-2">
-                      <div className="flex items-end justify-between h-full gap-1">
+                    <div className="h-12 w-full pt-1">
+                      <div className="flex items-end justify-between h-full gap-0.5">
                         {(() => {
                           const history = [...user.reachHistory].sort((a, b) => a.date.localeCompare(b.date));
                           const maxCount = Math.max(...history.map(h => h.count), 1);
                           return history.map((day, i) => (
-                            <div key={day.date} className="flex-1 flex flex-col items-center gap-1 group relative">
+                            <div key={day.date} className="flex-1 flex flex-col items-center gap-0.5 group relative">
                               <motion.div
                                 initial={{ height: 0 }}
                                 animate={{ height: `${(day.count / maxCount) * 100}%` }}
-                                className="w-full bg-gradient-to-t from-purple-500/20 to-purple-500/80 rounded-t-sm min-h-[2px]"
+                                className="w-full bg-gradient-to-t from-purple-500/20 to-purple-500/80 rounded-t-sm min-h-[1px]"
                               />
-                              <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-white text-black text-[8px] font-bold px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                              <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-white text-black text-[7px] font-bold px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                                 {day.count}
                               </div>
                             </div>
@@ -1491,49 +1491,49 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         })()}
                       </div>
                       <div className="flex justify-between mt-1 px-0.5">
-                         <span className="text-[6px] text-white/20 uppercase font-bold">7d ago</span>
-                         <span className="text-[6px] text-white/20 uppercase font-bold">Today</span>
+                         <span className="text-[5px] text-white/20 uppercase font-bold">7d ago</span>
+                         <span className="text-[5px] text-white/20 uppercase font-bold">Today</span>
                       </div>
                     </div>
                   )}
                   
-                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
-                    <div className="flex flex-col items-center gap-1">
-                      <span className="text-[8px] text-white/30 uppercase tracking-widest font-bold">Insta</span>
-                      <span className="text-sm font-bold text-white/80">{user.instaClicks || 0}</span>
+                  <div className="grid grid-cols-2 gap-2 pt-3 border-t border-white/10">
+                    <div className="flex flex-col items-center gap-0.5">
+                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">Insta</span>
+                      <span className="text-xs font-bold text-white/80">{user.instaClicks || 0}</span>
                     </div>
-                    <div className="flex flex-col items-center gap-1">
-                      <span className="text-[8px] text-white/30 uppercase tracking-widest font-bold">LinkedIn</span>
-                      <span className="text-sm font-bold text-white/80">{user.linkedinClicks || 0}</span>
+                    <div className="flex flex-col items-center gap-0.5">
+                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">LinkedIn</span>
+                      <span className="text-xs font-bold text-white/80">{user.linkedinClicks || 0}</span>
                     </div>
-                    <div className="flex flex-col items-center gap-1">
-                      <span className="text-[8px] text-white/30 uppercase tracking-widest font-bold">WhatsApp</span>
-                      <span className="text-sm font-bold text-white/80">{user.whatsappClicks || 0}</span>
+                    <div className="flex flex-col items-center gap-0.5">
+                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">WhatsApp</span>
+                      <span className="text-xs font-bold text-white/80">{user.whatsappClicks || 0}</span>
                     </div>
-                    <div className="flex flex-col items-center gap-1">
-                      <span className="text-[8px] text-white/30 uppercase tracking-widest font-bold">Portal</span>
-                      <span className="text-sm font-bold text-white/80">{user.portalClicks || 0}</span>
+                    <div className="flex flex-col items-center gap-0.5">
+                      <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">Portal</span>
+                      <span className="text-xs font-bold text-white/80">{user.portalClicks || 0}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* AI Analysis Window */}
-                <div className="mt-4 p-6 bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-white/10 rounded-2xl space-y-4 backdrop-blur-md relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-                    <TrendingUp className="w-8 h-8 text-purple-400" />
+                <div className="p-4 bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-white/10 rounded-xl space-y-3 backdrop-blur-md relative overflow-hidden group shrink-0">
+                  <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <TrendingUp className="w-6 h-6 text-purple-400" />
                   </div>
                   
-                  <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
-                      <span className="text-[10px] text-purple-400 uppercase tracking-[0.2em] font-bold">
+                  <div className="flex flex-col gap-0.5">
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
+                      <span className="text-[8px] text-purple-400 uppercase tracking-[0.2em] font-bold">
                         AI Analysis
                       </span>
                     </div>
-                    <h4 className="text-white font-bold text-sm">Growth Insights</h4>
+                    <h4 className="text-white font-bold text-xs">Growth Insights</h4>
                   </div>
 
-                  <div className="space-y-3 relative z-10">
+                  <div className="space-y-2 relative z-10">
                     {(() => {
                       const history = user.reachHistory || [];
                       const today = history.find(h => h.date === new Date().toISOString().split('T')[0])?.count || 0;
@@ -1543,36 +1543,36 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       
                       return (
                         <>
-                          <div className="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                          <div className="p-2 bg-white/5 rounded-lg border border-white/5 space-y-1.5">
                             <div className="flex items-center justify-between">
-                              <span className="text-[10px] text-white/40 uppercase font-bold tracking-tight">Status</span>
+                              <span className="text-[8px] text-white/40 uppercase font-bold tracking-tight">Status</span>
                               {isDecreasing ? (
-                                <span className="text-[10px] text-red-400 font-bold flex items-center gap-1">
-                                  <ChevronDown className="w-3 h-3" /> Decreasing
+                                <span className="text-[8px] text-red-400 font-bold flex items-center gap-1">
+                                  <ChevronDown className="w-2 h-2" /> Decreasing
                                 </span>
                               ) : (
-                                <span className="text-[10px] text-green-400 font-bold flex items-center gap-1">
-                                  <TrendingUp className="w-3 h-3" /> Growing
+                                <span className="text-[8px] text-green-400 font-bold flex items-center gap-1">
+                                  <TrendingUp className="w-2 h-2" /> Growing
                                 </span>
                               )}
                             </div>
-                            <p className="text-[11px] text-white/70 leading-relaxed">
+                            <p className="text-[9px] text-white/70 leading-tight">
                               {isDecreasing 
-                                ? `Your reach is down compared to yesterday. In the ${industry} sector, consistency is key.`
-                                : `Great job! Your profile is gaining traction in the ${industry} industry.`}
+                                ? `Reach down. In ${industry}, consistency is key.`
+                                : `Profile gaining traction in ${industry}.`}
                             </p>
                           </div>
 
-                          <div className="space-y-2">
-                            <span className="text-[10px] text-white/40 uppercase font-bold tracking-[0.1em]">AI Suggestions</span>
-                            <ul className="space-y-2">
+                          <div className="space-y-1.5">
+                            <span className="text-[8px] text-white/40 uppercase font-bold tracking-[0.1em]">AI Suggestions</span>
+                            <ul className="space-y-1.5">
                               {[
-                                `Update your ${industry} pitch card with latest achievements.`,
-                                "Share your QR code on LinkedIn for professional reach.",
-                                "Engagement peaks are observed during evening hours."
+                                `Update ${industry} pitch card.`,
+                                "Share QR on LinkedIn.",
+                                "Evening peaks observed."
                               ].map((s, i) => (
-                                <li key={i} className="flex items-start gap-2 text-[10px] text-white/60">
-                                  <div className="w-1 h-1 rounded-full bg-purple-500 mt-1.5 shrink-0" />
+                                <li key={i} className="flex items-start gap-1.5 text-[9px] text-white/60">
+                                  <div className="w-0.5 h-0.5 rounded-full bg-purple-500 mt-1.5 shrink-0" />
                                   {s}
                                 </li>
                               ))}
@@ -1592,14 +1592,14 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       exit={{ opacity: 0, height: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="mt-2 p-6 bg-white/5 border border-white/10 rounded-2xl space-y-6">
-                        <div className="space-y-2">
-                          <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                      <div className="mt-1 p-4 bg-white/5 border border-white/10 rounded-xl space-y-4">
+                        <div className="space-y-1.5">
+                          <label className="text-[8px] text-white/40 uppercase tracking-widest font-bold">
                             Persona Code
                           </label>
                           <div className="flex items-center justify-between group/item gap-2">
                             {isEditingSlug ? (
-                              <div className="flex-1 flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-2 py-1">
+                              <div className="flex-1 flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-lg px-2 py-1">
                                 <input
                                   type="text"
                                   value={slugValue}
@@ -1611,28 +1611,28 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                       setIsSlugTaken(false);
                                     }
                                   }}
-                                  className="flex-1 bg-transparent border-none text-sm font-mono text-white focus:outline-none"
+                                  className="flex-1 bg-transparent border-none text-xs font-mono text-white focus:outline-none"
                                   autoFocus
                                 />
-                                <div className="flex flex-col items-end gap-1">
+                                <div className="flex flex-col items-end gap-0.5">
                                   <button
                                     onClick={handleSaveSlug}
                                     disabled={updateSlugMutation.isPending || isSlugTaken}
                                     className={clsx(
-                                      "p-1 rounded-full transition-colors disabled:opacity-50",
+                                      "p-0.5 rounded-full transition-colors disabled:opacity-50",
                                       isSlugTaken ? "bg-red-500/20 text-red-400 cursor-not-allowed" : "bg-white/10 text-green-400 hover:text-green-300"
                                     )}
                                   >
                                     {updateSlugMutation.isPending ? (
-                                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                      <Loader2 className="w-3 h-3 animate-spin" />
                                     ) : isSlugTaken ? (
-                                      <X className="w-3.5 h-3.5" />
+                                      <X className="w-3 h-3" />
                                     ) : (
-                                      <Check className="w-3.5 h-3.5" />
+                                      <Check className="w-3 h-3" />
                                     )}
                                   </button>
                                   {isSlugTaken && (
-                                    <span className="text-[8px] text-red-400 uppercase tracking-tighter font-bold">
+                                    <span className="text-[7px] text-red-400 uppercase tracking-tighter font-bold">
                                       Taken
                                     </span>
                                   )}
@@ -1640,7 +1640,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                               </div>
                             ) : (
                               <>
-                                <span className="text-sm font-mono text-white">
+                                <span className="text-xs font-mono text-white">
                                   {user.uniqueSlug || "---"}
                                 </span>
                                 <button 
@@ -1648,40 +1648,40 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                     setSlugValue(user.uniqueSlug || "");
                                     setIsEditingSlug(true);
                                   }}
-                                  className="p-1.5 bg-white/5 rounded-lg text-white/40 hover:text-white transition-colors opacity-0 group-hover/item:opacity-100"
+                                  className="p-1 bg-white/5 rounded-lg text-white/40 hover:text-white transition-colors opacity-0 group-hover/item:opacity-100"
                                 >
-                                  <Pencil className="w-3.5 h-3.5" />
+                                  <Pencil className="w-3 h-3" />
                                 </button>
                               </>
                             )}
                           </div>
                         </div>
 
-                        <div className="space-y-2">
-                          <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                        <div className="space-y-1.5">
+                          <label className="text-[8px] text-white/40 uppercase tracking-widest font-bold">
                             Change PIN
                           </label>
                           <div className="flex items-center justify-between group/item">
                             {isEditingPin ? (
-                              <div className="flex items-center gap-2 w-full">
+                              <div className="flex items-center gap-1.5 w-full">
                                 <input
                                   type="text"
                                   maxLength={5}
                                   value={newPinValue}
                                   onChange={(e) => setNewPinValue(e.target.value.replace(/\D/g, ""))}
-                                  placeholder="New 5-digit PIN"
-                                  className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-purple-500/50"
+                                  placeholder="New PIN"
+                                  className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-purple-500/50"
                                   autoFocus
                                 />
                                 <button
                                   onClick={handlePinUpdate}
                                   disabled={updatePinMutation.isPending}
-                                  className="p-1.5 bg-purple-500/20 rounded-lg text-purple-400 hover:bg-purple-500/30 transition-colors disabled:opacity-50"
+                                  className="p-1 bg-purple-500/20 rounded-lg text-purple-400 hover:bg-purple-500/30 transition-colors disabled:opacity-50"
                                 >
                                   {updatePinMutation.isPending ? (
-                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                    <Loader2 className="w-3 h-3 animate-spin" />
                                   ) : (
-                                    <Check className="w-3.5 h-3.5" />
+                                    <Check className="w-3 h-3" />
                                   )}
                                 </button>
                                 <button
@@ -1689,21 +1689,21 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                     setIsEditingPin(false);
                                     setNewPinValue("");
                                   }}
-                                  className="p-1.5 bg-white/5 rounded-lg text-white/40 hover:text-white transition-colors"
+                                  className="p-1 bg-white/5 rounded-lg text-white/40 hover:text-white transition-colors"
                                 >
-                                  <X className="w-3.5 h-3.5" />
+                                  <X className="w-3 h-3" />
                                 </button>
                               </div>
                             ) : (
                               <>
-                                <span className="text-sm tracking-[0.3em] text-white/60">
+                                <span className="text-xs tracking-[0.3em] text-white/60">
                                   •••••
                                 </span>
                                 <button 
                                   onClick={() => setIsEditingPin(true)}
-                                  className="p-1.5 bg-white/5 rounded-lg text-white/40 hover:text-white transition-colors opacity-0 group-hover/item:opacity-100"
+                                  className="p-1 bg-white/5 rounded-lg text-white/40 hover:text-white transition-colors opacity-0 group-hover/item:opacity-100"
                                 >
-                                  <Pencil className="w-3.5 h-3.5" />
+                                  <Pencil className="w-3 h-3" />
                                 </button>
                               </>
                             )}
@@ -1721,10 +1721,10 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 setShowPersonaDialog(true);
                 setIsMenuOpen(false);
               }}
-              className="flex items-center gap-3 px-6 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white transition-all group ml-auto"
+              className="flex items-center gap-2 px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white transition-all group ml-auto"
             >
-              <User className="w-5 h-5 text-purple-400" />
-              <span className="font-bold text-sm tracking-widest uppercase">
+              <User className="w-4 h-4 text-purple-400" />
+              <span className="font-bold text-[10px] tracking-widest uppercase">
                 My Persona
               </span>
             </button>
@@ -1732,16 +1732,16 @@ export default function AuthPage({ slug }: { slug?: string }) {
         </motion.div>
       </div>
 
-      <div className="absolute inset-0 flex flex-col justify-end items-end p-12 pb-20 pointer-events-none">
+      <div className="absolute inset-0 flex flex-col justify-end items-end p-12 pb-12 pointer-events-none">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isMenuOpen ? 1 : 0, y: isMenuOpen ? 0 : 20 }}
-          className="text-right space-y-4 max-w-[240px] pointer-events-auto"
+          className="text-right space-y-2 max-w-[200px] pointer-events-auto"
         >
-          <p className="text-white/40 text-[10px] leading-relaxed uppercase tracking-widest text-center">
+          <p className="text-white/40 text-[8px] leading-relaxed uppercase tracking-widest text-center">
             copyright : persona UI/UX is inspired by
           </p>
-          <div className="space-y-3">
+          <div className="space-y-2">
             <a
               href="https://perala.in"
               target="_blank"
