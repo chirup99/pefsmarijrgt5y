@@ -280,29 +280,41 @@ const SwipeCardContent = ({
 
     setIsSpeaking(true);
     try {
-      const voice = "en-US-AndrewNeural";
-      const response = await fetch(
-        `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(
-          text,
-        )}`,
-      );
+      // Prioritize Edge Neural voices if available in the browser
+      const voices = window.speechSynthesis.getVoices();
+      const edgeNaturalVoice = voices.find(v => v.name.includes("Natural") && v.name.includes("Microsoft") && v.lang.startsWith("en"));
+      
+      if (edgeNaturalVoice && !window.chrome) { // window.chrome check is a rough proxy for "might be in Edge/Chrome with online voices"
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.voice = edgeNaturalVoice;
+        utterance.pitch = 1;
+        utterance.rate = 1;
+        utterance.onend = () => setIsSpeaking(false);
+        utterance.onerror = () => setIsSpeaking(false);
+        window.speechSynthesis.speak(utterance);
+      } else {
+        // Fallback to a high-quality neural-like TTS proxy that uses Microsoft Edge voices
+        // This is a common public endpoint used for accessing Edge TTS without an API key
+        const voice = "en-US-AndrewNeural";
+        const url = `https://api.lowline.ai/v1/tts?text=${encodeURIComponent(text)}&voice=${voice}`;
+        
+        let audio = document.getElementById("edge-tts-audio") as HTMLAudioElement;
+        if (!audio) {
+          audio = document.createElement("audio");
+          audio.id = "edge-tts-audio";
+          audio.style.display = "none";
+          document.body.appendChild(audio);
+        }
 
-      if (!response.ok) throw new Error("TTS failed");
-
-      let audio = document.getElementById("edge-tts-audio") as HTMLAudioElement;
-      if (!audio) {
-        audio = document.createElement("audio");
-        audio.id = "edge-tts-audio";
-        audio.style.display = "none";
-        document.body.appendChild(audio);
+        audio.src = url;
+        audio.onended = () => setIsSpeaking(false);
+        audio.onerror = () => {
+          // Final fallback to Google TTS if the neural proxy fails
+          audio.src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(text)}`;
+          audio.play().catch(() => setIsSpeaking(false));
+        };
+        await audio.play();
       }
-
-      audio.src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(
-        text,
-      )}`;
-      audio.onended = () => setIsSpeaking(false);
-      audio.onerror = () => setIsSpeaking(false);
-      await audio.play();
     } catch (error) {
       console.error("TTS Error:", error);
       setIsSpeaking(false);
@@ -718,20 +730,33 @@ const MiniCard = ({
 
     setIsSpeaking(true);
     try {
-      let audio = document.getElementById("edge-tts-audio-mini") as HTMLAudioElement;
-      if (!audio) {
-        audio = document.createElement("audio");
-        audio.id = "edge-tts-audio-mini";
-        audio.style.display = "none";
-        document.body.appendChild(audio);
-      }
+      const voices = window.speechSynthesis.getVoices();
+      const edgeNaturalVoice = voices.find(v => v.name.includes("Natural") && v.name.includes("Microsoft") && v.lang.startsWith("en"));
 
-      audio.src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(
-        text,
-      )}`;
-      audio.onended = () => setIsSpeaking(false);
-      audio.onerror = () => setIsSpeaking(false);
-      await audio.play();
+      if (edgeNaturalVoice) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.voice = edgeNaturalVoice;
+        utterance.onend = () => setIsSpeaking(false);
+        utterance.onerror = () => setIsSpeaking(false);
+        window.speechSynthesis.speak(utterance);
+      } else {
+        let audio = document.getElementById("edge-tts-audio-mini") as HTMLAudioElement;
+        if (!audio) {
+          audio = document.createElement("audio");
+          audio.id = "edge-tts-audio-mini";
+          audio.style.display = "none";
+          document.body.appendChild(audio);
+        }
+
+        const voice = "en-US-AndrewNeural";
+        audio.src = `https://api.lowline.ai/v1/tts?text=${encodeURIComponent(text)}&voice=${voice}`;
+        audio.onended = () => setIsSpeaking(false);
+        audio.onerror = () => {
+          audio.src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(text)}`;
+          audio.play().catch(() => setIsSpeaking(false));
+        };
+        await audio.play();
+      }
     } catch (error) {
       console.error("TTS Error:", error);
       setIsSpeaking(false);
