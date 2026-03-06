@@ -1400,6 +1400,24 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
   return (
     <div className="min-h-screen bg-[#050505] overflow-hidden relative">
+      {/* Reach Count Display at Top Center */}
+      {user && (
+        <div className="absolute top-8 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col items-center gap-1 px-6 py-2 bg-white/5 border border-white/10 rounded-full backdrop-blur-md"
+          >
+            <span className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">
+              Reach Count
+            </span>
+            <span className="text-xl font-display font-bold text-white">
+              {user.reachCount || 0}
+            </span>
+          </motion.div>
+        </div>
+      )}
+
       <div className="absolute inset-0 flex flex-col justify-start items-end p-12 pt-24 pointer-events-none">
         <motion.div
           initial={{ opacity: 0, x: 20 }}

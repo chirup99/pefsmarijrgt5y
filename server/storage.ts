@@ -56,11 +56,12 @@ export class MemStorage implements IStorage {
       whatsapp: insertUser.whatsapp || null,
       website: insertUser.website || null,
       industry: insertUser.industry || null,
-      uniqueSlug: (insertUser as any).uniqueSlug || null,
+      uniqueSlug: insertUser.uniqueSlug || null,
       connections: insertUser.connections || [],
       cards: insertUser.cards || [],
       notes: insertUser.notes || [],
       pin: insertUser.pin || null,
+      reachCount: 0,
     };
     this.users.set(id, newUser);
     return newUser;
@@ -141,11 +142,12 @@ export class DynamoDBStorage implements IStorage {
       whatsapp: insertUser.whatsapp || null,
       website: insertUser.website || null,
       industry: insertUser.industry || null,
-      uniqueSlug: (insertUser as any).uniqueSlug || null,
+      uniqueSlug: insertUser.uniqueSlug || null,
       connections: insertUser.connections || [],
       cards: insertUser.cards || [],
       notes: insertUser.notes || [],
       pin: insertUser.pin || null,
+      reachCount: 0,
     };
     try {
       // Attempt to describe table to check if it exists

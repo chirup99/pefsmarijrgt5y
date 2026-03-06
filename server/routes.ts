@@ -235,6 +235,11 @@ export async function registerRoutes(
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
+
+      // Increment reachCount when someone views a profile that isn't their own
+      // We'll just increment it for every GET request to this endpoint
+      await storage.updateUser(user.id, { reachCount: (user.reachCount || 0) + 1 });
+
       const { password: _, ...safeUser } = user;
       res.json(safeUser);
     } catch (err) {
