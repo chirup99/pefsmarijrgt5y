@@ -326,6 +326,44 @@ const SwipeCardContent = ({
                   </div>
                 </div>
               )
+            ) : card.type === "product" ? (
+              (card as any).imageUrl ? (
+                <div className="w-full aspect-square rounded-xl overflow-hidden shadow-lg border border-white/10 mb-4">
+                  <img 
+                    src={(card as any).imageUrl} 
+                    className="w-full h-full object-cover" 
+                    alt={card.name}
+                  />
+                </div>
+              ) : (
+                <div className="text-center space-y-0.5">
+                  <h3 className="text-white text-2xl font-bold leading-tight">
+                    {card.name}
+                  </h3>
+                  <h3 className="text-white text-sm opacity-60 font-medium leading-tight line-clamp-2 px-2">
+                    {card.subname}
+                  </h3>
+                </div>
+              )
+            ) : card.type === "product" ? (
+              (card as any).imageUrl ? (
+                <div className="w-full aspect-square rounded-xl overflow-hidden shadow-lg border border-white/10 mb-4">
+                  <img 
+                    src={(card as any).imageUrl} 
+                    className="w-full h-full object-cover" 
+                    alt={card.name}
+                  />
+                </div>
+              ) : (
+                <div className="text-center space-y-0.5">
+                  <h3 className="text-white text-2xl font-bold leading-tight">
+                    {card.name}
+                  </h3>
+                  <h3 className="text-white text-sm opacity-60 font-medium leading-tight line-clamp-2 px-2">
+                    {card.subname}
+                  </h3>
+                </div>
+              )
             ) : (
               <div className="text-center space-y-0.5">
                 <h3 className="text-white text-2xl font-bold leading-tight">
