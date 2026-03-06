@@ -239,17 +239,29 @@ const SwipeCardContent = ({
         </div>
 
         <div className="flex-1 flex flex-col items-center justify-center w-full space-y-3">
-          {card.type === "reel" && card.thumbnailUrl ? (
-            <div className="w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-white/10">
-              <img 
-                src={card.thumbnailUrl} 
-                className="w-full h-full object-cover" 
-                alt="Thumbnail"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = card.thumbnailUrl.replace('maxresdefault', 'hqdefault');
-                }}
-              />
-            </div>
+          {card.type === "reel" ? (
+            card.thumbnailUrl ? (
+              <div className="w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-white/10">
+                <img 
+                  src={card.thumbnailUrl} 
+                  className="w-full h-full object-cover" 
+                  alt="Thumbnail"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = card.thumbnailUrl.replace('maxresdefault', 'hqdefault');
+                  }}
+                />
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center space-y-3 py-4">
+                <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
+                  <Video className="w-8 h-8 text-white" />
+                </div>
+                <div className="text-center">
+                  <h3 className="text-white text-xl font-bold">{card.name}</h3>
+                  <p className="text-white/60 text-[10px] uppercase tracking-widest font-bold">Watch Reel</p>
+                </div>
+              </div>
+            )
           ) : (
             <div className="text-center space-y-0.5">
               <h3 className="text-white text-2xl font-bold leading-tight">
