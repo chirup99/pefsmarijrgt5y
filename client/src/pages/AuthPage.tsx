@@ -1104,7 +1104,7 @@ const MiniCard = ({
                 {card.type === "revenue" ? "Live Revenue" : "User Growth"}
               </div>
               <div className="text-white text-3xl font-bold tracking-tight">
-                {(card as any).value || (card.type === "revenue" ? "$1.2M" : "50k+")        )}
+                {(card as any).value || (card.type === "revenue" ? "$1.2M" : "50k+")}
               </div>
             </div>
             <div className="w-full h-32 relative group/chart">
