@@ -265,36 +265,48 @@ const SwipeCardContent = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
 
-  const handleSpeak = (text: string) => {
+  const handleSpeak = async (text: string) => {
     if (isSpeaking) {
-      window.speechSynthesis.cancel();
+      const audio = document.getElementById("edge-tts-audio") as HTMLAudioElement;
+      if (audio) {
+        audio.pause();
+        audio.src = "";
+      }
       setIsSpeaking(false);
       return;
     }
 
     if (!text) return;
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    const voices = window.speechSynthesis.getVoices();
-    const preferredVoice =
-      voices.find(
-        (v) => v.name.includes("Google") && v.lang.startsWith("en"),
-      ) ||
-      voices.find((v) => v.lang.startsWith("en-GB")) ||
-      voices.find((v) => v.lang.startsWith("en-US"));
-
-    if (preferredVoice) {
-      utterance.voice = preferredVoice;
-    }
-
-    utterance.pitch = 1;
-    utterance.rate = 0.9;
-
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-
     setIsSpeaking(true);
-    window.speechSynthesis.speak(utterance);
+    try {
+      const voice = "en-US-AndrewNeural";
+      const response = await fetch(
+        `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(
+          text,
+        )}`,
+      );
+
+      if (!response.ok) throw new Error("TTS failed");
+
+      let audio = document.getElementById("edge-tts-audio") as HTMLAudioElement;
+      if (!audio) {
+        audio = document.createElement("audio");
+        audio.id = "edge-tts-audio";
+        audio.style.display = "none";
+        document.body.appendChild(audio);
+      }
+
+      audio.src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(
+        text,
+      )}`;
+      audio.onended = () => setIsSpeaking(false);
+      audio.onerror = () => setIsSpeaking(false);
+      await audio.play();
+    } catch (error) {
+      console.error("TTS Error:", error);
+      setIsSpeaking(false);
+    }
   };
 
   const thumbnailUrl = useMemo(() => {
@@ -693,34 +705,37 @@ const MiniCard = ({
 
   const handleSpeak = async (text: string) => {
     if (isSpeaking) {
-      window.speechSynthesis.cancel();
+      const audio = document.getElementById("edge-tts-audio-mini") as HTMLAudioElement;
+      if (audio) {
+        audio.pause();
+        audio.src = "";
+      }
       setIsSpeaking(false);
       return;
     }
 
     if (!text) return;
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    const voices = window.speechSynthesis.getVoices();
-    const preferredVoice =
-      voices.find(
-        (v) => v.name.includes("Google") && v.lang.startsWith("en"),
-      ) ||
-      voices.find((v) => v.lang.startsWith("en-GB")) ||
-      voices.find((v) => v.lang.startsWith("en-US"));
-
-    if (preferredVoice) {
-      utterance.voice = preferredVoice;
-    }
-
-    utterance.pitch = 1;
-    utterance.rate = 0.9;
-
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-
     setIsSpeaking(true);
-    window.speechSynthesis.speak(utterance);
+    try {
+      let audio = document.getElementById("edge-tts-audio-mini") as HTMLAudioElement;
+      if (!audio) {
+        audio = document.createElement("audio");
+        audio.id = "edge-tts-audio-mini";
+        audio.style.display = "none";
+        document.body.appendChild(audio);
+      }
+
+      audio.src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(
+        text,
+      )}`;
+      audio.onended = () => setIsSpeaking(false);
+      audio.onerror = () => setIsSpeaking(false);
+      await audio.play();
+    } catch (error) {
+      console.error("TTS Error:", error);
+      setIsSpeaking(false);
+    }
   };
 
   const cardTypeInfo = CARD_TYPES.find((t) => t.type === card.type);
