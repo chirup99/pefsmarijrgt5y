@@ -574,7 +574,7 @@ const MiniCard = ({
               Done
             </button>
           </div>
-        ) : card.type === "reel" && isPlaying ? (
+        ) : card.type === "reel" && !isEditing && isPlaying ? (
           <div className="w-full h-full relative group">
             {embedUrl ? (
               <iframe
@@ -594,6 +594,46 @@ const MiniCard = ({
             >
               <X className="w-4 h-4" />
             </button>
+          </div>
+        ) : card.type === "reel" && !isEditing && !isPlaying ? (
+          <div 
+            className="w-full h-full cursor-pointer group relative overflow-hidden rounded-xl"
+            onClick={() => {
+              if ((card as any).url) {
+                setIsPlaying(true);
+              } else {
+                setIsEditing(true);
+              }
+            }}
+          >
+            {thumbnailUrl ? (
+              <img 
+                src={thumbnailUrl} 
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                alt="Video thumbnail"
+                onError={(e) => {
+                  // Fallback to hqdefault if maxres isn't available
+                  (e.target as HTMLImageElement).src = thumbnailUrl.replace('maxresdefault', 'hqdefault');
+                }}
+              />
+            ) : (
+              <div className="w-full h-full bg-white/10 flex items-center justify-center">
+                {(card as any).url ? (
+                  <Video className="w-12 h-12 text-white/40" />
+                ) : (
+                  <Plus className="w-12 h-12 text-white/40 group-hover:scale-110 transition-transform" />
+                )}
+              </div>
+            )}
+            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform">
+                {(card as any).url ? (
+                  <Play className="w-8 h-8 text-white fill-current" />
+                ) : (
+                  <Plus className="w-8 h-8 text-white" />
+                )}
+              </div>
+            </div>
           </div>
         ) : card.type === "pitch" ? (
           <div className="w-full h-full flex flex-col items-center justify-center p-2 overflow-hidden">
@@ -661,32 +701,6 @@ const MiniCard = ({
               >
                 {(card as any).value}
               </motion.div>
-            </div>
-          </div>
-        ) : card.type === "reel" ? (
-          <div 
-            className="w-full h-full cursor-pointer group relative overflow-hidden rounded-xl"
-            onClick={() => setIsPlaying(true)}
-          >
-            {thumbnailUrl ? (
-              <img 
-                src={thumbnailUrl} 
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-                alt="Video thumbnail"
-                onError={(e) => {
-                  // Fallback to hqdefault if maxres isn't available
-                  (e.target as HTMLImageElement).src = thumbnailUrl.replace('maxresdefault', 'hqdefault');
-                }}
-              />
-            ) : (
-              <div className="w-full h-full bg-white/10 flex items-center justify-center">
-                <Video className="w-12 h-12 text-white/40" />
-              </div>
-            )}
-            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform">
-                <Play className="w-8 h-8 text-white fill-current" />
-              </div>
             </div>
           </div>
         ) : (
