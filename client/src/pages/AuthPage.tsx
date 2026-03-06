@@ -263,7 +263,7 @@ const SwipeCard = ({ cards, user: propsUser }: { cards: string[]; user?: any }) 
           const typeInfo = CARD_TYPES.find((t) => t.type === card.type);
           return {
             title: card.title || "Untitled",
-            name: card.type.toUpperCase(),
+            name: card.title || card.type.toUpperCase(),
             subname: card.value || card.url || "Persona",
             color: typeInfo?.color || "from-gray-700 to-gray-800",
             bgStack1: "bg-black/20",
@@ -403,9 +403,9 @@ const MiniCard = ({
     if (ytMatch)
       return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${ytMatch[1]}&modestbranding=1&rel=0`;
     const igMatch = url.match(
-      /(?:instagram\.com\/(?:reels|reel|p)\/)([\w-]+)/,
+      /(?:instagram\.com\/(?:reels|reel|p|tv)\/)([\w-]+)/,
     );
-    if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed/captioned=0`;
+    if (igMatch) return `https://www.instagram.com/reels/${igMatch[1]}/embed/`;
     return null;
   };
 
@@ -600,17 +600,6 @@ const MiniCard = ({
               <X className="w-4 h-4" />
             </button>
             <div className="absolute bottom-4 left-4 right-4 z-40 pointer-events-none">
-              <div className="pointer-events-auto">
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsPlaying(true);
-                  }}
-                  className="w-full bg-white/90 backdrop-blur-md text-black rounded-full py-2.5 text-xs font-bold flex items-center justify-center gap-2 shadow-lg"
-                >
-                  <Play className="w-3 h-3 fill-current" /> Play Now
-                </button>
-              </div>
             </div>
           </div>
         ) : card.type === "reel" && !isEditing && !isPlaying ? (
@@ -642,6 +631,16 @@ const MiniCard = ({
                   <Plus className="w-12 h-12 text-white/40 group-hover:scale-110 transition-transform" />
                 )}
               </div>
+            ) || (
+              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform">
+                  {(card as any).url ? (
+                    <Play className="w-8 h-8 text-white fill-current" />
+                  ) : (
+                    <Plus className="w-8 h-8 text-white" />
+                  )}
+                </div>
+              </div>
             )}
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
               <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform">
@@ -651,17 +650,6 @@ const MiniCard = ({
                   <Plus className="w-8 h-8 text-white" />
                 )}
               </div>
-            </div>
-            <div className="absolute bottom-4 left-4 right-4 z-40">
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsPlaying(true);
-                }}
-                className="w-full bg-white/90 backdrop-blur-md text-black rounded-full py-2.5 text-xs font-bold flex items-center justify-center gap-2 shadow-lg"
-              >
-                <Play className="w-3 h-3 fill-current" /> Play Now
-              </button>
             </div>
           </div>
         ) : card.type === "pitch" ? (
