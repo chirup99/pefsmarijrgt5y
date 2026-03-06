@@ -15,12 +15,21 @@ export const cardSchema = z.discriminatedUnion("type", [
     type: z.literal("revenue"),
     title: z.string(),
     value: z.string(),
+    revenue: z.string().optional(),
+    imageUrl: z.string().optional(),
+  }),
+  z.object({
+    type: z.literal("traction"),
+    title: z.string(),
+    value: z.string().optional(),
+    traction: z.string().optional(),
     imageUrl: z.string().optional(),
   }),
   z.object({
     type: z.literal("product"),
     title: z.string(),
     imageUrl: z.string(),
+    traction: z.string().optional(),
   }),
 ]);
 

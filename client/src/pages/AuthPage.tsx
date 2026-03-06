@@ -806,6 +806,50 @@ const MiniCard = ({
                   }}
                 />
                 <input
+                  className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
+                  placeholder="Revenue Number (e.g. 10000)"
+                  defaultValue={(card as any).revenue}
+                  onBlur={(e) => {
+                    onUpdate(
+                      JSON.stringify({ ...card, revenue: e.target.value }),
+                    );
+                  }}
+                />
+                <input
+                  className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-[10px] text-white"
+                  placeholder="Image URL"
+                  defaultValue={(card as any).imageUrl}
+                  onBlur={(e) => {
+                    onUpdate(
+                      JSON.stringify({ ...card, imageUrl: e.target.value }),
+                    );
+                  }}
+                />
+              </div>
+            )}
+            {card.type === "traction" && (
+              <div className="space-y-1">
+                <input
+                  className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
+                  placeholder="Value (e.g. +20%)"
+                  defaultValue={(card as any).value}
+                  onBlur={(e) => {
+                    onUpdate(
+                      JSON.stringify({ ...card, value: e.target.value }),
+                    );
+                  }}
+                />
+                <input
+                  className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
+                  placeholder="User Count (e.g. 500)"
+                  defaultValue={(card as any).traction}
+                  onBlur={(e) => {
+                    onUpdate(
+                      JSON.stringify({ ...card, traction: e.target.value }),
+                    );
+                  }}
+                />
+                <input
                   className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-[10px] text-white"
                   placeholder="Image URL"
                   defaultValue={(card as any).imageUrl}
@@ -819,6 +863,16 @@ const MiniCard = ({
             )}
             {card.type === "product" && (
               <div className="space-y-1">
+                <input
+                  className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white"
+                  placeholder="User Count / Traction"
+                  defaultValue={(card as any).traction}
+                  onBlur={(e) => {
+                    onUpdate(
+                      JSON.stringify({ ...card, traction: e.target.value }),
+                    );
+                  }}
+                />
                 <input
                   type="file"
                   accept="image/*"
@@ -1088,8 +1142,15 @@ const MiniCard = ({
         ) : card.type === "revenue" ? (
           <div className="space-y-2">
             {!isPlaying && (
-              <div className="text-white font-bold text-xl">
-                {(card as any).value}
+              <div className="text-center">
+                <div className="text-white font-bold text-xl">
+                  {(card as any).value}
+                </div>
+                {(card as any).revenue && (
+                  <div className="text-white/40 text-[10px] font-bold uppercase tracking-widest mt-1">
+                    Total: {(card as any).revenue}
+                  </div>
+                )}
               </div>
             )}
             <button
@@ -1099,6 +1160,37 @@ const MiniCard = ({
               <Play className="w-3 h-3 fill-current" />{" "}
               {isPlaying ? "Reset" : "Play Projection"}
             </button>
+          </div>
+        ) : card.type === "traction" ? (
+          <div className="space-y-2">
+            {!isPlaying && (
+              <div className="text-center">
+                <div className="text-white font-bold text-xl">
+                  {(card as any).value}
+                </div>
+                {(card as any).traction && (
+                  <div className="text-white/40 text-[10px] font-bold uppercase tracking-widest mt-1">
+                    Users: {(card as any).traction}
+                  </div>
+                )}
+              </div>
+            )}
+            <button
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="w-full bg-white text-black rounded-full py-2 text-xs font-bold flex items-center justify-center gap-2"
+            >
+              <Play className="w-3 h-3 fill-current" />{" "}
+              {isPlaying ? "Reset" : "Play Projection"}
+            </button>
+          </div>
+        ) : card.type === "product" ? (
+          <div className="space-y-1 text-center">
+            {(card as any).traction && (
+              <div className="text-emerald-400 font-bold text-sm mb-1 flex items-center justify-center gap-1">
+                <TrendingUp className="w-3 h-3" />
+                {(card as any).traction}
+              </div>
+            )}
           </div>
         ) : null}
       </div>
@@ -3015,13 +3107,23 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                                   type: "revenue",
                                                   title: "Monthly Sales",
                                                   value: "$0",
+                                                  revenue: "",
                                                   imageUrl: "",
                                                 }
-                                              : {
-                                                  type: "product",
-                                                  title: "Product",
-                                                  imageUrls: ["", ""],
-                                                };
+                                              : t.type === "traction"
+                                                ? {
+                                                    type: "traction",
+                                                    title: "Traction",
+                                                    value: "0",
+                                                    traction: "",
+                                                    imageUrl: "",
+                                                  }
+                                                : {
+                                                    type: "product",
+                                                    title: "Product",
+                                                    imageUrl: "",
+                                                    traction: "",
+                                                  };
                                       currentCards[idx] =
                                         JSON.stringify(newCard);
                                       setSelectedCards(currentCards);
