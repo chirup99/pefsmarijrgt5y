@@ -1517,6 +1517,73 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   </div>
                 </div>
 
+                {/* AI Analysis Window */}
+                <div className="mt-4 p-6 bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-white/10 rounded-2xl space-y-4 backdrop-blur-md relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
+                    <TrendingUp className="w-8 h-8 text-purple-400" />
+                  </div>
+                  
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+                      <span className="text-[10px] text-purple-400 uppercase tracking-[0.2em] font-bold">
+                        AI Analysis
+                      </span>
+                    </div>
+                    <h4 className="text-white font-bold text-sm">Growth Insights</h4>
+                  </div>
+
+                  <div className="space-y-3 relative z-10">
+                    {(() => {
+                      const history = user.reachHistory || [];
+                      const today = history.find(h => h.date === new Date().toISOString().split('T')[0])?.count || 0;
+                      const yesterday = history.find(h => h.date === new Date(Date.now() - 86400000).toISOString().split('T')[0])?.count || 0;
+                      const isDecreasing = today < yesterday;
+                      const industry = user.industry || "General";
+                      
+                      return (
+                        <>
+                          <div className="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] text-white/40 uppercase font-bold tracking-tight">Status</span>
+                              {isDecreasing ? (
+                                <span className="text-[10px] text-red-400 font-bold flex items-center gap-1">
+                                  <ChevronDown className="w-3 h-3" /> Decreasing
+                                </span>
+                              ) : (
+                                <span className="text-[10px] text-green-400 font-bold flex items-center gap-1">
+                                  <TrendingUp className="w-3 h-3" /> Growing
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[11px] text-white/70 leading-relaxed">
+                              {isDecreasing 
+                                ? `Your reach is down compared to yesterday. In the ${industry} sector, consistency is key.`
+                                : `Great job! Your profile is gaining traction in the ${industry} industry.`}
+                            </p>
+                          </div>
+
+                          <div className="space-y-2">
+                            <span className="text-[10px] text-white/40 uppercase font-bold tracking-[0.1em]">AI Suggestions</span>
+                            <ul className="space-y-2">
+                              {[
+                                `Update your ${industry} pitch card with latest achievements.`,
+                                "Share your QR code on LinkedIn for professional reach.",
+                                "Engagement peaks are observed during evening hours."
+                              ].map((s, i) => (
+                                <li key={i} className="flex items-start gap-2 text-[10px] text-white/60">
+                                  <div className="w-1 h-1 rounded-full bg-purple-500 mt-1.5 shrink-0" />
+                                  {s}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
+
                 <AnimatePresence>
                   {isPersonaExpanded && (
                     <motion.div
