@@ -198,6 +198,39 @@ const SwipeCardContent = ({
   const rotate = useTransform(x, [-200, 200], [-30, 30]);
   const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  const handleSpeak = (text: string) => {
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
+    if (!text) return;
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    const voices = window.speechSynthesis.getVoices();
+    const preferredVoice =
+      voices.find(
+        (v) => v.name.includes("Google") && v.lang.startsWith("en"),
+      ) ||
+      voices.find((v) => v.lang.startsWith("en-GB")) ||
+      voices.find((v) => v.lang.startsWith("en-US"));
+
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
+
+    utterance.pitch = 1;
+    utterance.rate = 0.9;
+
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    setIsSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+  };
 
   const thumbnailUrl = useMemo(() => {
     if (card.type !== "reel") return null;
@@ -383,6 +416,11 @@ const SwipeCardContent = ({
                 <h3 className="text-white text-sm opacity-60 font-medium leading-tight line-clamp-2 px-2">
                   {card.subname}
                 </h3>
+                {card.type === "pitch" && (card as any).content && (
+                  <p className="text-white/80 text-xs mt-2 px-4 line-clamp-3">
+                    {(card as any).content}
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -391,11 +429,27 @@ const SwipeCardContent = ({
             <div className="w-full">
               <button
                 type="button"
-                onClick={() => setIsPlaying(true)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (card.type === "pitch" && (card as any).content) {
+                    handleSpeak((card as any).content);
+                  } else {
+                    setIsPlaying(true);
+                  }
+                }}
                 className="w-full bg-white text-black rounded-full py-3 flex items-center justify-center gap-2 font-bold shadow-xl hover:scale-105 transition-transform text-sm"
               >
-                <Play className="w-3.5 h-3.5 fill-current" />
-                Play Now
+                {isSpeaking ? (
+                  <>
+                    <Mic className="w-3.5 h-3.5 animate-pulse text-red-500" />
+                    Speaking...
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-3.5 h-3.5 fill-current" />
+                    Play Now
+                  </>
+                )}
               </button>
             </div>
           )}
