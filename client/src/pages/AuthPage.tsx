@@ -1226,6 +1226,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
       whatsapp: user?.whatsapp || "",
       website: user?.website || "",
       cards: user?.cards || [],
+      email: user?.email && !user.email.endsWith("@persona.local") ? user.email : "",
     },
   });
 
