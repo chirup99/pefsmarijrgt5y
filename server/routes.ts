@@ -29,8 +29,14 @@ export async function registerRoutes(
 
       console.log("Verify Persona - User found:", user.id, "User PIN in DB:", user.pin);
 
-      if (String(user.pin) !== String(pin)) {
-        console.log("Verify Persona - PIN mismatch");
+      // Normalize PINs to strings for comparison and trim whitespace
+      const pinInDb = String(user.pin || "").trim();
+      const providedPin = String(pin || "").trim();
+      
+      console.log("Verify Persona - Comparing PINs:", { pinInDb, providedPin, slug });
+
+      if (pinInDb !== providedPin) {
+        console.log("Verify Persona - PIN mismatch for slug:", slug);
         return res.status(401).json({ message: "Invalid PIN" });
       }
 

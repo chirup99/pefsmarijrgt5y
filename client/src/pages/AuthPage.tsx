@@ -996,8 +996,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const loggedInUser = authUser || localUser;
   const [publicUser, setPublicUser] = useState<any>(null);
 
+  const user = slug ? publicUser : loggedInUser;
   const isOtherPersona = slug && loggedInUser && loggedInUser.uniqueSlug !== slug;
-  const user = isOtherPersona ? publicUser : loggedInUser;
 
   useEffect(() => {
     if (slug && (!publicUser || publicUser.uniqueSlug !== slug)) {
@@ -2962,7 +2962,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       {/* QR Code Section - More Compact */}
                       <div id="qr-download-area" className="p-4 bg-white rounded-[24px] shadow-2xl flex flex-col items-center">
                         <QRCodeSVG
-                          value={window.location.origin + "/" + user?.uniqueSlug}
+                          value={window.location.origin + "/" + (user?.uniqueSlug || window.location.pathname.split("/")[1] || "")}
                           size={140}
                           level="H"
                           includeMargin={false}
@@ -3244,7 +3244,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
                           const userData = await res.json();
 
                           // Set user and sync form
-                          queryClient.setQueryData(["/api/me"], userData);
+                          localStorage.setItem("persona_user_id", userData.id);
+                          localStorage.setItem("persona_user", JSON.stringify(userData));
+                          await queryClient.invalidateQueries({ queryKey: ["/api/me"] });
                           setLocalUser(userData);
                           setShowPersonaDialog(false);
                           form.reset({
@@ -3259,8 +3261,12 @@ export default function AuthPage({ slug }: { slug?: string }) {
                             cards: userData.cards || [],
                           });
                           setSelectedCards(userData.cards || []);
+                          
+                          if (userData.uniqueSlug) {
+                            setLocation(`/${userData.uniqueSlug}`);
+                          }
+                          
                           setMode("login");
-                          setShowPersonaDialog(false);
                           toast({
                             title: "Welcome back!",
                             description: `Successfully loaded persona: ${userData.name}`,
