@@ -1095,18 +1095,26 @@ const MiniCard = ({
             </div>
           </div>
         ) : (card.type === "revenue" || card.type === "traction") ? (
-          <div className="w-full h-full flex flex-col items-center justify-center p-4">
+          <div 
+            className="w-full h-full flex flex-col items-center justify-center p-4 cursor-pointer group/card-content"
+            onClick={() => setIsEditing(true)}
+          >
             <div className="text-center mb-4">
               <div className="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1">
                 {card.type === "revenue" ? "Live Revenue" : "User Growth"}
               </div>
               <div className="text-white text-3xl font-bold tracking-tight">
-                {(card as any).value || (card.type === "revenue" ? "$1.2M" : "50k+")}
+                {(card as any).value || (card.type === "revenue" ? "$1.2M" : "50k+")        )}
               </div>
             </div>
             <div className="w-full h-32 relative group/chart">
               <TrendLine />
               <div className="absolute inset-0 bg-white/5 opacity-0 group-hover/chart:opacity-100 transition-opacity rounded-xl -m-2" />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/card-content:opacity-100 transition-opacity">
+                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                  <Plus className="w-6 h-6 text-white" />
+                </div>
+              </div>
             </div>
           </div>
         ) : (
