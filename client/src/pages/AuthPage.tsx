@@ -251,7 +251,7 @@ const SwipeCardContent = ({
   );
 };
 
-const SwipeCard = ({ cards }: { cards: string[] }) => {
+const SwipeCard = ({ cards, user: propsUser }: { cards: string[]; user?: any }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleSwipeLeft = () => {
@@ -284,7 +284,7 @@ const SwipeCard = ({ cards }: { cards: string[] }) => {
             return CARDS[0];
           }
         })
-      : user
+      : propsUser
         ? [
             {
               title: "NO CARDS",
@@ -2180,7 +2180,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   </div>
                 ) : (
                   <div className="py-2">
-                    <SwipeCard cards={selectedCards} />
+                    <SwipeCard cards={selectedCards} user={user} />
                   </div>
                 )}
               </motion.div>
