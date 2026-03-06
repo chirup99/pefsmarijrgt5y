@@ -1901,6 +1901,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                               {[
                                 `Update ${industry} pitch card.`,
                                 "Share QR on LinkedIn.",
+                                "Set QR as wallpaper for easy networking.",
                                 "Write notes & todo list."
                               ].map((s, i) => (
                                 <li key={i} className="flex items-start gap-1.5 text-[9px] text-white/60">
