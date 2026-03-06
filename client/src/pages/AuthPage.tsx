@@ -2689,7 +2689,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
               </button>
             )}
 
-            {!user && (
+            {!loggedInUser && (
               <button
                 type="button"
                 onClick={() => {
@@ -2699,7 +2699,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     setMode("login");
                   }
                 }}
-                className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg"
+                className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg mt-2"
               >
                 create your persona
               </button>
