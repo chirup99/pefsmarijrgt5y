@@ -1068,9 +1068,16 @@ export default function AuthPage({ slug }: { slug?: string }) {
         // Ensure we stay on Persona tab after update
         setMode("login");
 
-        // If it's a new registration or missing uniqueSlug, show the QR/Pin flow
+        // If it's a new registration or missing pin, show the QR/Pin flow
         if (mode === "register" || !result.pin) {
           setShowHomeDialog(true);
+        } else if (result.uniqueSlug && mode === "customize") {
+          // If we were in customize mode and now have a pin, show QR
+          setShowQRDialog(true);
+          // Also redirect to the profile after a short delay or when they close
+          setTimeout(() => {
+            setLocation(`/${result.uniqueSlug}`);
+          }, 500);
         } else if (result.uniqueSlug) {
           setLocation(`/${result.uniqueSlug}`);
         }
