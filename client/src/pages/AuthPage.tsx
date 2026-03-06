@@ -2136,9 +2136,20 @@ export default function AuthPage({ slug }: { slug?: string }) {
           <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-2">
             Networking & Exposure
           </h2>
-          <p className="text-white/70 text-base mb-4 max-w-sm mx-auto">
+          <p className="text-white/70 text-base mb-6 max-w-sm mx-auto">
             Persona: Your Digital Identity & Collaboration Hub.
           </p>
+
+          <div className="flex items-center justify-center gap-6 mb-4">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
+              <span className="text-[11px] font-medium text-emerald-500/90 uppercase tracking-wider">Smart Networking</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
+              <span className="text-[11px] font-medium text-emerald-500/90 uppercase tracking-wider">Startup Exposure</span>
+            </div>
+          </div>
         </motion.div>
 
         <motion.div
