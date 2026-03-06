@@ -401,11 +401,11 @@ const MiniCard = ({
       /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/|reels\/))([\w-]{11})/,
     );
     if (ytMatch)
-      return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${ytMatch[1]}`;
+      return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${ytMatch[1]}&modestbranding=1&rel=0`;
     const igMatch = url.match(
       /(?:instagram\.com\/(?:reels|reel|p)\/)([\w-]+)/,
     );
-    if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed`;
+    if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed/captioned=0`;
     return null;
   };
 
@@ -575,25 +575,43 @@ const MiniCard = ({
             </button>
           </div>
         ) : card.type === "reel" && !isEditing && isPlaying ? (
-          <div className="w-full h-full relative group">
+          <div className="w-full h-full relative group bg-black">
             {embedUrl ? (
-              <iframe
-                src={embedUrl}
-                className="w-full h-full border-0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+              <div className="w-full h-full overflow-hidden flex items-center justify-center">
+                <iframe
+                  src={embedUrl}
+                  className="w-full h-[calc(100%+80px)] -mt-[40px] border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
             ) : (
               <div className="text-white text-xs p-4 text-center">
                 Invalid Video URL
               </div>
             )}
             <button
-              onClick={() => setIsPlaying(false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsPlaying(false);
+              }}
               className="absolute top-4 right-4 p-2 bg-black/50 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity z-30"
             >
               <X className="w-4 h-4" />
             </button>
+            <div className="absolute bottom-4 left-4 right-4 z-40 pointer-events-none">
+              <div className="pointer-events-auto">
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsPlaying(true);
+                  }}
+                  className="w-full bg-white/90 backdrop-blur-md text-black rounded-full py-2.5 text-xs font-bold flex items-center justify-center gap-2 shadow-lg"
+                >
+                  <Play className="w-3 h-3 fill-current" /> Play Now
+                </button>
+              </div>
+            </div>
           </div>
         ) : card.type === "reel" && !isEditing && !isPlaying ? (
           <div 
@@ -633,6 +651,17 @@ const MiniCard = ({
                   <Plus className="w-8 h-8 text-white" />
                 )}
               </div>
+            </div>
+            <div className="absolute bottom-4 left-4 right-4 z-40">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsPlaying(true);
+                }}
+                className="w-full bg-white/90 backdrop-blur-md text-black rounded-full py-2.5 text-xs font-bold flex items-center justify-center gap-2 shadow-lg"
+              >
+                <Play className="w-3 h-3 fill-current" /> Play Now
+              </button>
             </div>
           </div>
         ) : card.type === "pitch" ? (
@@ -716,12 +745,7 @@ const MiniCard = ({
 
       <div className="pt-2">
         {card.type === "reel" ? (
-          <button 
-            onClick={() => setIsPlaying(true)}
-            className="w-full bg-white text-black rounded-full py-2 text-xs font-bold flex items-center justify-center gap-2"
-          >
-            <Play className="w-3 h-3 fill-current" /> Play Now
-          </button>
+          null
         ) : card.type === "pitch" ? (
           <button
             onClick={() => handleSpeak((card as any).content || "")}
