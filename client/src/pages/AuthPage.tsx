@@ -409,7 +409,17 @@ const MiniCard = ({
     return null;
   };
 
+  const getThumbnailUrl = (url: string) => {
+    if (!url) return null;
+    const ytMatch = url.match(
+      /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/|reels\/))([\w-]{11})/,
+    );
+    if (ytMatch) return `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`;
+    return null;
+  };
+
   const embedUrl = card.type === "reel" ? getEmbedUrl((card as any).url) : null;
+  const thumbnailUrl = card.type === "reel" ? getThumbnailUrl((card as any).url) : null;
 
   return (
     <motion.div
@@ -654,13 +664,31 @@ const MiniCard = ({
             </div>
           </div>
         ) : card.type === "reel" ? (
-          <button
-            type="button"
+          <div 
+            className="w-full h-full cursor-pointer group relative overflow-hidden rounded-xl"
             onClick={() => setIsPlaying(true)}
-            className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all group"
           >
-            <Video className="w-8 h-8 text-white group-hover:scale-110 transition-transform" />
-          </button>
+            {thumbnailUrl ? (
+              <img 
+                src={thumbnailUrl} 
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                alt="Video thumbnail"
+                onError={(e) => {
+                  // Fallback to hqdefault if maxres isn't available
+                  (e.target as HTMLImageElement).src = thumbnailUrl.replace('maxresdefault', 'hqdefault');
+                }}
+              />
+            ) : (
+              <div className="w-full h-full bg-white/10 flex items-center justify-center">
+                <Video className="w-12 h-12 text-white/40" />
+              </div>
+            )}
+            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform">
+                <Play className="w-8 h-8 text-white fill-current" />
+              </div>
+            </div>
+          </div>
         ) : (
           <button
             type="button"
