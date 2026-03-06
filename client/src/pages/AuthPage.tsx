@@ -284,7 +284,16 @@ const SwipeCard = ({ cards }: { cards: string[] }) => {
             return CARDS[0];
           }
         })
-      : CARDS;
+      : [
+          {
+            title: "NO CARDS YET",
+            name: "START",
+            subname: "SWIPE TO ADD",
+            color: "from-gray-800 to-gray-900",
+            bgStack1: "bg-black/20",
+            bgStack2: "bg-black/10",
+          }
+        ];
 
   const currentCard = displayCards[currentIndex];
   const nextCard = displayCards[(currentIndex + 1) % displayCards.length];
