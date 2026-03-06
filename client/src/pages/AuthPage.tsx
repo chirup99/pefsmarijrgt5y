@@ -948,7 +948,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [showScannerDialog, setShowScannerDialog] = useState(false);
   const [scannerTab, setScannerTab] = useState<"scan" | "code">("scan");
   const [activeTab, setActiveTab] = useState<"notes" | "events" | "connect">("notes");
-  const [connections, setConnections] = useState<{ name: string; industry: string; slug: string }[]>([]);
+  const [connections, setConnections] = useState<{ name: string; industry: string; slug: string; expiresAt: string }[]>([]);
 
   useEffect(() => {
     if (user?.id) {
@@ -972,6 +972,16 @@ export default function AuthPage({ slug }: { slug?: string }) {
       }).catch(console.error);
     }
   }, [isOtherPersona, authUser, publicUser]);
+
+  const getRemainingTime = (expiresAt: string) => {
+    if (!expiresAt) return "48H";
+    const now = new Date();
+    const expiry = new Date(expiresAt);
+    const diffMs = expiry.getTime() - now.getTime();
+    if (diffMs <= 0) return "0H";
+    const diffHrs = Math.ceil(diffMs / (1000 * 60 * 60));
+    return `${diffHrs}H`;
+  };
   const [isEditingSlug, setIsEditingSlug] = useState(false);
   const [slugValue, setSlugValue] = useState(user?.uniqueSlug || "");
 
@@ -1945,7 +1955,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                     </div>
                                     <div className="flex items-center gap-3">
                                       <span className="text-[10px] font-bold text-blue-400/80 bg-blue-400/10 px-1.5 py-0.5 rounded border border-blue-400/20">
-                                        48H
+                                        {getRemainingTime(conn.expiresAt)}
                                       </span>
                                       <ArrowRight className="w-3 h-3 text-white/20 group-hover:text-white/60 group-hover:translate-x-0.5 transition-all" />
                                     </div>

@@ -253,9 +253,23 @@ export async function registerRoutes(
       if (!user) return res.status(404).json({ message: "User not found" });
 
       const connections = user.connections || [];
-      if (!connections.includes(targetSlug)) {
+      const now = new Date();
+      
+      // Filter out expired connections (older than 48h)
+      const validConnections = connections.filter(conn => {
+        const connectedAt = new Date(conn.connectedAt);
+        const diffHours = (now.getTime() - connectedAt.getTime()) / (1000 * 60 * 60);
+        return diffHours < 48;
+      });
+
+      if (!validConnections.find(c => c.slug === targetSlug)) {
         await storage.updateUser(userId, {
-          connections: [...connections, targetSlug]
+          connections: [...validConnections, { slug: targetSlug, connectedAt: now.toISOString() }]
+        });
+      } else if (validConnections.length !== connections.length) {
+        // Just update if some expired even if target already exists
+        await storage.updateUser(userId, {
+          connections: validConnections
         });
       }
 
@@ -271,15 +285,32 @@ export async function registerRoutes(
       const user = await storage.getUser(req.params.id);
       if (!user) return res.status(404).json({ message: "User not found" });
 
-      const connectionSlugs = user.connections || [];
+      const connections = user.connections || [];
+      const now = new Date();
+
+      // Filter out expired connections (older than 48h)
+      const validConnections = connections.filter(conn => {
+        const connectedAt = new Date(conn.connectedAt);
+        const diffHours = (now.getTime() - connectedAt.getTime()) / (1000 * 60 * 60);
+        return diffHours < 48;
+      });
+
+      // Update user if some connections expired
+      if (validConnections.length !== connections.length) {
+        await storage.updateUser(user.id, { connections: validConnections });
+      }
+
       const connectionProfiles = await Promise.all(
-        connectionSlugs.map(async (slug) => {
-          const profile = await storage.getUserBySlug(slug);
+        validConnections.map(async (conn) => {
+          const profile = await storage.getUserBySlug(conn.slug);
           if (profile) {
+            const connectedAt = new Date(conn.connectedAt);
+            const expiresAt = new Date(connectedAt.getTime() + 48 * 60 * 60 * 1000);
             return {
               name: profile.name || "Anonymous",
               industry: profile.industry || "Unknown",
-              slug: profile.uniqueSlug
+              slug: profile.uniqueSlug,
+              expiresAt: expiresAt.toISOString()
             };
           }
           return null;
@@ -288,6 +319,7 @@ export async function registerRoutes(
 
       res.json(connectionProfiles.filter(Boolean));
     } catch (err) {
+      console.error("Get connections error:", err);
       res.status(500).json({ message: "Internal server error" });
     }
   });
