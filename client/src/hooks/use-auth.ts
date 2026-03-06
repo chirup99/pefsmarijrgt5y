@@ -14,8 +14,32 @@ function parseWithLogging<T>(schema: z.ZodSchema<T>, data: unknown, label: strin
 
 export function useAuth() {
   const queryClient = useQueryClient();
-  const user = queryClient.getQueryData<User>(["/api/me"]) ?? null;
-  return { user };
+  
+  const { data: user, isLoading } = useQuery<User | null>({
+    queryKey: ["/api/me"],
+    queryFn: async () => {
+      const userId = localStorage.getItem("persona_user_id");
+      if (!userId) return null;
+      
+      try {
+        const res = await fetch(`/api/user/${userId}`);
+        if (!res.ok) {
+          if (res.status === 404) {
+            localStorage.removeItem("persona_user_id");
+            return null;
+          }
+          throw new Error("Failed to fetch user");
+        }
+        return await res.json();
+      } catch (error) {
+        console.error("Error fetching user session:", error);
+        return null;
+      }
+    },
+    staleTime: Infinity,
+  });
+
+  return { user, isLoading };
 }
 
 export function useLogin() {

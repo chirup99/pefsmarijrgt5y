@@ -981,7 +981,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [location, setLocation] = useLocation();
   const { toast } = useToast();
   const [mode, setMode] = useState<AuthMode>("login");
-  const { user: authUser } = useAuth();
+  const { user: authUser, isLoading: isAuthLoading } = useAuth();
   const [localUser, setLocalUser] = useState<any>(() => {
     const saved = localStorage.getItem("persona_user");
     return saved ? JSON.parse(saved) : null;
@@ -1607,6 +1607,14 @@ export default function AuthPage({ slug }: { slug?: string }) {
   }, [user, publicUser]);
 
   const [isPersonaExpanded, setIsPersonaExpanded] = useState(false);
+
+  if (isAuthLoading && localStorage.getItem("persona_user_id")) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#050505] overflow-hidden relative">
