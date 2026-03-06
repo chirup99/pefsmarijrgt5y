@@ -1655,7 +1655,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
           animate={{ opacity: isMenuOpen ? 1 : 0, x: isMenuOpen ? 0 : 20 }}
           className="space-y-3 pointer-events-auto mb-4 max-h-[calc(100vh-220px)] overflow-y-auto scrollbar-hide pr-2"
         >
-          {user ? (
+          {loggedInUser ? (
             <div className="flex flex-col items-end gap-1.5">
               <button
                 onClick={logout}
@@ -1667,7 +1667,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 <div className="flex flex-col items-start">
                   <div className="flex items-center gap-1">
                     <span className="font-bold text-xs tracking-tight">
-                      {user.name || "Persona User"}
+                      {loggedInUser.name || "Persona User"}
                     </span>
                     <div className="w-3 h-3 bg-yellow-400 rounded-full flex items-center justify-center">
                       <Check className="w-2 h-2 text-black" strokeWidth={4} />
@@ -1718,7 +1718,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                   value={slugValue}
                                   onChange={(e) => {
                                     setSlugValue(e.target.value);
-                                    if (e.target.value !== user.uniqueSlug) {
+                                    if (e.target.value !== loggedInUser.uniqueSlug) {
                                       checkSlugMutation.mutate(e.target.value);
                                     } else {
                                       setIsSlugTaken(false);
@@ -1754,11 +1754,11 @@ export default function AuthPage({ slug }: { slug?: string }) {
                             ) : (
                               <>
                                 <span className="text-xs font-mono text-white">
-                                  {user.uniqueSlug || "---"}
+                                  {loggedInUser.uniqueSlug || "---"}
                                 </span>
                                 <button 
                                   onClick={() => {
-                                    setSlugValue(user.uniqueSlug || "");
+                                    setSlugValue(loggedInUser.uniqueSlug || "");
                                     setIsEditingSlug(true);
                                   }}
                                   className="p-1 bg-white/5 rounded-lg text-white/40 hover:text-white transition-colors opacity-0 group-hover/item:opacity-100"
@@ -1834,16 +1834,16 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       Reach Count
                     </span>
                     <span className="text-xl font-display font-bold text-white">
-                      {user.reachCount || 0}
+                      {loggedInUser.reachCount || 0}
                     </span>
                   </div>
 
                   {/* Reach Trend Chart */}
-                  {user.reachHistory && user.reachHistory.length > 0 && (
+                  {loggedInUser.reachHistory && loggedInUser.reachHistory.length > 0 && (
                     <div className="h-12 w-full pt-1">
                       <div className="flex items-end justify-between h-full gap-0.5">
                         {(() => {
-                          const history = [...user.reachHistory].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+                          const history = [...loggedInUser.reachHistory].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
                           const counts = history.map(h => h.count);
                           const maxCount = Math.max(...counts, 1);
                           
@@ -1927,19 +1927,19 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   <div className="grid grid-cols-2 gap-2 pt-3 border-t border-white/10">
                     <div className="flex flex-col items-center gap-0.5">
                       <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">Insta</span>
-                      <span className="text-xs font-bold text-white/80">{user.instaClicks || 0}</span>
+                      <span className="text-xs font-bold text-white/80">{loggedInUser.instaClicks || 0}</span>
                     </div>
                     <div className="flex flex-col items-center gap-0.5">
                       <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">LinkedIn</span>
-                      <span className="text-xs font-bold text-white/80">{user.linkedinClicks || 0}</span>
+                      <span className="text-xs font-bold text-white/80">{loggedInUser.linkedinClicks || 0}</span>
                     </div>
                     <div className="flex flex-col items-center gap-0.5">
                       <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">WhatsApp</span>
-                      <span className="text-xs font-bold text-white/80">{user.whatsappClicks || 0}</span>
+                      <span className="text-xs font-bold text-white/80">{loggedInUser.whatsappClicks || 0}</span>
                     </div>
                     <div className="flex flex-col items-center gap-0.5">
                       <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">Portal</span>
-                      <span className="text-xs font-bold text-white/80">{user.portalClicks || 0}</span>
+                      <span className="text-xs font-bold text-white/80">{loggedInUser.portalClicks || 0}</span>
                     </div>
                   </div>
                 </div>
@@ -1962,7 +1962,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
                   <div className="space-y-2 relative z-10">
                     {(() => {
-                      const history = user.reachHistory || [];
+                      const history = loggedInUser.reachHistory || [];
                       const todayDate = new Date().toISOString();
                       const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString();
                       
@@ -1970,7 +1970,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       const prevEntry = history.length > 1 ? history[history.length - 2] : { count: 0 };
                       
                       const isDecreasing = lastEntry.count < prevEntry.count;
-                      const industry = user.industry || "General";
+                      const industry = loggedInUser.industry || "General";
                       
                       return (
                         <>
