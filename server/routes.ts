@@ -236,33 +236,39 @@ export async function registerRoutes(
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Increment reachCount when someone views a profile that isn't their own
-      // We'll just increment it for every GET request to this endpoint
+      // Increment reachCount when someone views a profile
+      // We'll increment it for every GET request to this endpoint
       
       const isSelf = req.query.self === 'true';
       if (!isSelf) {
         const now = new Date();
-        const todayStr = now.toISOString().split('T')[0];
+        const currentTimestamp = now.toISOString();
         const reachHistory = user.reachHistory || [];
-        const existingDay = reachHistory.find(h => h.date === todayStr);
+        
+        // Find if we have an entry within the last 12 hours
+        const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
+        const lastEntry = reachHistory.length > 0 ? reachHistory[reachHistory.length - 1] : null;
         
         let newHistory = [...reachHistory];
-        if (existingDay) {
-          newHistory = reachHistory.map(h => 
-            h.date === todayStr ? { ...h, count: h.count + 1 } : h
-          );
+        if (lastEntry && new Date(lastEntry.timestamp) > twelveHoursAgo) {
+          // Update the last 12h entry
+          newHistory[newHistory.length - 1] = { 
+            ...lastEntry, 
+            count: (lastEntry.count || 0) + 1 
+          };
         } else {
-          newHistory.push({ date: todayStr, count: 1 });
+          // Create a new 12h slot
+          newHistory.push({ timestamp: currentTimestamp, count: 1 });
         }
         
-        // Keep only last 7 days
-        if (newHistory.length > 7) {
-          newHistory = newHistory.slice(-7);
+        // Keep last 14 entries (7 days * 2 entries/day)
+        if (newHistory.length > 14) {
+          newHistory = newHistory.slice(-14);
         }
 
         await storage.updateUser(user.id, { 
           reachCount: (user.reachCount || 0) + 1,
-          reachHistory: newHistory
+          reachHistory: newHistory as any
         });
       }
 

@@ -1804,20 +1804,78 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     <div className="h-12 w-full pt-1">
                       <div className="flex items-end justify-between h-full gap-0.5">
                         {(() => {
-                          const history = [...user.reachHistory].sort((a, b) => a.date.localeCompare(b.date));
-                          const maxCount = Math.max(...history.map(h => h.count), 1);
-                          return history.map((day, i) => (
-                            <div key={day.date} className="flex-1 flex flex-col items-center gap-0.5 group relative">
-                              <motion.div
-                                initial={{ height: 0 }}
-                                animate={{ height: String((day.count / maxCount) * 100) + "%" }}
-                                className="w-full bg-gradient-to-t from-purple-500/20 to-purple-500/80 rounded-t-sm min-h-[1px]"
-                              />
-                              <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-white text-black text-[7px] font-bold px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                                {day.count}
+                          const history = [...user.reachHistory].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+                          const counts = history.map(h => h.count);
+                          const maxCount = Math.max(...counts, 1);
+                          
+                          return (
+                            <div className="w-full h-full relative flex items-end">
+                              <svg 
+                                className="w-full h-full overflow-visible"
+                                viewBox="0 0 100 100"
+                                preserveAspectRatio="none"
+                              >
+                                <defs>
+                                  <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor="rgb(168, 85, 247)" stopOpacity="0.8" />
+                                    <stop offset="100%" stopColor="rgb(168, 85, 247)" stopOpacity="0.1" />
+                                  </linearGradient>
+                                </defs>
+                                {(() => {
+                                  if (history.length < 2) return null;
+                                  
+                                  const points = history.map((h, i) => {
+                                    const x = (i / (history.length - 1)) * 100;
+                                    const y = 100 - (h.count / maxCount) * 80 - 10; // Margin top/bottom
+                                    return `${x},${y}`;
+                                  });
+                                  
+                                  const pathData = points.reduce((acc, point, i, arr) => {
+                                    if (i === 0) return `M ${point}`;
+                                    // Cubic bezier for smooth curve
+                                    const prev = arr[i-1].split(',');
+                                    const curr = point.split(',');
+                                    const cp1x = Number(prev[0]) + (Number(curr[0]) - Number(prev[0])) / 2;
+                                    return `${acc} C ${cp1x},${prev[1]} ${cp1x},${curr[1]} ${curr[0]},${curr[1]}`;
+                                  }, "");
+
+                                  const areaData = `${pathData} L 100,100 L 0,100 Z`;
+
+                                  return (
+                                    <>
+                                      <motion.path
+                                        initial={{ pathLength: 0, opacity: 0 }}
+                                        animate={{ pathLength: 1, opacity: 1 }}
+                                        transition={{ duration: 1, ease: "easeOut" }}
+                                        d={pathData}
+                                        fill="none"
+                                        stroke="rgb(168, 85, 247)"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                      />
+                                      <motion.path
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ duration: 1.5, delay: 0.5 }}
+                                        d={areaData}
+                                        fill="url(#chartGradient)"
+                                      />
+                                    </>
+                                  );
+                                })()}
+                              </svg>
+                              {/* Points for tooltips */}
+                              <div className="absolute inset-0 flex justify-between">
+                                {history.map((day, i) => (
+                                  <div key={i} className="flex-1 group relative h-full">
+                                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-white text-black text-[7px] font-bold px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                                      {day.count}
+                                    </div>
+                                  </div>
+                                ))}
                               </div>
                             </div>
-                          ));
+                          );
                         })()}
                       </div>
                       <div className="flex justify-between mt-1 px-0.5">
@@ -1866,11 +1924,13 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   <div className="space-y-2 relative z-10">
                     {(() => {
                       const history = user.reachHistory || [];
-                      const todayDate = new Date().toISOString().split('T')[0];
-                      const yesterdayDate = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-                      const today = (history.find(h => h.date === todayDate) || { count: 0 }).count;
-                      const yesterday = (history.find(h => h.date === yesterdayDate) || { count: 0 }).count;
-                      const isDecreasing = today < yesterday;
+                      const todayDate = new Date().toISOString();
+                      const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString();
+                      
+                      const lastEntry = history.length > 0 ? history[history.length - 1] : { count: 0 };
+                      const prevEntry = history.length > 1 ? history[history.length - 2] : { count: 0 };
+                      
+                      const isDecreasing = lastEntry.count < prevEntry.count;
                       const industry = user.industry || "General";
                       
                       return (

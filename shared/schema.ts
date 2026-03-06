@@ -63,7 +63,7 @@ export type User = {
   linkedinClicks: number;
   whatsappClicks: number;
   portalClicks: number;
-  reachHistory: { date: string; count: number }[]; // last 7 days reach
+  reachHistory: { timestamp: string; count: number }[]; // every 12h for last 7 days
   connections: { slug: string; connectedAt: string }[]; // array of uniqueSlugs with timestamp
   cards: string[]; // JSON strings
   notes: { id: string; text: string; completed: boolean; expiresAt: string }[];
