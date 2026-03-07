@@ -2691,16 +2691,36 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         )}
                       </div>
                     </div>
-                    <a
-                      href={form.watch("website") || "#"}
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={() => trackClick("portal")}
-                      className="w-full bg-primary text-white rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 group no-underline"
-                    >
-                      View Collaboration Portal{" "}
-                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                    </a>
+                    {(() => {
+                      const portalUrl = form.watch("website");
+                      const hasPortal = !!portalUrl && portalUrl.trim() !== "" && portalUrl !== "#";
+                      return (
+                        <a
+                          href={hasPortal ? portalUrl : undefined}
+                          target={hasPortal ? "_blank" : undefined}
+                          rel={hasPortal ? "noreferrer" : undefined}
+                          onClick={(e) => {
+                            if (!hasPortal) {
+                              e.preventDefault();
+                              return;
+                            }
+                            trackClick("portal");
+                          }}
+                          className={clsx(
+                            "w-full rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 group no-underline transition-all",
+                            hasPortal 
+                              ? "bg-primary text-white hover:opacity-90 shadow-lg cursor-pointer" 
+                              : "bg-white/5 text-white/20 cursor-not-allowed border border-white/5"
+                          )}
+                        >
+                          {hasPortal ? "View Collaboration Portal" : "No Portal Available"}
+                          <ArrowRight className={clsx(
+                            "w-3.5 h-3.5 transition-transform",
+                            hasPortal ? "group-hover:translate-x-1" : "opacity-0"
+                          )} />
+                        </a>
+                      );
+                    })()}
                     {loggedInUser && user && loggedInUser.id === user.id && (
                       <div className="pt-4 border-t border-white/10">
                         {/* Tabs Navigation */}
