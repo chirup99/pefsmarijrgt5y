@@ -59,12 +59,6 @@ type AuthMode = "login" | "register" | "customize" | "swipe";
 
 const CARD_TYPES = [
   {
-    type: "pitch",
-    label: "Elevated Pitch",
-    icon: FileText,
-    color: "from-blue-500 to-blue-600",
-  },
-  {
     type: "reel",
     label: "Reel / Short",
     icon: Video,
@@ -3172,40 +3166,34 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                     onClick={() => {
                                       const currentCards = [...selectedCards];
                                       const newCard =
-                                        t.type === "pitch"
+                                        t.type === "reel"
                                           ? {
-                                              type: "pitch",
-                                              title: "New Pitch",
-                                              content: "",
+                                              type: "reel",
+                                              title: "New Reel",
+                                              url: "",
                                             }
-                                          : t.type === "reel"
+                                          : t.type === "revenue"
                                             ? {
-                                                type: "reel",
-                                                title: "New Reel",
-                                                url: "",
+                                                type: "revenue",
+                                                title: "Monthly Sales",
+                                                value: "$0",
+                                                revenue: "",
+                                                imageUrl: "",
                                               }
-                                            : t.type === "revenue"
+                                            : t.type === "traction"
                                               ? {
-                                                  type: "revenue",
-                                                  title: "Monthly Sales",
-                                                  value: "$0",
-                                                  revenue: "",
+                                                  type: "traction",
+                                                  title: "Traction",
+                                                  value: "0",
+                                                  traction: "",
                                                   imageUrl: "",
                                                 }
-                                              : t.type === "traction"
-                                                ? {
-                                                    type: "traction",
-                                                    title: "Traction",
-                                                    value: "0",
-                                                    traction: "",
-                                                    imageUrl: "",
-                                                  }
-                                                : {
-                                                    type: "product",
-                                                    title: "Product",
-                                                    imageUrl: "",
-                                                    traction: "",
-                                                  };
+                                              : {
+                                                  type: "product",
+                                                  title: "Product",
+                                                  imageUrl: "",
+                                                  traction: "",
+                                                };
                                       currentCards[idx] =
                                         JSON.stringify(newCard);
                                       setSelectedCards(currentCards);
