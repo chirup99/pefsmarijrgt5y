@@ -2646,49 +2646,113 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         {form.watch("bio") || ""}
                       </p>
                       <div className="flex items-center justify-center gap-3 w-full pt-1">
-                        {form.watch("linkedin") && (
-                          <a
-                            href={form.watch("linkedin")}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={() => trackClick("linkedin")}
-                            className="p-2.5 bg-white/5 rounded-lg text-white/70 hover:text-white"
-                          >
-                            <Linkedin className="w-4 h-4" />
-                          </a>
-                        )}
-                        {form.watch("instagram") && (
-                          <a
-                            href={form.watch("instagram")}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={() => trackClick("insta")}
-                            className="p-2.5 bg-white/5 rounded-lg text-white/70 hover:text-white"
-                          >
-                            <SiInstagram className="w-4 h-4" />
-                          </a>
-                        )}
-                        {form.watch("whatsapp") && (
-                          <a
-                            href={form.watch("whatsapp")}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={() => trackClick("whatsapp")}
-                            className="p-2.5 bg-white/5 rounded-lg text-white/70 hover:text-white"
-                          >
-                            <SiWhatsapp className="w-4 h-4" />
-                          </a>
-                        )}
-                        {form.watch("email") && (
-                          <a
-                            href={`mailto:${form.watch("email")}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="p-2.5 bg-white/5 rounded-lg text-white/70 hover:text-white"
-                          >
-                            <Mail className="w-4 h-4" />
-                          </a>
-                        )}
+                        {(() => {
+                          const linkedin = form.watch("linkedin");
+                          const hasLinkedin = !!linkedin && linkedin.trim() !== "" && linkedin !== "#";
+                          return (
+                            <a
+                              href={hasLinkedin ? linkedin : undefined}
+                              target={hasLinkedin ? "_blank" : undefined}
+                              rel={hasLinkedin ? "noreferrer" : undefined}
+                              onClick={(e) => {
+                                if (!hasLinkedin) {
+                                  e.preventDefault();
+                                  return;
+                                }
+                                trackClick("linkedin");
+                              }}
+                              className={clsx(
+                                "p-2.5 rounded-lg transition-all",
+                                hasLinkedin 
+                                  ? "bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 shadow-[0_0_10px_rgba(59,130,246,0.2)]" 
+                                  : "bg-white/5 text-white/20 cursor-not-allowed"
+                              )}
+                              title={hasLinkedin ? "LinkedIn" : "LinkedIn (Not Available)"}
+                            >
+                              <Linkedin className="w-4 h-4" />
+                            </a>
+                          );
+                        })()}
+                        {(() => {
+                          const instagram = form.watch("instagram");
+                          const hasInstagram = !!instagram && instagram.trim() !== "" && instagram !== "#";
+                          return (
+                            <a
+                              href={hasInstagram ? instagram : undefined}
+                              target={hasInstagram ? "_blank" : undefined}
+                              rel={hasInstagram ? "noreferrer" : undefined}
+                              onClick={(e) => {
+                                if (!hasInstagram) {
+                                  e.preventDefault();
+                                  return;
+                                }
+                                trackClick("insta");
+                              }}
+                              className={clsx(
+                                "p-2.5 rounded-lg transition-all",
+                                hasInstagram 
+                                  ? "bg-pink-500/10 text-pink-400 hover:bg-pink-500/20 hover:text-pink-300 shadow-[0_0_10px_rgba(236,72,153,0.2)]" 
+                                  : "bg-white/5 text-white/20 cursor-not-allowed"
+                              )}
+                              title={hasInstagram ? "Instagram" : "Instagram (Not Available)"}
+                            >
+                              <SiInstagram className="w-4 h-4" />
+                            </a>
+                          );
+                        })()}
+                        {(() => {
+                          const whatsapp = form.watch("whatsapp");
+                          const hasWhatsapp = !!whatsapp && whatsapp.trim() !== "" && whatsapp !== "#";
+                          return (
+                            <a
+                              href={hasWhatsapp ? whatsapp : undefined}
+                              target={hasWhatsapp ? "_blank" : undefined}
+                              rel={hasWhatsapp ? "noreferrer" : undefined}
+                              onClick={(e) => {
+                                if (!hasWhatsapp) {
+                                  e.preventDefault();
+                                  return;
+                                }
+                                trackClick("whatsapp");
+                              }}
+                              className={clsx(
+                                "p-2.5 rounded-lg transition-all",
+                                hasWhatsapp 
+                                  ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.2)]" 
+                                  : "bg-white/5 text-white/20 cursor-not-allowed"
+                              )}
+                              title={hasWhatsapp ? "WhatsApp" : "WhatsApp (Not Available)"}
+                            >
+                              <SiWhatsapp className="w-4 h-4" />
+                            </a>
+                          );
+                        })()}
+                        {(() => {
+                          const email = form.watch("email");
+                          const hasEmail = !!email && email.trim() !== "" && email !== "#";
+                          return (
+                            <a
+                              href={hasEmail ? `mailto:${email}` : undefined}
+                              target={hasEmail ? "_blank" : undefined}
+                              rel={hasEmail ? "noreferrer" : undefined}
+                              onClick={(e) => {
+                                if (!hasEmail) {
+                                  e.preventDefault();
+                                  return;
+                                }
+                              }}
+                              className={clsx(
+                                "p-2.5 rounded-lg transition-all",
+                                hasEmail 
+                                  ? "bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 hover:text-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.2)]" 
+                                  : "bg-white/5 text-white/20 cursor-not-allowed"
+                              )}
+                              title={hasEmail ? "Email" : "Email (Not Available)"}
+                            >
+                              <Mail className="w-4 h-4" />
+                            </a>
+                          );
+                        })()}
                       </div>
                     </div>
                     {(() => {
