@@ -777,7 +777,6 @@ const MiniCard = ({
           <X className="w-4 h-4" />
         </button>
       )}
-
       {(!isPlaying || card.type !== "reel") && (
         <div className="space-y-2">
           <p className="text-[10px] font-bold uppercase tracking-widest text-white/80">
@@ -788,7 +787,6 @@ const MiniCard = ({
           </h5>
         </div>
       )}
-
       <div
         className={clsx(
           "flex-1 flex items-center justify-center relative",
@@ -1111,7 +1109,6 @@ const MiniCard = ({
           </button>
         )}
       </div>
-
       <div className="pt-2">
         {card.type === "reel" ? null : card.type === "pitch" ? (
           <button
@@ -2508,7 +2505,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
           </div>
         </motion.div>
       </div>
-
       <motion.div
         animate={{
           x: isMenuOpen ? "-80%" : "0%",
@@ -2587,7 +2583,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
               paddingBottom: isTradersExpanded ? "12px" : "0",
             }}
             transition={{ type: "spring", damping: 20, stiffness: 100 }}
-            className="bg-white/5 hover:bg-white/10 border border-white/20 rounded-r-xl flex items-center justify-center shadow-lg transition-all"
+            className="bg-white/5 hover:bg-white/10 border border-white/20 rounded-r-xl flex items-center justify-center shadow-lg transition-all mt-[100px] mb-[100px] pt-[2px] pb-[2px]"
           >
             <motion.div
               animate={{
