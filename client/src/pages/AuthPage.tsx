@@ -1456,7 +1456,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [showQRDialog, setShowQRDialog] = useState(false);
   const [showScannerDialog, setShowScannerDialog] = useState(false);
   const [scannerTab, setScannerTab] = useState<"scan" | "code">("scan");
-  const [communityTab, setCommunityTab] = useState<"community" | "traders">("community");
   const [showNavToggle, setShowNavToggle] = useState(false);
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -2697,8 +2696,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
           animate={{ opacity: 1, scale: 1 }}
           className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl p-5 sm:p-6 z-10 relative overflow-hidden max-h-[calc(100vh-120px)] md:max-h-[calc(100vh-160px)] flex flex-col"
         >
-          {communityTab === "community" ? (
-            <>
           <div className="flex p-1 bg-white/10 rounded-lg mb-6 relative">
             <button
               onClick={() => setMode("login")}
@@ -3442,22 +3439,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
               </button>
             )}
           </div>
-            </>
-          ) : (
-            <div className="w-full h-full min-h-[400px] flex items-center justify-center">
-              <div className="text-center space-y-4">
-                <p className="text-white/40 text-sm uppercase tracking-widest">
-                  Traders Tab
-                </p>
-                <p className="text-white/20 text-xs font-medium">
-                  Coming Soon
-                </p>
-              </div>
-            </div>
-          )}
         </motion.div>
 
-        {/* Secondary Window - Community/Traders Content */}
+        {/* Secondary Window - Community Content */}
         <motion.div
           initial={{ opacity: 0, scale: 0.98, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -3465,159 +3449,16 @@ export default function AuthPage({ slug }: { slug?: string }) {
         >
           {/* Content Area */}
           <div className="flex-1 min-h-[200px] flex items-center justify-center">
-            {communityTab === "community" ? (
-              <div className="text-center space-y-4 w-full">
-                <p className="text-white/60 text-sm font-semibold tracking-widest uppercase">
-                  Community Hub
-                </p>
-                <p className="text-white/40 text-xs">
-                  Connect with fellow founders and startups
-                </p>
-              </div>
-            ) : (
-              <div className="text-center space-y-4 w-full">
-                <p className="text-white/60 text-sm font-semibold tracking-widest uppercase">
-                  Traders Market
-                </p>
-                <p className="text-white/40 text-xs">
-                  Connect with investors and traders
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Bottom Switch Bar */}
-          <div className="flex p-1 bg-white/10 rounded-lg border border-white/5 mt-6">
-            <button
-              onClick={() => setCommunityTab("community")}
-              className={clsx(
-                "flex-1 py-2 text-xs font-semibold rounded-md z-10 transition-colors",
-                communityTab === "community"
-                  ? "text-white bg-white/10"
-                  : "text-white/50 hover:text-white/70",
-              )}
-            >
-              Community
-            </button>
-            <button
-              onClick={() => setCommunityTab("traders")}
-              className={clsx(
-                "flex-1 py-2 text-xs font-semibold rounded-md z-10 transition-colors",
-                communityTab === "traders"
-                  ? "text-white bg-white/10"
-                  : "text-white/50 hover:text-white/70",
-              )}
-            >
-              Traders
-            </button>
+            <div className="text-center space-y-4 w-full">
+              <p className="text-white/60 text-sm font-semibold tracking-widest uppercase">
+                Community Hub
+              </p>
+              <p className="text-white/40 text-xs">
+                Connect with fellow founders and startups
+              </p>
+            </div>
           </div>
         </motion.div>
-
-        {/* Community/Traders Toggle - Desktop */}
-        <AnimatePresence>
-          {showNavToggle && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 10 }}
-          className="hidden md:block fixed bottom-8 left-8 z-10"
-        >
-          <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/10 rounded-full p-1 shadow-lg">
-            <button
-              onClick={() => setCommunityTab("community")}
-              className={clsx(
-                "px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-2",
-                communityTab === "community"
-                  ? "bg-white/20 text-white"
-                  : "text-white/50 hover:text-white/70"
-              )}
-            >
-              <div
-                className={clsx(
-                  "w-2 h-2 rounded-full transition-all",
-                  communityTab === "community"
-                    ? "bg-emerald-500 shadow-[0_0_8px_#10b981]"
-                    : "bg-white/20"
-                )}
-              />
-              Community
-            </button>
-            <button
-              onClick={() => setCommunityTab("traders")}
-              className={clsx(
-                "px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-2",
-                communityTab === "traders"
-                  ? "bg-white/20 text-white"
-                  : "text-white/50 hover:text-white/70"
-              )}
-            >
-              <div
-                className={clsx(
-                  "w-2 h-2 rounded-full transition-all",
-                  communityTab === "traders"
-                    ? "bg-blue-500 shadow-[0_0_8px_#3b82f6]"
-                    : "bg-white/20"
-                )}
-              />
-              Traders
-            </button>
-          </div>
-        </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Community/Traders Toggle - Mobile Bottom Bar */}
-        <AnimatePresence>
-          {showMobileNav && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-          className="md:hidden fixed bottom-0 left-0 right-0 z-20 p-2 bg-gradient-to-t from-black/90 via-black/70 to-transparent"
-        >
-          <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/10 rounded-lg p-1 shadow-lg w-full">
-            <button
-              onClick={() => setCommunityTab("community")}
-              className={clsx(
-                "flex-1 px-2 py-1.5 rounded-md text-xs font-semibold transition-all flex items-center justify-center gap-1",
-                communityTab === "community"
-                  ? "bg-white/20 text-white"
-                  : "text-white/50 hover:text-white/70"
-              )}
-            >
-              <div
-                className={clsx(
-                  "w-1.5 h-1.5 rounded-full transition-all",
-                  communityTab === "community"
-                    ? "bg-emerald-500 shadow-[0_0_8px_#10b981]"
-                    : "bg-white/20"
-                )}
-              />
-              <span className="hidden xs:inline">Community</span>
-            </button>
-            <button
-              onClick={() => setCommunityTab("traders")}
-              className={clsx(
-                "flex-1 px-2 py-1.5 rounded-md text-xs font-semibold transition-all flex items-center justify-center gap-1",
-                communityTab === "traders"
-                  ? "bg-white/20 text-white"
-                  : "text-white/50 hover:text-white/70"
-              )}
-            >
-              <div
-                className={clsx(
-                  "w-1.5 h-1.5 rounded-full transition-all",
-                  communityTab === "traders"
-                    ? "bg-blue-500 shadow-[0_0_8px_#3b82f6]"
-                    : "bg-white/20"
-                )}
-              />
-              <span className="hidden xs:inline">Traders</span>
-            </button>
-          </div>
-        </motion.div>
-          )}
-        </AnimatePresence>
 
         <AnimatePresence>
           {showScannerDialog && (
