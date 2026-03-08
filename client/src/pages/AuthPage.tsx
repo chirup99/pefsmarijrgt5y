@@ -2017,7 +2017,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: isMenuOpen ? 1 : 0, x: isMenuOpen ? 0 : 20 }}
-          className="space-y-3 pointer-events-auto mb-4 max-h-[calc(100vh-220px)] overflow-y-auto scrollbar-hide pr-2"
+          className="space-y-3 pointer-events-auto mb-4 pr-2"
         >
           {loggedInUser ? (
             <div className="flex flex-col items-end gap-1.5">
@@ -2611,7 +2611,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
           ref={personaCardRef}
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl p-5 sm:p-6 z-10 relative overflow-y-auto max-h-[calc(100vh-180px)] md:max-h-[70vh] pb-20 md:pb-0"
+          className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl p-5 sm:p-6 z-10 relative overflow-hidden max-h-[calc(100vh-120px)] md:max-h-[calc(100vh-160px)] flex flex-col"
         >
           {communityTab === "community" ? (
             <>
@@ -2899,7 +2899,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                                   <Plus className="w-4 h-4" />
                                 </button>
                               </div>
-                              <div className="space-y-2 max-h-[120px] overflow-y-auto custom-scrollbar">
+                              <div className="space-y-2">
                                 {notes.map((note) => (
                                   <div
                                     key={note.id}
@@ -2974,7 +2974,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                               exit={{ opacity: 0, y: -10 }}
                               className="space-y-3"
                             >
-                              <div className="space-y-2 max-h-[120px] overflow-y-auto custom-scrollbar">
+                              <div className="space-y-2">
                                 {connections.map((conn, idx) => (
                                   <div
                                     key={idx}
@@ -3019,7 +3019,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 ) : mode === "register" ? (
                   <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar"
+                    className="space-y-3 pr-2"
                   >
                     <div className="space-y-1">
                       <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
