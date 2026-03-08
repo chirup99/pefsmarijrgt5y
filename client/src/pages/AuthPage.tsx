@@ -2578,7 +2578,10 @@ export default function AuthPage({ slug }: { slug?: string }) {
               className="fixed left-0 bottom-8 z-50"
             >
               <motion.button
-                onClick={() => setIsTradersExpanded(!isTradersExpanded)}
+                onClick={() => {
+                  setIsTradersExpanded(!isTradersExpanded);
+                  setCommunityTab("traders");
+                }}
                 animate={{
                   width: isTradersExpanded ? "auto" : "48px",
                   height: isTradersExpanded ? "auto" : "48px",
@@ -2588,7 +2591,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   paddingBottom: isTradersExpanded ? "12px" : "0",
                 }}
                 transition={{ type: "spring", damping: 20, stiffness: 100 }}
-                className="bg-white/5 hover:bg-white/10 border border-white/20 rounded-r-xl flex items-center justify-center shadow-lg transition-all py-2"
+                className="bg-white/5 hover:bg-white/10 border border-white/20 rounded-r-xl flex items-center justify-center shadow-lg transition-all py-2 group"
               >
                 <motion.div
                   animate={{
@@ -2598,14 +2601,19 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   transition={{ type: "spring", damping: 20, stiffness: 100 }}
                   className="overflow-hidden whitespace-nowrap"
                 >
-                  <span className="text-xs font-semibold text-white/80 mr-2">
-                    Traders Community
-                  </span>
+                  <div className="flex flex-col items-start">
+                    <span className="text-[10px] font-semibold text-white/60 uppercase tracking-wide">
+                      Connect with
+                    </span>
+                    <span className="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">
+                      Traders
+                    </span>
+                  </div>
                 </motion.div>
                 <img
                   src="/perala.png"
                   alt="Traders Community"
-                  className="w-5 h-5"
+                  className="w-5 h-5 group-hover:scale-110 transition-transform"
                 />
               </motion.button>
             </motion.div>
