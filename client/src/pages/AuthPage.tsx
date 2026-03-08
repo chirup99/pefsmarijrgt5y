@@ -1462,6 +1462,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isTradersExpanded, setIsTradersExpanded] = useState(false);
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
+  const [showTradersModal, setShowTradersModal] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -2580,7 +2581,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
               <motion.button
                 onClick={() => {
                   setIsTradersExpanded(!isTradersExpanded);
-                  setCommunityTab("traders");
+                  setShowTradersModal(true);
                 }}
                 animate={{
                   width: isTradersExpanded ? "auto" : "48px",
@@ -2617,6 +2618,122 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 />
               </motion.button>
             </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Traders Bottom Sheet Modal */}
+        <AnimatePresence>
+          {showTradersModal && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowTradersModal(false)}
+                className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+              />
+              <motion.div
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "100%" }}
+                transition={{ type: "spring", damping: 30, stiffness: 300 }}
+                className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black/95 via-black/90 to-black/80 rounded-t-3xl max-h-[70vh] overflow-y-auto shadow-2xl"
+              >
+                <div className="p-6 space-y-6">
+                  {/* Close Button */}
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-bold text-white tracking-tight">
+                      Connect with Traders
+                    </h2>
+                    <button
+                      onClick={() => setShowTradersModal(false)}
+                      className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white/60 hover:text-white"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  {/* Description */}
+                  <div className="space-y-2">
+                    <p className="text-white/80 text-sm leading-relaxed">
+                      Connect with successful traders and investment professionals. Share your startup journey, get investment insights, and build meaningful relationships with potential investors.
+                    </p>
+                  </div>
+
+                  {/* Features Grid */}
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { icon: "🎯", label: "Target Network", desc: "Find investors" },
+                      { icon: "💼", label: "Portfolio", desc: "Showcase your startup" },
+                      { icon: "📈", label: "Growth", desc: "Scale faster" },
+                      { icon: "🤝", label: "Partnerships", desc: "Build alliances" },
+                    ].map((feature, idx) => (
+                      <div
+                        key={idx}
+                        className="p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group"
+                      >
+                        <div className="text-2xl mb-1 group-hover:scale-110 transition-transform">
+                          {feature.icon}
+                        </div>
+                        <p className="text-xs font-semibold text-white mb-0.5">
+                          {feature.label}
+                        </p>
+                        <p className="text-[10px] text-white/50">{feature.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Active Traders */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-white/80 mb-3 uppercase tracking-wider">
+                      Active Traders Now
+                    </h3>
+                    <div className="space-y-2">
+                      {[
+                        { name: "Sarah Chen", role: "Angel Investor", status: "Online" },
+                        { name: "Marcus Williams", role: "VC Partner", status: "Online" },
+                        { name: "Emma Rodriguez", role: "Trader", status: "Online" },
+                      ].map((trader, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold">
+                              {trader.name[0]}
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-white group-hover:text-emerald-400 transition-colors">
+                                {trader.name}
+                              </p>
+                              <p className="text-xs text-white/40">{trader.role}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_6px_#10b981]" />
+                            <span className="text-[10px] text-emerald-400">{trader.status}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="space-y-2 pt-4">
+                    <button className="w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all shadow-lg flex items-center justify-center gap-2 group">
+                      <span>Start Connecting</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                    <button
+                      onClick={() => setShowTradersModal(false)}
+                      className="w-full py-2 bg-white/10 hover:bg-white/20 text-white/80 hover:text-white font-medium rounded-lg transition-all border border-white/10"
+                    >
+                      Maybe Later
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </>
           )}
         </AnimatePresence>
 
