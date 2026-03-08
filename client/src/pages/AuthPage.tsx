@@ -1463,6 +1463,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [showNavToggle, setShowNavToggle] = useState(false);
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isTradersExpanded, setIsTradersExpanded] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -2568,6 +2569,45 @@ export default function AuthPage({ slug }: { slug?: string }) {
             </motion.button>
           )}
         </AnimatePresence>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.5 }}
+          className="fixed bottom-8 left-8 z-50"
+        >
+          <motion.button
+            onClick={() => setIsTradersExpanded(!isTradersExpanded)}
+            animate={{
+              width: isTradersExpanded ? "auto" : "56px",
+              paddingLeft: isTradersExpanded ? "16px" : "0",
+              paddingRight: isTradersExpanded ? "16px" : "0",
+            }}
+            transition={{ type: "spring", damping: 20, stiffness: 100 }}
+            className="h-12 bg-white/5 hover:bg-white/10 border border-white/20 rounded-full flex items-center justify-center shadow-lg transition-all"
+          >
+            <motion.div
+              animate={{
+                opacity: isTradersExpanded ? 1 : 0,
+                width: isTradersExpanded ? "auto" : 0,
+              }}
+              transition={{ type: "spring", damping: 20, stiffness: 100 }}
+              className="overflow-hidden whitespace-nowrap"
+            >
+              <span className="text-xs font-semibold text-white/80 mr-2">
+                Traders Community
+              </span>
+            </motion.div>
+            <motion.div
+              animate={{
+                rotate: isTradersExpanded ? 180 : 0,
+              }}
+              transition={{ type: "spring", damping: 20, stiffness: 100 }}
+            >
+              <ArrowRight className="w-5 h-5 text-white/70" strokeWidth={2} />
+            </motion.div>
+          </motion.button>
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: -10 }}
