@@ -3433,7 +3433,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
-          className="md:hidden fixed bottom-0 left-0 right-0 z-10 p-2 bg-gradient-to-t from-black/80 to-transparent"
+          className="md:hidden w-full pt-6 pb-2 px-2 bg-gradient-to-t from-black/80 to-transparent"
         >
           <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/10 rounded-lg p-1 shadow-lg w-full">
             <button
