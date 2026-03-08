@@ -1459,6 +1459,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [showQRDialog, setShowQRDialog] = useState(false);
   const [showScannerDialog, setShowScannerDialog] = useState(false);
   const [scannerTab, setScannerTab] = useState<"scan" | "code">("scan");
+  const [communityTab, setCommunityTab] = useState<"community" | "traders">("community");
   const [activeTab, setActiveTab] = useState<"notes" | "events" | "connect">(
     "notes",
   );
@@ -2575,6 +2576,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
           animate={{ opacity: 1, scale: 1 }}
           className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl p-5 sm:p-6 z-10 relative overflow-hidden"
         >
+          {communityTab === "community" ? (
+            <>
           <div className="flex p-1 bg-white/10 rounded-lg mb-6 relative">
             <button
               onClick={() => setMode("login")}
@@ -3317,6 +3320,67 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 create your persona
               </button>
             )}
+          </div>
+            </>
+          ) : (
+            <div className="w-full h-full min-h-[400px] flex items-center justify-center">
+              <div className="text-center space-y-4">
+                <p className="text-white/40 text-sm uppercase tracking-widest">
+                  Traders Tab
+                </p>
+                <p className="text-white/20 text-xs font-medium">
+                  Coming Soon
+                </p>
+              </div>
+            </div>
+          )}
+        </motion.div>
+
+        {/* Community/Traders Toggle */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed bottom-8 left-8 z-10"
+        >
+          <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/10 rounded-full p-1 shadow-lg">
+            <button
+              onClick={() => setCommunityTab("community")}
+              className={clsx(
+                "px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-2",
+                communityTab === "community"
+                  ? "bg-white/20 text-white"
+                  : "text-white/50 hover:text-white/70"
+              )}
+            >
+              <div
+                className={clsx(
+                  "w-2 h-2 rounded-full transition-all",
+                  communityTab === "community"
+                    ? "bg-emerald-500 shadow-[0_0_8px_#10b981]"
+                    : "bg-white/20"
+                )}
+              />
+              Community
+            </button>
+            <button
+              onClick={() => setCommunityTab("traders")}
+              className={clsx(
+                "px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-2",
+                communityTab === "traders"
+                  ? "bg-white/20 text-white"
+                  : "text-white/50 hover:text-white/70"
+              )}
+            >
+              <div
+                className={clsx(
+                  "w-2 h-2 rounded-full transition-all",
+                  communityTab === "traders"
+                    ? "bg-blue-500 shadow-[0_0_8px_#3b82f6]"
+                    : "bg-white/20"
+                )}
+              />
+              Traders
+            </button>
           </div>
         </motion.div>
 
