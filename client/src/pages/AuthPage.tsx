@@ -1461,6 +1461,24 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [scannerTab, setScannerTab] = useState<"scan" | "code">("scan");
   const [communityTab, setCommunityTab] = useState<"community" | "traders">("community");
   const [showNavToggle, setShowNavToggle] = useState(false);
+  const [showMobileNav, setShowMobileNav] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      const isAtBottom = documentHeight - currentScrollY - windowHeight < 100;
+      const isScrollingDown = currentScrollY > lastScrollY;
+      
+      setShowMobileNav(isAtBottom && showNavToggle);
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY, showNavToggle]);
   const personaCardRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<"notes" | "events" | "connect">(
     "notes",
@@ -3410,18 +3428,18 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
         {/* Community/Traders Toggle - Mobile Bottom Bar */}
         <AnimatePresence>
-          {showNavToggle && (
+          {showMobileNav && (
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 10 }}
-          className="md:hidden fixed bottom-0 left-0 right-0 z-10 p-4"
+          exit={{ opacity: 0, y: 20 }}
+          className="md:hidden fixed bottom-0 left-0 right-0 z-10 p-2 bg-gradient-to-t from-black/80 to-transparent"
         >
-          <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-2 shadow-lg w-full">
+          <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/10 rounded-lg p-1 shadow-lg w-full">
             <button
               onClick={() => setCommunityTab("community")}
               className={clsx(
-                "flex-1 px-4 py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2",
+                "flex-1 px-2 py-1.5 rounded-md text-xs font-semibold transition-all flex items-center justify-center gap-1",
                 communityTab === "community"
                   ? "bg-white/20 text-white"
                   : "text-white/50 hover:text-white/70"
@@ -3429,18 +3447,18 @@ export default function AuthPage({ slug }: { slug?: string }) {
             >
               <div
                 className={clsx(
-                  "w-2 h-2 rounded-full transition-all",
+                  "w-1.5 h-1.5 rounded-full transition-all",
                   communityTab === "community"
                     ? "bg-emerald-500 shadow-[0_0_8px_#10b981]"
                     : "bg-white/20"
                 )}
               />
-              Community
+              <span className="hidden xs:inline">Community</span>
             </button>
             <button
               onClick={() => setCommunityTab("traders")}
               className={clsx(
-                "flex-1 px-4 py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2",
+                "flex-1 px-2 py-1.5 rounded-md text-xs font-semibold transition-all flex items-center justify-center gap-1",
                 communityTab === "traders"
                   ? "bg-white/20 text-white"
                   : "text-white/50 hover:text-white/70"
@@ -3448,13 +3466,13 @@ export default function AuthPage({ slug }: { slug?: string }) {
             >
               <div
                 className={clsx(
-                  "w-2 h-2 rounded-full transition-all",
+                  "w-1.5 h-1.5 rounded-full transition-all",
                   communityTab === "traders"
                     ? "bg-blue-500 shadow-[0_0_8px_#3b82f6]"
                     : "bg-white/20"
                 )}
               />
-              Traders
+              <span className="hidden xs:inline">Traders</span>
             </button>
           </div>
         </motion.div>
