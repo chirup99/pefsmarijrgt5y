@@ -2574,17 +2574,20 @@ export default function AuthPage({ slug }: { slug?: string }) {
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.5 }}
-          className="fixed bottom-8 left-8 z-50"
+          className="fixed left-0 top-1/2 -translate-y-1/2 z-50"
         >
           <motion.button
             onClick={() => setIsTradersExpanded(!isTradersExpanded)}
             animate={{
               width: isTradersExpanded ? "auto" : "56px",
-              paddingLeft: isTradersExpanded ? "16px" : "0",
+              height: isTradersExpanded ? "auto" : "56px",
+              paddingLeft: "0px",
               paddingRight: isTradersExpanded ? "16px" : "0",
+              paddingTop: isTradersExpanded ? "12px" : "0",
+              paddingBottom: isTradersExpanded ? "12px" : "0",
             }}
             transition={{ type: "spring", damping: 20, stiffness: 100 }}
-            className="h-12 bg-white/5 hover:bg-white/10 border border-white/20 rounded-full flex items-center justify-center shadow-lg transition-all"
+            className="bg-white/5 hover:bg-white/10 border border-white/20 rounded-r-xl flex items-center justify-center shadow-lg transition-all"
           >
             <motion.div
               animate={{
