@@ -1460,6 +1460,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [showScannerDialog, setShowScannerDialog] = useState(false);
   const [scannerTab, setScannerTab] = useState<"scan" | "code">("scan");
   const [communityTab, setCommunityTab] = useState<"community" | "traders">("community");
+  const [showNavToggle, setShowNavToggle] = useState(false);
+  const personaCardRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<"notes" | "events" | "connect">(
     "notes",
   );
@@ -1475,6 +1477,22 @@ export default function AuthPage({ slug }: { slug?: string }) {
         .catch(console.error);
     }
   }, [user?.id]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (personaCardRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = personaCardRef.current;
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
+        setShowNavToggle(isAtBottom);
+      }
+    };
+
+    const ref = personaCardRef.current;
+    if (ref) {
+      ref.addEventListener("scroll", handleScroll);
+      return () => ref.removeEventListener("scroll", handleScroll);
+    }
+  }, []);
 
   useEffect(() => {
     // Only save connections for logged-in users visiting someone else's profile
@@ -2572,9 +2590,10 @@ export default function AuthPage({ slug }: { slug?: string }) {
         </motion.div>
 
         <motion.div
+          ref={personaCardRef}
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl p-5 sm:p-6 z-10 relative overflow-hidden"
+          className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl p-5 sm:p-6 z-10 relative overflow-y-auto max-h-[70vh] pb-20"
         >
           {communityTab === "community" ? (
             <>
@@ -3337,9 +3356,12 @@ export default function AuthPage({ slug }: { slug?: string }) {
         </motion.div>
 
         {/* Community/Traders Toggle */}
+        <AnimatePresence>
+          {showNavToggle && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
           className="fixed bottom-8 left-8 z-10"
         >
           <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/10 rounded-full p-1 shadow-lg">
@@ -3383,6 +3405,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
             </button>
           </div>
         </motion.div>
+          )}
+        </AnimatePresence>
 
         <AnimatePresence>
           {showScannerDialog && (
