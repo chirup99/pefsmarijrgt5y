@@ -2611,7 +2611,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
           ref={personaCardRef}
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl p-5 sm:p-6 z-10 relative overflow-y-auto max-h-[70vh] pb-20"
+          className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl p-5 sm:p-6 z-10 relative overflow-y-auto max-h-[calc(100vh-180px)] md:max-h-[70vh] pb-20 md:pb-0"
         >
           {communityTab === "community" ? (
             <>
@@ -3433,7 +3433,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
-          className="md:hidden w-full pt-6 pb-2 px-2 bg-gradient-to-t from-black/80 to-transparent"
+          className="md:hidden fixed bottom-0 left-0 right-0 z-20 p-2 bg-gradient-to-t from-black/90 via-black/70 to-transparent"
         >
           <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/10 rounded-lg p-1 shadow-lg w-full">
             <button
