@@ -1461,6 +1461,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isTradersExpanded, setIsTradersExpanded] = useState(false);
+  const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -1471,6 +1472,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
       const isScrollingDown = currentScrollY > lastScrollY;
       
       setShowMobileNav(isAtBottom && showNavToggle);
+      setIsScrolledToBottom(isAtBottom);
       setLastScrollY(currentScrollY);
     };
 
@@ -2566,44 +2568,49 @@ export default function AuthPage({ slug }: { slug?: string }) {
           )}
         </AnimatePresence>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.5 }}
-          className="fixed left-0 top-1/2 -translate-y-1/2 z-50"
-        >
-          <motion.button
-            onClick={() => setIsTradersExpanded(!isTradersExpanded)}
-            animate={{
-              width: isTradersExpanded ? "auto" : "48px",
-              height: isTradersExpanded ? "auto" : "48px",
-              paddingLeft: "0px",
-              paddingRight: isTradersExpanded ? "16px" : "0",
-              paddingTop: isTradersExpanded ? "12px" : "0",
-              paddingBottom: isTradersExpanded ? "12px" : "0",
-            }}
-            transition={{ type: "spring", damping: 20, stiffness: 100 }}
-            className="bg-white/5 hover:bg-white/10 border border-white/20 rounded-r-xl flex items-center justify-center shadow-lg transition-all mt-[100px] mb-[100px] py-2"
-          >
+        <AnimatePresence>
+          {isScrolledToBottom && (
             <motion.div
-              animate={{
-                opacity: isTradersExpanded ? 1 : 0,
-                width: isTradersExpanded ? "auto" : 0,
-              }}
+              initial={{ opacity: 0, scale: 0.5, x: -20 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.5, x: -20 }}
               transition={{ type: "spring", damping: 20, stiffness: 100 }}
-              className="overflow-hidden whitespace-nowrap"
+              className="fixed left-0 bottom-8 z-50"
             >
-              <span className="text-xs font-semibold text-white/80 mr-2">
-                Traders Community
-              </span>
+              <motion.button
+                onClick={() => setIsTradersExpanded(!isTradersExpanded)}
+                animate={{
+                  width: isTradersExpanded ? "auto" : "48px",
+                  height: isTradersExpanded ? "auto" : "48px",
+                  paddingLeft: "0px",
+                  paddingRight: isTradersExpanded ? "16px" : "0",
+                  paddingTop: isTradersExpanded ? "12px" : "0",
+                  paddingBottom: isTradersExpanded ? "12px" : "0",
+                }}
+                transition={{ type: "spring", damping: 20, stiffness: 100 }}
+                className="bg-white/5 hover:bg-white/10 border border-white/20 rounded-r-xl flex items-center justify-center shadow-lg transition-all py-2"
+              >
+                <motion.div
+                  animate={{
+                    opacity: isTradersExpanded ? 1 : 0,
+                    width: isTradersExpanded ? "auto" : 0,
+                  }}
+                  transition={{ type: "spring", damping: 20, stiffness: 100 }}
+                  className="overflow-hidden whitespace-nowrap"
+                >
+                  <span className="text-xs font-semibold text-white/80 mr-2">
+                    Traders Community
+                  </span>
+                </motion.div>
+                <img
+                  src="/perala.png"
+                  alt="Traders Community"
+                  className="w-5 h-5"
+                />
+              </motion.button>
             </motion.div>
-            <img
-              src="/perala.png"
-              alt="Traders Community"
-              className="w-5 h-5"
-            />
-          </motion.button>
-        </motion.div>
+          )}
+        </AnimatePresence>
 
         <motion.div
           initial={{ opacity: 0, y: -10 }}
