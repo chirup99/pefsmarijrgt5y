@@ -1,7 +1,6 @@
 import { QRCodeSVG } from "qrcode.react";
 import * as htmlToImage from "html-to-image";
 import { BrowserMultiFormatReader } from "@zxing/library";
-import tradersLogoPath from "@assets/l_1772970750047.png";
 
 // ... existing imports
 import { useState, useMemo, useEffect, useRef } from "react";
@@ -2603,7 +2602,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
               </span>
             </motion.div>
             <img
-              src={tradersLogoPath}
+              src="/perala.png"
               alt="Traders Community"
               className="w-5 h-5"
             />
