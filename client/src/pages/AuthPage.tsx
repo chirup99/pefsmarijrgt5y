@@ -2591,7 +2591,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   paddingBottom: isTradersExpanded ? "12px" : "0",
                 }}
                 transition={{ type: "spring", damping: 20, stiffness: 100 }}
-                className="bg-white/5 hover:bg-white/10 border border-white/20 rounded-r-xl flex items-center justify-center shadow-lg transition-all py-2 group"
+                className="bg-slate-900/80 hover:bg-slate-800/80 border border-white/20 rounded-r-xl flex items-center justify-center shadow-lg transition-all py-2 group"
               >
                 <motion.div
                   animate={{
