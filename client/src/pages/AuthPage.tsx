@@ -3441,25 +3441,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
           </div>
         </motion.div>
 
-        {/* Secondary Window - Community Content */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.98, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl p-5 sm:p-6 z-10 relative flex flex-col mt-4"
-        >
-          {/* Content Area */}
-          <div className="flex-1 min-h-[200px] flex items-center justify-center">
-            <div className="text-center space-y-4 w-full">
-              <p className="text-white/60 text-sm font-semibold tracking-widest uppercase">
-                Community Hub
-              </p>
-              <p className="text-white/40 text-xs">
-                Connect with fellow founders and startups
-              </p>
-            </div>
-          </div>
-        </motion.div>
-
         <AnimatePresence>
           {showScannerDialog && (
             <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
