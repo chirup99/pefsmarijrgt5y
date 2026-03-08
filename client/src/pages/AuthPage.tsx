@@ -3355,14 +3355,14 @@ export default function AuthPage({ slug }: { slug?: string }) {
           )}
         </motion.div>
 
-        {/* Community/Traders Toggle */}
+        {/* Community/Traders Toggle - Desktop */}
         <AnimatePresence>
           {showNavToggle && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
-          className="fixed bottom-8 left-8 z-10"
+          className="hidden md:block fixed bottom-8 left-8 z-10"
         >
           <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/10 rounded-full p-1 shadow-lg">
             <button
@@ -3388,6 +3388,59 @@ export default function AuthPage({ slug }: { slug?: string }) {
               onClick={() => setCommunityTab("traders")}
               className={clsx(
                 "px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-2",
+                communityTab === "traders"
+                  ? "bg-white/20 text-white"
+                  : "text-white/50 hover:text-white/70"
+              )}
+            >
+              <div
+                className={clsx(
+                  "w-2 h-2 rounded-full transition-all",
+                  communityTab === "traders"
+                    ? "bg-blue-500 shadow-[0_0_8px_#3b82f6]"
+                    : "bg-white/20"
+                )}
+              />
+              Traders
+            </button>
+          </div>
+        </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Community/Traders Toggle - Mobile Bottom Bar */}
+        <AnimatePresence>
+          {showNavToggle && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+          className="md:hidden fixed bottom-0 left-0 right-0 z-10 p-4"
+        >
+          <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-2 shadow-lg w-full">
+            <button
+              onClick={() => setCommunityTab("community")}
+              className={clsx(
+                "flex-1 px-4 py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2",
+                communityTab === "community"
+                  ? "bg-white/20 text-white"
+                  : "text-white/50 hover:text-white/70"
+              )}
+            >
+              <div
+                className={clsx(
+                  "w-2 h-2 rounded-full transition-all",
+                  communityTab === "community"
+                    ? "bg-emerald-500 shadow-[0_0_8px_#10b981]"
+                    : "bg-white/20"
+                )}
+              />
+              Community
+            </button>
+            <button
+              onClick={() => setCommunityTab("traders")}
+              className={clsx(
+                "flex-1 px-4 py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2",
                 communityTab === "traders"
                   ? "bg-white/20 text-white"
                   : "text-white/50 hover:text-white/70"
