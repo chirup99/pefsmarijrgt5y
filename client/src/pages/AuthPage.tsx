@@ -3373,6 +3373,62 @@ export default function AuthPage({ slug }: { slug?: string }) {
           )}
         </motion.div>
 
+        {/* Secondary Window - Community/Traders Content */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl p-5 sm:p-6 z-10 relative flex flex-col mt-4"
+        >
+          {/* Content Area */}
+          <div className="flex-1 min-h-[200px] flex items-center justify-center">
+            {communityTab === "community" ? (
+              <div className="text-center space-y-4 w-full">
+                <p className="text-white/60 text-sm font-semibold tracking-widest uppercase">
+                  Community Hub
+                </p>
+                <p className="text-white/40 text-xs">
+                  Connect with fellow founders and startups
+                </p>
+              </div>
+            ) : (
+              <div className="text-center space-y-4 w-full">
+                <p className="text-white/60 text-sm font-semibold tracking-widest uppercase">
+                  Traders Market
+                </p>
+                <p className="text-white/40 text-xs">
+                  Connect with investors and traders
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Bottom Switch Bar */}
+          <div className="flex p-1 bg-white/10 rounded-lg border border-white/5 mt-6">
+            <button
+              onClick={() => setCommunityTab("community")}
+              className={clsx(
+                "flex-1 py-2 text-xs font-semibold rounded-md z-10 transition-colors",
+                communityTab === "community"
+                  ? "text-white bg-white/10"
+                  : "text-white/50 hover:text-white/70",
+              )}
+            >
+              Community
+            </button>
+            <button
+              onClick={() => setCommunityTab("traders")}
+              className={clsx(
+                "flex-1 py-2 text-xs font-semibold rounded-md z-10 transition-colors",
+                communityTab === "traders"
+                  ? "text-white bg-white/10"
+                  : "text-white/50 hover:text-white/70",
+              )}
+            >
+              Traders
+            </button>
+          </div>
+        </motion.div>
+
         {/* Community/Traders Toggle - Desktop */}
         <AnimatePresence>
           {showNavToggle && (
