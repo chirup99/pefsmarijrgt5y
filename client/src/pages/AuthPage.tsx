@@ -1154,13 +1154,6 @@ const MiniCard = ({
                 )}
               </div>
             )}
-            <button
-              onClick={() => setIsPlaying(!isPlaying)}
-              className="w-full bg-white text-black rounded-full py-2 text-xs font-bold flex items-center justify-center gap-2"
-            >
-              <Play className="w-3 h-3 fill-current" />{" "}
-              {isPlaying ? "Reset" : "Play Projection"}
-            </button>
           </div>
         ) : card.type === "traction" ? (
           <div className="space-y-2">
@@ -1176,13 +1169,6 @@ const MiniCard = ({
                 )}
               </div>
             )}
-            <button
-              onClick={() => setIsPlaying(!isPlaying)}
-              className="w-full bg-white text-black rounded-full py-2 text-xs font-bold flex items-center justify-center gap-2"
-            >
-              <Play className="w-3 h-3 fill-current" />{" "}
-              {isPlaying ? "Reset" : "Play Projection"}
-            </button>
           </div>
         ) : card.type === "product" ? (
           <div className="space-y-1 text-center">
