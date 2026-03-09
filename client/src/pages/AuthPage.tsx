@@ -486,7 +486,7 @@ const SwipeCardContent = forwardRef(({
             )}
           </div>
 
-          {card.type !== "product" && (
+          {card.type !== "product" && card.type !== "traction" && card.type !== "revenue" && (
             <div className="w-full">
               <button
                 type="button"
