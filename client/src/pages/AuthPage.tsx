@@ -1,6 +1,7 @@
 import { QRCodeSVG } from "qrcode.react";
 import * as htmlToImage from "html-to-image";
 import { BrowserMultiFormatReader } from "@zxing/library";
+import logoImg from "@assets/logo.png";
 
 // ... existing imports
 import { useState, useMemo, useEffect, useRef, forwardRef } from "react";
@@ -2734,6 +2735,50 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       </motion.div>
                     ))}
                   </div>
+                </div>
+
+                <div className="px-6 pb-8 border-t border-white/10">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="flex flex-col items-center gap-4 pt-6"
+                  >
+                    <a
+                      href="https://perala.in"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-600 to-blue-400 flex items-center justify-center hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all duration-300 group"
+                    >
+                      <img
+                        src={logoImg}
+                        alt="Perala"
+                        className="w-14 h-14 object-contain group-hover:scale-110 transition-transform"
+                      />
+                    </a>
+
+                    <div className="text-center space-y-2">
+                      <p className="text-sm font-semibold text-white">
+                        Join Our Trading Community
+                      </p>
+                      <p className="text-[12px] text-emerald-400 font-bold">
+                        10K+ Active Traders
+                      </p>
+                      <p className="text-[11px] text-white/60 max-w-xs">
+                        Get AI-powered analysis to master your trades. Keep only the best strategies and eliminate emotional trading.
+                      </p>
+                    </div>
+
+                    <a
+                      href="https://perala.in"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-500 hover:to-blue-400 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 group shadow-lg"
+                    >
+                      <span>Analyze Your Trades</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </a>
+                  </motion.div>
                 </div>
               </motion.div>
             </>
