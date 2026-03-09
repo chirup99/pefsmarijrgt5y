@@ -2816,41 +2816,38 @@ export default function AuthPage({ slug }: { slug?: string }) {
           )}
 
           <div className="space-y-4 overflow-y-auto flex-1">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={mode}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                className="space-y-3"
-              >
-                {mode === "login" ? (
-                  <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-4"
-                  >
-                    <div className="flex flex-col items-center text-center space-y-4 py-2 relative">
-                      <button
-                        type="button"
-                        onClick={() => setShowQRDialog(true)}
-                        className="absolute top-0 right-0 p-2 bg-white/5 hover:bg-white/10 rounded-lg text-white/40 hover:text-white transition-all z-10"
-                        title="View QR Code"
-                      >
-                        <QrCode className="w-4 h-4" />
-                      </button>
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-blue-400 mx-auto flex items-center justify-center text-white text-2xl font-bold shadow-lg">
-                        {form.watch("name")?.[0] || "P"}
-                      </div>
-                      <h3 className="text-xl font-bold text-white tracking-tight">
-                        {form.watch("name") || "Networking Profile"}
-                      </h3>
-                      <p className="text-white/40 text-xs">
-                        {ROLES.find((r) => r.value === form.watch("role"))
-                          ?.label || "Founder"}
-                      </p>
-                      <p className="text-white/40 text-[10px] italic">
-                        {form.watch("bio") || ""}
-                      </p>
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="space-y-3"
+            >
+              {mode === "login" ? (
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4"
+                >
+                  <div className="flex flex-col items-center text-center space-y-4 py-2 relative">
+                    <button
+                      type="button"
+                      onClick={() => setShowQRDialog(true)}
+                      className="absolute top-0 right-0 p-2 bg-white/5 hover:bg-white/10 rounded-lg text-white/40 hover:text-white transition-all z-10"
+                      title="View QR Code"
+                    >
+                      <QrCode className="w-4 h-4" />
+                    </button>
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-blue-400 mx-auto flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                      {form.watch("name")?.[0] || "P"}
+                    </div>
+                    <h3 className="text-xl font-bold text-white tracking-tight">
+                      {form.watch("name") || "Networking Profile"}
+                    </h3>
+                    <p className="text-white/40 text-xs">
+                      {ROLES.find((r) => r.value === form.watch("role"))
+                        ?.label || "Founder"}
+                    </p>
+                    <p className="text-white/40 text-[10px] italic">
+                      {form.watch("bio") || ""}
+                    </p>
                       <div className="flex items-center justify-center gap-3 w-full pt-1">
                         {(() => {
                           const linkedin = form.watch("linkedin");
@@ -3466,8 +3463,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     <SwipeCard cards={selectedCards} user={user} />
                   </div>
                 )}
-              </motion.div>
-            </AnimatePresence>
+            </motion.div>
 
             <div className="relative py-2">
               <div className="absolute inset-0 flex items-center">
