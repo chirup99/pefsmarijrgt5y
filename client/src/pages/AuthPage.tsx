@@ -3410,7 +3410,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
               )
             )}
 
-            {!loggedInUser && (
+            {!loggedInUser && mode === "login" && (
               <button
                 type="button"
                 onClick={() => {
