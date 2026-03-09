@@ -2634,7 +2634,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 transition={{ type: "spring", damping: 30, stiffness: 300 }}
                 className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black/95 via-black/90 to-black/80 rounded-t-3xl max-h-[70vh] overflow-y-auto shadow-2xl"
               >
-                <div className="flex items-center justify-between p-6">
+                <div className="flex items-center justify-between p-6 pb-4">
+                  <h3 className="text-lg font-bold text-white">Featured Traders</h3>
                   <button
                     onClick={() => setShowTradersModal(false)}
                     className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white/60 hover:text-white"
@@ -2642,7 +2643,68 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     <X className="w-5 h-5" />
                   </button>
                 </div>
-              
+
+                <div className="overflow-x-auto scrollbar-hide px-6 pb-6">
+                  <div className="flex gap-4">
+                    {[
+                      {
+                        title: "Dine in Style",
+                        subtitle: "Restaurant Network",
+                        tag: "Lifestyle",
+                        image: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)",
+                      },
+                      {
+                        title: "Tech Summit",
+                        subtitle: "Innovation Hub",
+                        tag: "Tech",
+                        image: "linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)",
+                      },
+                      {
+                        title: "Trading Floor",
+                        subtitle: "Financial Network",
+                        tag: "Finance",
+                        image: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
+                      },
+                      {
+                        title: "Creative Studio",
+                        subtitle: "Designer Community",
+                        tag: "Creative",
+                        image: "linear-gradient(135deg, #d97706 0%, #f59e0b 100%)",
+                      },
+                      {
+                        title: "Startup Labs",
+                        subtitle: "Entrepreneur Hub",
+                        tag: "Startup",
+                        image: "linear-gradient(135deg, #dc2626 0%, #ef4444 100%)",
+                      },
+                    ].map((card, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.1 }}
+                        className="flex-shrink-0 w-48 h-32 rounded-2xl overflow-hidden cursor-pointer group relative"
+                      >
+                        <div
+                          className="absolute inset-0"
+                          style={{ background: card.image }}
+                        />
+                        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
+                        <div className="absolute inset-0 flex flex-col justify-end p-4 text-white">
+                          <h4 className="font-bold text-sm leading-tight">
+                            {card.title}
+                          </h4>
+                          <p className="text-[10px] text-white/70">
+                            {card.subtitle}
+                          </p>
+                          <span className="inline-block bg-white/20 text-white/80 text-[9px] font-semibold px-2 py-1 rounded mt-2 w-fit border border-white/30">
+                            {card.tag}
+                          </span>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
               </motion.div>
             </>
           )}
