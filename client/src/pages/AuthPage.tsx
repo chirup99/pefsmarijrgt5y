@@ -649,8 +649,8 @@ const SwipeCard = ({
               nextNextCard?.color || "from-gray-700 to-gray-800"
             )}
             style={{
-              transform: 'translateY(12px) translateX(8px)',
-              opacity: 0.4,
+              transform: 'translateY(16px) translateX(12px)',
+              opacity: 1,
             }}
           />
           {/* First card - middle layer */}
@@ -660,8 +660,8 @@ const SwipeCard = ({
               nextCard?.color || "from-gray-700 to-gray-800"
             )}
             style={{
-              transform: 'translateY(8px) translateX(4px)',
-              opacity: 0.6,
+              transform: 'translateY(8px) translateX(6px)',
+              opacity: 1,
             }}
           />
         </>
