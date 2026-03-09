@@ -3480,7 +3480,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
               </div>
             </div>
 
-            {(mode === "login" || mode === "swipe") && (
+            {mode === "swipe" && (
               <div className="flex items-center justify-between text-white/40 text-[10px] uppercase tracking-wider font-bold px-4 mt-3">
                 <span>← Left Swipe</span>
                 <span>Right Swipe →</span>
