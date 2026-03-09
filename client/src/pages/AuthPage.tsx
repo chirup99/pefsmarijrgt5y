@@ -2724,7 +2724,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
             />
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-4 overflow-y-auto flex-1">
             <AnimatePresence mode="wait">
               <motion.div
                 key={mode}
