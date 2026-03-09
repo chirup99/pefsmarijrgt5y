@@ -2669,30 +2669,35 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         subtitle: "VIP Community Access",
                         tag: "Premium",
                         image: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)",
+                        video: "/1.MOV",
                       },
                       {
                         title: "Private Trade Forum",
                         subtitle: "Curated Discussion Space",
                         tag: "Exclusive",
                         image: "linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)",
+                        video: "/2.MOV",
                       },
                       {
                         title: "Performance Vault",
                         subtitle: "Track & Analyze in Private",
                         tag: "Private",
                         image: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
+                        video: "/3.MOV",
                       },
                       {
                         title: "AI Intelligence Hub",
                         subtitle: "Advanced Market Analytics",
                         tag: "Exclusive AI",
                         image: "linear-gradient(135deg, #d97706 0%, #f59e0b 100%)",
+                        video: "/4.MOV",
                       },
                       {
                         title: "Insights Archive",
                         subtitle: "Learning Library & Reports",
                         tag: "Premium Access",
                         image: "linear-gradient(135deg, #dc2626 0%, #ef4444 100%)",
+                        video: "/5.MOV",
                       },
                     ].map((card, idx) => (
                       <motion.div
@@ -2702,10 +2707,22 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         transition={{ delay: idx * 0.1 }}
                         className="flex-shrink-0 w-48 h-32 rounded-2xl overflow-hidden cursor-pointer group relative"
                       >
-                        <div
-                          className="absolute inset-0"
-                          style={{ background: card.image }}
-                        />
+                        {card.video ? (
+                          <video
+                            className="absolute inset-0 w-full h-full object-cover"
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                          >
+                            <source src={card.video} type="video/quicktime" />
+                          </video>
+                        ) : (
+                          <div
+                            className="absolute inset-0"
+                            style={{ background: card.image }}
+                          />
+                        )}
                         <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
                         <div className="absolute inset-0 flex flex-col justify-end p-4 text-white">
                           <h4 className="font-bold text-sm leading-tight">
