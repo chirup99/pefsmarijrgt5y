@@ -71,7 +71,7 @@ export type User = {
   instaClicks: number;
   linkedinClicks: number;
   whatsappClicks: number;
-  portalClicks: number;
+  websiteClicks: number;
   reachHistory: { timestamp: string; count: number }[]; // every 12h for last 7 days
   connections: { slug: string; connectedAt: string }[]; // array of uniqueSlugs with timestamp
   cards: string[]; // JSON strings

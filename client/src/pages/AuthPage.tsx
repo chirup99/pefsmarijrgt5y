@@ -1335,7 +1335,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
   }, [slug, setLocation, loggedInUser, lastLoadedSlug]);
 
   const trackClick = async (
-    type: "insta" | "linkedin" | "whatsapp" | "portal",
+    type: "insta" | "linkedin" | "whatsapp" | "website",
   ) => {
     if (!publicUser?.id) return;
     try {
@@ -2438,10 +2438,10 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     </div>
                     <div className="flex flex-col items-center gap-0.5">
                       <span className="text-[7px] text-white/30 uppercase tracking-widest font-bold">
-                        Portal
+                        Website
                       </span>
                       <span className="text-xs font-bold text-white/80">
-                        {loggedInUser.portalClicks || 0}
+                        {loggedInUser.websiteClicks || 0}
                       </span>
                     </div>
                   </div>
@@ -3041,31 +3041,31 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       </div>
                     </div>
                     {(() => {
-                      const portalUrl = form.watch("website");
-                      const hasPortal = !!portalUrl && portalUrl.trim() !== "" && portalUrl !== "#";
+                      const websiteUrl = form.watch("website");
+                      const hasWebsite = !!websiteUrl && websiteUrl.trim() !== "" && websiteUrl !== "#";
                       return (
                         <a
-                          href={hasPortal ? portalUrl : undefined}
-                          target={hasPortal ? "_blank" : undefined}
-                          rel={hasPortal ? "noreferrer" : undefined}
+                          href={hasWebsite ? websiteUrl : undefined}
+                          target={hasWebsite ? "_blank" : undefined}
+                          rel={hasWebsite ? "noreferrer" : undefined}
                           onClick={(e) => {
-                            if (!hasPortal) {
+                            if (!hasWebsite) {
                               e.preventDefault();
                               return;
                             }
-                            trackClick("portal");
+                            trackClick("website");
                           }}
                           className={clsx(
                             "w-full rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 group no-underline transition-all",
-                            hasPortal 
+                            hasWebsite 
                               ? "bg-primary text-white hover:opacity-90 shadow-lg cursor-pointer" 
                               : "bg-white/5 text-white/20 cursor-not-allowed border border-white/5"
                           )}
                         >
-                          {hasPortal ? "View Collaboration Portal" : "No Portal Available"}
+                          {hasWebsite ? "View Website" : "No Website Available"}
                           <ArrowRight className={clsx(
                             "w-3.5 h-3.5 transition-transform",
-                            hasPortal ? "group-hover:translate-x-1" : "opacity-0"
+                            hasWebsite ? "group-hover:translate-x-1" : "opacity-0"
                           )} />
                         </a>
                       );
@@ -3377,17 +3377,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         />
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
-                          Email
-                        </label>
-                        <input
-                          {...form.register("email")}
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
-                          placeholder="Email"
-                        />
-                      </div>
+                    <div className="space-y-3">
                       <div className="space-y-1">
                         <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
                           WhatsApp
@@ -3453,15 +3443,25 @@ export default function AuthPage({ slug }: { slug?: string }) {
                           )}
                         </div>
                       </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                          Email
+                        </label>
+                        <input
+                          {...form.register("email")}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
+                          placeholder="Email"
+                        />
+                      </div>
                     </div>
                     <div className="space-y-1">
                       <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
-                        Portal URL
+                        Website URL
                       </label>
                       <input
                         {...form.register("website")}
                         className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
-                        placeholder="https://your-portal.com"
+                        placeholder="https://your-website.com"
                       />
                     </div>
                     <div className="flex gap-2 mt-4">

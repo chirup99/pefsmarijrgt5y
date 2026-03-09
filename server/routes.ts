@@ -383,7 +383,7 @@ export async function registerRoutes(
   app.post("/api/user/:id/click", async (req, res) => {
     try {
       const { id } = req.params;
-      const { type } = z.object({ type: z.enum(["insta", "linkedin", "whatsapp", "portal"]) }).parse(req.body);
+      const { type } = z.object({ type: z.enum(["insta", "linkedin", "whatsapp", "website"]) }).parse(req.body);
       const user = await storage.getUser(id);
       if (!user) return res.status(404).json({ message: "User not found" });
 
