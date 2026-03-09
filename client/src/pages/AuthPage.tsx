@@ -2673,7 +2673,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
           animate={{ opacity: 1, scale: 1 }}
           className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl p-5 sm:p-6 z-10 relative overflow-hidden max-h-[calc(100vh-120px)] md:max-h-[calc(100vh-160px)] flex flex-col"
         >
-          {mode !== "customize" && (
+          {(mode === "login" || mode === "swipe") && (
             <div className="flex p-1 bg-white/10 rounded-lg mb-6 relative">
               <button
                 onClick={() => setMode("login")}
