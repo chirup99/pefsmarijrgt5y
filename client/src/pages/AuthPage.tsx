@@ -487,7 +487,7 @@ const SwipeCardContent = forwardRef(({
           </div>
 
           {card.type !== "product" && (
-            <div className="w-full">
+            <div className="w-full space-y-3">
               <button
                 type="button"
                 onClick={(e) => {
@@ -512,6 +512,10 @@ const SwipeCardContent = forwardRef(({
                   </>
                 )}
               </button>
+              <div className="flex items-center justify-between text-white/40 text-[9px] uppercase tracking-wider font-bold px-2">
+                <span>← Left Swipe</span>
+                <span>Right Swipe →</span>
+              </div>
             </div>
           )}
         </div>
