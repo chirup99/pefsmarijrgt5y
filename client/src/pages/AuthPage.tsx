@@ -633,8 +633,41 @@ const SwipeCard = ({
 
   if (!currentCard) return null;
 
+  // Get next two cards for the stack effect
+  const nextCard = displayCards[(currentIndex + 1) % displayCards.length];
+  const nextNextCard = displayCards[(currentIndex + 2) % displayCards.length];
+
   return (
     <div className="relative w-full max-w-[240px] aspect-[3/4] mx-auto perspective-1000">
+      {/* Background stacked cards - only show if there's more than 1 card */}
+      {displayCards.length > 1 && (
+        <>
+          {/* Second card - furthest back */}
+          <div 
+            className={clsx(
+              "absolute inset-0 rounded-[24px] pointer-events-none z-0 shadow-lg bg-gradient-to-b",
+              nextNextCard?.color || "from-gray-700 to-gray-800"
+            )}
+            style={{
+              transform: 'translateY(12px) translateX(8px)',
+              opacity: 0.4,
+            }}
+          />
+          {/* First card - middle layer */}
+          <div 
+            className={clsx(
+              "absolute inset-0 rounded-[24px] pointer-events-none z-10 shadow-xl bg-gradient-to-b",
+              nextCard?.color || "from-gray-700 to-gray-800"
+            )}
+            style={{
+              transform: 'translateY(8px) translateX(4px)',
+              opacity: 0.6,
+            }}
+          />
+        </>
+      )}
+      
+      {/* Main card - front */}
       <AnimatePresence mode="popLayout" initial={false}>
         <SwipeCardContent
           key={currentIndex}
