@@ -2673,33 +2673,35 @@ export default function AuthPage({ slug }: { slug?: string }) {
           animate={{ opacity: 1, scale: 1 }}
           className="w-full max-w-md bg-card border border-white/10 rounded-[20px] shadow-2xl p-5 sm:p-6 z-10 relative overflow-hidden max-h-[calc(100vh-120px)] md:max-h-[calc(100vh-160px)] flex flex-col"
         >
-          <div className="flex p-1 bg-white/10 rounded-lg mb-6 relative">
-            <button
-              onClick={() => setMode("login")}
-              className={clsx(
-                "flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors",
-                mode === "login" || mode === "register" || mode === "customize"
-                  ? "text-white"
-                  : "text-white/50",
-              )}
-            >
-              Persona
-            </button>
-            <button
-              onClick={() => setMode("swipe")}
-              className={clsx(
-                "flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors",
-                mode === "swipe" ? "text-white" : "text-white/50",
-              )}
-            >
-              Mini-Cards
-            </button>
-            <motion.div
-              layoutId="activeTab"
-              className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white/20 rounded-md shadow-sm"
-              animate={{ left: mode === "swipe" ? "calc(50%)" : "4px" }}
-            />
-          </div>
+          {mode !== "customize" && (
+            <div className="flex p-1 bg-white/10 rounded-lg mb-6 relative">
+              <button
+                onClick={() => setMode("login")}
+                className={clsx(
+                  "flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors",
+                  mode === "login" || mode === "register"
+                    ? "text-white"
+                    : "text-white/50",
+                )}
+              >
+                Persona
+              </button>
+              <button
+                onClick={() => setMode("swipe")}
+                className={clsx(
+                  "flex-1 py-2 text-sm font-semibold rounded-md z-10 transition-colors",
+                  mode === "swipe" ? "text-white" : "text-white/50",
+                )}
+              >
+                Mini-Cards
+              </button>
+              <motion.div
+                layoutId="activeTab"
+                className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white/20 rounded-md shadow-sm"
+                animate={{ left: mode === "swipe" ? "calc(50%)" : "4px" }}
+              />
+            </div>
+          )}
 
           <div className="space-y-4 overflow-y-auto flex-1">
             <AnimatePresence mode="wait">
