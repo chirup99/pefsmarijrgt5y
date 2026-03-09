@@ -2744,29 +2744,21 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     transition={{ duration: 0.4 }}
                     className="flex flex-col items-center gap-4 pt-6"
                   >
-                    <a
-                      href="https://perala.in"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="cursor-pointer hover:scale-110 active:scale-95 transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(168,85,247,0.6)]"
-                    >
-                      <img
-                        src={logoImg}
-                        alt="Perala"
-                        className="w-12 h-12 object-contain"
-                      />
-                    </a>
-
-                    <div className="text-center space-y-2">
-                      <p className="text-sm font-semibold text-white">
-                        Join Our Trading Community
+                    <div className="text-center space-y-3">
+                      <h3 className="text-lg font-bold text-white">
+                        Get Early Access
+                      </h3>
+                      <p className="text-[12px] text-white/70 max-w-xs">
+                        Perala: Your Advanced Trading Journal & Performance Analysis Hub.
                       </p>
-                      <p className="text-[12px] text-emerald-400 font-bold">
-                        10K+ Active Traders
-                      </p>
-                      <p className="text-[11px] text-white/60 max-w-xs">
-                        Get AI-powered analysis to master your trades. Keep only the best strategies and eliminate emotional trading.
-                      </p>
+                      <div className="flex items-center justify-center gap-2 flex-wrap pt-2">
+                        <span className="text-[10px] text-emerald-400 font-semibold bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/20">
+                          Daily Trade Tracking
+                        </span>
+                        <span className="text-[10px] text-blue-400 font-semibold bg-blue-400/10 px-3 py-1 rounded-full border border-blue-400/20">
+                          AI Performance Analysis
+                        </span>
+                      </div>
                     </div>
                   </motion.div>
                 </div>
