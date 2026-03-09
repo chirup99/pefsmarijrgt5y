@@ -49,8 +49,8 @@ import { useLogin, useRegister, useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
 import { SiInstagram, SiWhatsapp } from "react-icons/si";
-import avatarWoman from "@assets/image_1773058287701.png";
-import avatarMan from "@assets/image_1773058578233.png";
+import avatarWoman from "@assets/female.png";
+import avatarMan from "@assets/male.png";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
 
