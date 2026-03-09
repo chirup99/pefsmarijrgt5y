@@ -2692,19 +2692,12 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         image: "linear-gradient(135deg, #d97706 0%, #f59e0b 100%)",
                         video: "/4.mp4",
                       },
-                      {
-                        title: "Insights Archive",
-                        subtitle: "Learning Library & Reports",
-                        tag: "Premium Access",
-                        image: "linear-gradient(135deg, #dc2626 0%, #ef4444 100%)",
-                        video: "/5.mp4",
-                      },
                     ].map((card, idx) => (
                       <motion.div
                         key={idx}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.1 }}
+                        transition={{ duration: 0.3 }}
                         className="flex-shrink-0 w-48 h-56 rounded-2xl overflow-hidden cursor-pointer group relative"
                       >
                         {card.video ? (
