@@ -3347,12 +3347,12 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     </div>
                     <div className="space-y-1">
                       <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
-                        Startup / Business
+                        Bio
                       </label>
                       <input
                         {...form.register("bio")}
                         className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
-                        placeholder=""
+                        placeholder="Startup / Business"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
