@@ -648,12 +648,13 @@ const SwipeCard = ({
           {/* Second card - furthest back */}
           <div 
             className={clsx(
-              "absolute inset-0 rounded-[24px] pointer-events-none z-0 shadow-lg bg-gradient-to-b",
+              "absolute inset-0 rounded-[24px] pointer-events-none z-0 shadow-2xl bg-gradient-to-b",
               nextNextCard?.color || "from-gray-700 to-gray-800"
             )}
             style={{
-              transform: 'translateY(16px) translateX(12px)',
-              opacity: 1,
+              transform: 'translateY(24px) translateX(12px) scale(0.98)',
+              opacity: 0.45,
+              filter: 'brightness(0.75)',
             }}
           />
           {/* First card - middle layer */}
@@ -663,8 +664,9 @@ const SwipeCard = ({
               nextCard?.color || "from-gray-700 to-gray-800"
             )}
             style={{
-              transform: 'translateY(8px) translateX(6px)',
-              opacity: 1,
+              transform: 'translateY(12px) translateX(6px) scale(0.99)',
+              opacity: 0.65,
+              filter: 'brightness(0.85)',
             }}
           />
         </>
