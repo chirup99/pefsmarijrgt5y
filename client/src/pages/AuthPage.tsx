@@ -2635,7 +2635,10 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black/95 via-black/90 to-black/80 rounded-t-3xl max-h-[70vh] overflow-y-auto shadow-2xl"
               >
                 <div className="flex items-center justify-between p-6 pb-4">
-                  <h3 className="text-lg font-bold text-white">Featured Traders</h3>
+                  <div className="flex flex-col gap-1">
+                    <h3 className="text-lg font-bold text-white">Exclusive Traders Circle</h3>
+                    <p className="text-[10px] text-white/40 uppercase tracking-wider">Premium & Differentiated Features</p>
+                  </div>
                   <button
                     onClick={() => setShowTradersModal(false)}
                     className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white/60 hover:text-white"
@@ -2648,33 +2651,33 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   <div className="flex gap-4">
                     {[
                       {
-                        title: "Trading Community",
-                        subtitle: "Connect with Traders",
-                        tag: "Community",
+                        title: "Exclusive Traders Network",
+                        subtitle: "VIP Community Access",
+                        tag: "Premium",
                         image: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)",
                       },
                       {
-                        title: "Traders Social Media",
-                        subtitle: "Share & Network",
-                        tag: "Social",
+                        title: "Private Trade Forum",
+                        subtitle: "Curated Discussion Space",
+                        tag: "Exclusive",
                         image: "linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)",
                       },
                       {
-                        title: "Trading Journal",
-                        subtitle: "Track Your Trades",
-                        tag: "Journal",
+                        title: "Performance Vault",
+                        subtitle: "Track & Analyze in Private",
+                        tag: "Private",
                         image: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
                       },
                       {
-                        title: "AI Over Trading Tracker",
-                        subtitle: "Smart Trade Analysis",
-                        tag: "AI Analytics",
+                        title: "AI Intelligence Hub",
+                        subtitle: "Advanced Market Analytics",
+                        tag: "Exclusive AI",
                         image: "linear-gradient(135deg, #d97706 0%, #f59e0b 100%)",
                       },
                       {
-                        title: "Trading Loss Analysis",
-                        subtitle: "Learn from Losses",
-                        tag: "Analysis",
+                        title: "Insights Archive",
+                        subtitle: "Learning Library & Reports",
+                        tag: "Premium Access",
                         image: "linear-gradient(135deg, #dc2626 0%, #ef4444 100%)",
                       },
                     ].map((card, idx) => (
