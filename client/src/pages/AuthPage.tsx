@@ -1479,6 +1479,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY, showNavToggle]);
   const personaCardRef = useRef<HTMLDivElement>(null);
+  const tradersRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<"notes" | "events" | "connect">(
     "notes",
   );
@@ -1494,6 +1495,23 @@ export default function AuthPage({ slug }: { slug?: string }) {
         .catch(console.error);
     }
   }, [user?.id]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isTradersExpanded &&
+        tradersRef.current &&
+        !tradersRef.current.contains(event.target as Node)
+      ) {
+        setIsTradersExpanded(false);
+      }
+    };
+
+    if (isTradersExpanded) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [isTradersExpanded]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -2548,6 +2566,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
         <AnimatePresence>
           {isScrolledToBottom && (
             <motion.div
+              ref={tradersRef}
               initial={{ opacity: 0, scale: 0.5, x: -20 }}
               animate={{ opacity: 1, scale: 1, x: 0 }}
               exit={{ opacity: 0, scale: 0.5, x: -20 }}
