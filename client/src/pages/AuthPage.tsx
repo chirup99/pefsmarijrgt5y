@@ -1739,6 +1739,17 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const qrRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // Preload all videos when component mounts for instant playback
+  useEffect(() => {
+    const videoUrls = ["/1.mp4", "/2.mp4", "/3.mp4", "/4.mp4"];
+    videoUrls.forEach((url) => {
+      const video = document.createElement("video");
+      video.src = url;
+      video.preload = "auto";
+      video.load();
+    });
+  }, []);
+
   useEffect(() => {
     let controls: any = null;
     let isMounted = true;
@@ -2708,7 +2719,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                             loop
                             muted
                             playsInline
-                            preload="metadata"
+                            preload="auto"
                             poster={card.image}
                             style={{ background: card.image }}
                           >
@@ -2744,6 +2755,11 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     transition={{ duration: 0.4 }}
                     className="flex flex-col items-center gap-4 pt-6"
                   >
+                    <img
+                      src={logoImg}
+                      alt="Perala"
+                      className="w-16 h-16 object-contain"
+                    />
                     <div className="text-center space-y-3">
                       <h3 className="text-lg font-bold text-white">
                         Get Early Access
