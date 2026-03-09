@@ -349,28 +349,13 @@ const SwipeCardContent = forwardRef(({
       style={{ x, rotate, opacity }}
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.9}
+      dragElastic={0.2}
       onDragEnd={(_, info) => {
         if (info.offset.x < -80) onSwipeLeft();
         else if (info.offset.x > 80) onSwipeRight();
       }}
-      initial={{ scale: 0.9, opacity: 0, y: 10 }}
-      animate={{ scale: 1, opacity: 1, y: 0 }}
-      exit={{
-        x: x.get() < 0 ? -400 : 400,
-        opacity: 0,
-        scale: 0.5,
-        rotate: x.get() < 0 ? -45 : 45,
-        transition: { duration: 0.4, ease: "easeIn" },
-      }}
-      transition={{
-        type: "spring",
-        stiffness: 500,
-        damping: 30,
-        mass: 0.8,
-      }}
       className={clsx(
-        "absolute inset-0 bg-gradient-to-b rounded-[24px] p-4 shadow-2xl cursor-grab active:cursor-grabbing overflow-hidden group transition-colors duration-500",
+        "absolute inset-0 bg-gradient-to-b rounded-[24px] p-4 shadow-2xl cursor-grab active:cursor-grabbing overflow-hidden group",
         card.color,
       )}
     >
@@ -665,16 +650,14 @@ const SwipeCard = ({
       )}
       
       {/* Main card - front */}
-      <AnimatePresence mode="popLayout" initial={false}>
-        <SwipeCardContent
-          key={currentIndex}
-          card={currentCard}
-          currentIndex={currentIndex}
-          totalCards={displayCards.length}
-          onSwipeLeft={handleSwipeLeft}
-          onSwipeRight={handleSwipeRight}
-        />
-      </AnimatePresence>
+      <SwipeCardContent
+        key={currentIndex}
+        card={currentCard}
+        currentIndex={currentIndex}
+        totalCards={displayCards.length}
+        onSwipeLeft={handleSwipeLeft}
+        onSwipeRight={handleSwipeRight}
+      />
     </div>
   );
 };
