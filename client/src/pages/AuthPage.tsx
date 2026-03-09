@@ -653,10 +653,10 @@ const SwipeCard = ({
             )}
             style={{
               transform: 'translateY(24px) translateX(12px) scale(0.98)',
-              opacity: 0.45,
-              filter: 'brightness(0.75)',
             }}
-          />
+          >
+            <div className="absolute inset-0 bg-black/40 rounded-[24px]" />
+          </div>
           {/* First card - middle layer */}
           <div 
             className={clsx(
@@ -665,10 +665,10 @@ const SwipeCard = ({
             )}
             style={{
               transform: 'translateY(12px) translateX(6px) scale(0.99)',
-              opacity: 0.65,
-              filter: 'brightness(0.85)',
             }}
-          />
+          >
+            <div className="absolute inset-0 bg-black/25 rounded-[24px]" />
+          </div>
         </>
       )}
       
