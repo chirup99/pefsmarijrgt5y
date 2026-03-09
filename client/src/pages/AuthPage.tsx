@@ -2665,6 +2665,13 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   <div className="flex gap-4">
                     {[
                       {
+                        title: "Visual Trade Tracking",
+                        subtitle: "Track FOMO Mistakes on Calendar",
+                        tag: "Advanced Line Point Tracking",
+                        image: "linear-gradient(135deg, #ec4899 0%, #f472b6 100%)",
+                        video: "/1.mp4",
+                      },
+                      {
                         title: "Your Advanced Trading Journal",
                         subtitle: "Daily Trade Tracking",
                         tag: "Performance Analysis",
