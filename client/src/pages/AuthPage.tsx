@@ -2845,6 +2845,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       {ROLES.find((r) => r.value === form.watch("role"))
                         ?.label || "Founder"}
                     </p>
+                    <p className="text-white/40 text-[10px]">
+                      {form.watch("industry") || ""}
+                    </p>
                     <p className="text-white/40 text-[10px] italic">
                       {form.watch("bio") || ""}
                     </p>
