@@ -3239,14 +3239,38 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         placeholder="https://your-portal.com"
                       />
                     </div>
-                    <button
-                      type="button"
-                      disabled={!form.watch("name") || !form.watch("role")}
-                      onClick={() => setMode("customize")}
-                      className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Next <ArrowRight className="w-4 h-4" />
-                    </button>
+                    <div className="flex gap-2 mt-4">
+                      <button
+                        type="button"
+                        disabled={!form.watch("name") || !form.watch("role")}
+                        onClick={() => setMode("customize")}
+                        className="flex-1 bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Next <ArrowRight className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          form.reset({
+                            password: "",
+                            name: "",
+                            role: "founder",
+                            bio: "",
+                            instagram: "",
+                            linkedin: "",
+                            whatsapp: "",
+                            website: "",
+                            cards: [],
+                            email: "",
+                          });
+                          setSelectedCards([]);
+                          setMode("login");
+                        }}
+                        className="bg-white/10 hover:bg-white/20 text-white rounded-lg py-3 px-3 font-bold text-sm flex items-center justify-center transition-all border border-white/20"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
                   </form>
                 ) : mode === "customize" ? (
                   <div className="space-y-4">
