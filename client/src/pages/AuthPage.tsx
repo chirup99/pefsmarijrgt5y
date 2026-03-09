@@ -2983,9 +2983,14 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         {(() => {
                           const whatsapp = form.watch("whatsapp");
                           const hasWhatsapp = !!whatsapp && whatsapp.trim() !== "" && whatsapp !== "#";
+                          const whatsappUrl = hasWhatsapp 
+                            ? (whatsapp.includes("http") || whatsapp.includes("wa.me")
+                                ? whatsapp 
+                                : `https://wa.me/${whatsappCountryCode}${whatsapp.replace(/\D/g, "")}`)
+                            : undefined;
                           return (
                             <a
-                              href={hasWhatsapp ? whatsapp : undefined}
+                              href={whatsappUrl}
                               target={hasWhatsapp ? "_blank" : undefined}
                               rel={hasWhatsapp ? "noreferrer" : undefined}
                               onClick={(e) => {
