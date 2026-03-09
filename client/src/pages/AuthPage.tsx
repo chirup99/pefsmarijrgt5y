@@ -2651,7 +2651,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 <div className="flex items-center justify-between p-6 pb-4">
                   <div className="flex flex-col gap-1">
                     <h3 className="text-lg font-bold text-white">Exclusive Traders Circle</h3>
-                    <p className="text-[10px] text-white/40 uppercase tracking-wider">Premium & Differentiated Features</p>
+                    <p className="text-[10px] text-white/40 uppercase tracking-wider">Master Your Trading Cards</p>
                   </div>
                   <button
                     onClick={() => setShowTradersModal(false)}
@@ -2707,7 +2707,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
                             loop
                             muted
                             playsInline
-                            preload="auto"
+                            preload="metadata"
+                            poster={card.image}
+                            style={{ background: card.image }}
                           >
                             <source src={card.video} type="video/mp4" />
                           </video>
