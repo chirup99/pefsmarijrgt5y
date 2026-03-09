@@ -2719,7 +2719,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                             loop
                             muted
                             playsInline
-                            preload="auto"
+                            preload="metadata"
                             poster={card.image}
                             style={{ background: card.image }}
                           >
@@ -2755,13 +2755,20 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     transition={{ duration: 0.4 }}
                     className="flex flex-col items-center gap-4 pt-6"
                   >
-                    <img
-                      src={logoImg}
-                      alt="Perala"
-                      className="w-16 h-16 object-contain"
-                    />
+                    <a
+                      href="https://perala.in"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="group cursor-pointer"
+                    >
+                      <img
+                        src={logoImg}
+                        alt="Perala"
+                        className="w-32 h-32 object-contain group-hover:scale-110 transition-transform duration-300"
+                      />
+                    </a>
                     <div className="text-center space-y-3">
-                      <h3 className="text-lg font-bold text-white">
+                      <h3 className="text-xl font-bold text-white tracking-tight">
                         Get Early Access
                       </h3>
                       <p className="text-[12px] text-white/70 max-w-xs">
