@@ -1309,13 +1309,15 @@ export default function AuthPage({ slug }: { slug?: string }) {
   // This ensures that as soon as the useQuery finishes, it takes precedence
   const loggedInUser = authUser || localUser;
   const [publicUser, setPublicUser] = useState<any>(null);
+  const [lastLoadedSlug, setLastLoadedSlug] = useState<string | null>(null);
 
   const user = slug ? publicUser : loggedInUser;
   const isOtherPersona =
     slug && loggedInUser && loggedInUser.uniqueSlug !== slug;
 
   useEffect(() => {
-    if (slug && (!publicUser || publicUser.uniqueSlug !== slug)) {
+    // Only fetch if the slug changed to a new slug we haven't loaded yet
+    if (slug && lastLoadedSlug !== slug) {
       const isSelf = loggedInUser?.uniqueSlug === slug;
       fetch(`/api/user/slug/${slug}${isSelf ? "?self=true" : ""}`)
         .then((res) => res.json())
@@ -1323,6 +1325,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
           if (data.id) {
             setPublicUser(data);
             setMode("login");
+            setLastLoadedSlug(slug);
             // If viewing a public profile, update form to show its data
             Object.entries(data).forEach(([key, value]) => {
               if (value !== null && value !== undefined && key !== "password") {
@@ -1340,7 +1343,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
         setLocation(`/${user.uniqueSlug}`);
       }
     }
-  }, [slug, user, setLocation, publicUser]);
+  }, [slug, setLocation, loggedInUser, lastLoadedSlug]);
 
   const trackClick = async (
     type: "insta" | "linkedin" | "whatsapp" | "portal",
