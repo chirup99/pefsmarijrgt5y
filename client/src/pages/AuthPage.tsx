@@ -2648,33 +2648,33 @@ export default function AuthPage({ slug }: { slug?: string }) {
                   <div className="flex gap-4">
                     {[
                       {
-                        title: "Dine in Style",
-                        subtitle: "Restaurant Network",
-                        tag: "Lifestyle",
+                        title: "Trading Community",
+                        subtitle: "Connect with Traders",
+                        tag: "Community",
                         image: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)",
                       },
                       {
-                        title: "Tech Summit",
-                        subtitle: "Innovation Hub",
-                        tag: "Tech",
+                        title: "Traders Social Media",
+                        subtitle: "Share & Network",
+                        tag: "Social",
                         image: "linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)",
                       },
                       {
-                        title: "Trading Floor",
-                        subtitle: "Financial Network",
-                        tag: "Finance",
+                        title: "Trading Journal",
+                        subtitle: "Track Your Trades",
+                        tag: "Journal",
                         image: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
                       },
                       {
-                        title: "Creative Studio",
-                        subtitle: "Designer Community",
-                        tag: "Creative",
+                        title: "AI Over Trading Tracker",
+                        subtitle: "Smart Trade Analysis",
+                        tag: "AI Analytics",
                         image: "linear-gradient(135deg, #d97706 0%, #f59e0b 100%)",
                       },
                       {
-                        title: "Startup Labs",
-                        subtitle: "Entrepreneur Hub",
-                        tag: "Startup",
+                        title: "Trading Loss Analysis",
+                        subtitle: "Learn from Losses",
+                        tag: "Analysis",
                         image: "linear-gradient(135deg, #dc2626 0%, #ef4444 100%)",
                       },
                     ].map((card, idx) => (
