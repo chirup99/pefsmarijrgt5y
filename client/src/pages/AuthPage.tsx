@@ -49,7 +49,6 @@ import { useLogin, useRegister, useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
 import { SiInstagram, SiWhatsapp } from "react-icons/si";
-import peralaLogo from "@/assets/logo.png";
 import avatarWoman from "@assets/image_1772649645691.png";
 import avatarMan from "@assets/image_1772649703230.png";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -2483,28 +2482,6 @@ export default function AuthPage({ slug }: { slug?: string }) {
               </span>
             </button>
           )}
-
-          <div className="pt-4 mt-auto">
-            <div className="text-right space-y-2 max-w-[200px] ml-auto">
-              <p className="text-white/40 text-[8px] leading-relaxed uppercase tracking-widest text-center">
-                copyright : persona UI/UX is inspired by
-              </p>
-              <div className="space-y-2">
-                <a
-                  href="https://perala.in"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block group"
-                >
-                  <img
-                    src={peralaLogo}
-                    alt="Perala"
-                    className="w-full h-auto opacity-80 group-hover:opacity-100 transition-opacity rounded-lg"
-                  />
-                </a>
-              </div>
-            </div>
-          </div>
         </motion.div>
       </div>
       <motion.div
