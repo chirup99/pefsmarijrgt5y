@@ -487,7 +487,7 @@ const SwipeCardContent = forwardRef(({
           </div>
 
           {card.type !== "product" && (
-            <div className="w-full space-y-3">
+            <div className="w-full">
               <button
                 type="button"
                 onClick={(e) => {
@@ -512,10 +512,6 @@ const SwipeCardContent = forwardRef(({
                   </>
                 )}
               </button>
-              <div className="flex items-center justify-between text-white/40 text-[9px] uppercase tracking-wider font-bold px-2">
-                <span>← Left Swipe</span>
-                <span>Right Swipe →</span>
-              </div>
             </div>
           )}
         </div>
@@ -3487,6 +3483,13 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 </span>
               </div>
             </div>
+
+            {(mode === "login" || mode === "swipe") && (
+              <div className="flex items-center justify-between text-white/40 text-[10px] uppercase tracking-wider font-bold px-4 mt-3">
+                <span>← Left Swipe</span>
+                <span>Right Swipe →</span>
+              </div>
+            )}
 
             {isOtherPersona ? (
               <button
