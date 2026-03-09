@@ -2669,35 +2669,35 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         subtitle: "VIP Community Access",
                         tag: "Premium",
                         image: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)",
-                        video: "/1.MOV",
+                        video: "/1.mp4",
                       },
                       {
                         title: "Private Trade Forum",
                         subtitle: "Curated Discussion Space",
                         tag: "Exclusive",
                         image: "linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)",
-                        video: "/2.MOV",
+                        video: "/2.mp4",
                       },
                       {
                         title: "Performance Vault",
                         subtitle: "Track & Analyze in Private",
                         tag: "Private",
                         image: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
-                        video: "/3.MOV",
+                        video: "/3.mp4",
                       },
                       {
                         title: "AI Intelligence Hub",
                         subtitle: "Advanced Market Analytics",
                         tag: "Exclusive AI",
                         image: "linear-gradient(135deg, #d97706 0%, #f59e0b 100%)",
-                        video: "/4.MOV",
+                        video: "/4.mp4",
                       },
                       {
                         title: "Insights Archive",
                         subtitle: "Learning Library & Reports",
                         tag: "Premium Access",
                         image: "linear-gradient(135deg, #dc2626 0%, #ef4444 100%)",
-                        video: "/5.MOV",
+                        video: "/5.mp4",
                       },
                     ].map((card, idx) => (
                       <motion.div
@@ -2714,8 +2714,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
                             loop
                             muted
                             playsInline
+                            preload="auto"
                           >
-                            <source src={card.video} type="video/quicktime" />
+                            <source src={card.video} type="video/mp4" />
                           </video>
                         ) : (
                           <div
