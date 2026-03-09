@@ -2705,7 +2705,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.1 }}
-                        className="flex-shrink-0 w-48 h-32 rounded-2xl overflow-hidden cursor-pointer group relative"
+                        className="flex-shrink-0 w-48 h-56 rounded-2xl overflow-hidden cursor-pointer group relative"
                       >
                         {card.video ? (
                           <video
