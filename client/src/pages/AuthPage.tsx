@@ -3,7 +3,7 @@ import * as htmlToImage from "html-to-image";
 import { BrowserMultiFormatReader } from "@zxing/library";
 
 // ... existing imports
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, forwardRef } from "react";
 import { useLocation } from "wouter";
 import {
   Infinity as InfinityIcon,
@@ -246,12 +246,12 @@ const TrendLine = () => (
   </div>
 );
 
-const SwipeCardContent = ({
+const SwipeCardContent = forwardRef(({
   card,
   currentIndex,
   onSwipeLeft,
   onSwipeRight,
-}: SwipeCardProps) => {
+}: SwipeCardProps, ref) => {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-30, 30]);
   const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
@@ -344,6 +344,7 @@ const SwipeCardContent = ({
 
   return (
     <motion.div
+      ref={ref}
       key={currentIndex}
       style={{ x, rotate, opacity }}
       drag="x"
@@ -552,7 +553,9 @@ const SwipeCardContent = ({
       <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
     </motion.div>
   );
-};
+});
+
+SwipeCardContent.displayName = "SwipeCardContent";
 
 const SwipeCard = ({
   cards,
@@ -2814,7 +2817,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
               </button>
               <motion.div
                 layoutId="activeTab"
-                className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white/20 rounded-md shadow-sm"
+                className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white/20 rounded-md shadow-sm pointer-events-none"
                 animate={{ left: mode === "swipe" ? "calc(50%)" : "4px" }}
               />
             </div>
