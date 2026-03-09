@@ -472,25 +472,6 @@ const SwipeCardContent = forwardRef(({
                   </h3>
                 </div>
               )
-            ) : card.type === "product" ? (
-              (card as any).imageUrl ? (
-                <div className="w-full aspect-square rounded-xl overflow-hidden shadow-lg border border-white/10 mb-4">
-                  <img
-                    src={(card as any).imageUrl}
-                    className="w-full h-full object-cover"
-                    alt={card.name}
-                  />
-                </div>
-              ) : (
-                <div className="text-center space-y-0.5">
-                  <h3 className="text-white text-2xl font-bold leading-tight">
-                    {card.name}
-                  </h3>
-                  <h3 className="text-white text-sm opacity-60 font-medium leading-tight line-clamp-2 px-2">
-                    {card.subname}
-                  </h3>
-                </div>
-              )
             ) : card.type === "revenue" || card.type === "traction" ? (
               <div className="w-full flex flex-col items-center">
                 <div className="text-center space-y-0.5 mb-2">
@@ -571,12 +552,23 @@ const SwipeCard = ({
           const card = JSON.parse(c);
           if (!card || !card.type) return CARDS[0];
           const typeInfo = CARD_TYPES.find((t) => t.type === card.type);
+          
+          // Set name field based on card type
+          let name = card.title || "Untitled";
+          if (card.type === "revenue" || card.type === "traction") {
+            name = card.value || card.title || "Growth";
+          } else if (card.type === "reel") {
+            name = card.title || "Video";
+          } else if (card.type === "product") {
+            name = card.title || "Product";
+          }
+          
           return {
             ...card,
             type: card.type,
             title: card.title || "Untitled",
-            name: card.title || card.type.toUpperCase(),
-            subname: card.value || card.url || "Persona",
+            name: name,
+            subname: card.url || "Persona",
             thumbnailUrl:
               card.type === "reel" ? getThumbnailUrl(card.url) : null,
             color: typeInfo?.color || "from-gray-700 to-gray-800",
