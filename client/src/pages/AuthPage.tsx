@@ -1413,17 +1413,23 @@ export default function AuthPage({ slug }: { slug?: string }) {
     }
   };
 
-  const [selectedCards, setSelectedCards] = useState<string[]>(
-    user?.cards || [],
-  );
+  const [selectedCards, setSelectedCards] = useState<string[]>(() => {
+    // Get initial cards from the current user being viewed
+    const currentUser = slug ? null : loggedInUser;
+    return currentUser?.cards || [];
+  });
 
   useEffect(() => {
-    if (publicUser) {
-      setSelectedCards(publicUser.cards || []);
-    } else if (user) {
-      setSelectedCards(user.cards || []);
+    // Sync selectedCards whenever user data changes
+    if (publicUser?.cards) {
+      setSelectedCards(publicUser.cards);
+    } else if (user?.cards) {
+      setSelectedCards(user.cards);
+    } else if (!user?.cards && user) {
+      // If user exists but has no cards, set empty array
+      setSelectedCards([]);
     }
-  }, [publicUser, user]);
+  }, [publicUser?.cards, user?.cards, publicUser, user]);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditingPin, setIsEditingPin] = useState(false);
