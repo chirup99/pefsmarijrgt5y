@@ -57,6 +57,29 @@ import { useMutation } from "@tanstack/react-query";
 
 type AuthMode = "login" | "register" | "customize" | "swipe";
 
+const COUNTRY_CODES = [
+  { code: "+91", country: "India", flag: "🇮🇳" },
+  { code: "+1", country: "USA/Canada", flag: "🇺🇸" },
+  { code: "+44", country: "UK", flag: "🇬🇧" },
+  { code: "+61", country: "Australia", flag: "🇦🇺" },
+  { code: "+81", country: "Japan", flag: "🇯🇵" },
+  { code: "+86", country: "China", flag: "🇨🇳" },
+  { code: "+33", country: "France", flag: "🇫🇷" },
+  { code: "+49", country: "Germany", flag: "🇩🇪" },
+  { code: "+39", country: "Italy", flag: "🇮🇹" },
+  { code: "+34", country: "Spain", flag: "🇪🇸" },
+  { code: "+31", country: "Netherlands", flag: "🇳🇱" },
+  { code: "+46", country: "Sweden", flag: "🇸🇪" },
+  { code: "+47", country: "Norway", flag: "🇳🇴" },
+  { code: "+41", country: "Switzerland", flag: "🇨🇭" },
+  { code: "+43", country: "Austria", flag: "🇦🇹" },
+  { code: "+55", country: "Brazil", flag: "🇧🇷" },
+  { code: "+234", country: "Nigeria", flag: "🇳🇬" },
+  { code: "+27", country: "South Africa", flag: "🇿🇦" },
+  { code: "+65", country: "Singapore", flag: "🇸🇬" },
+  { code: "+60", country: "Malaysia", flag: "🇲🇾" },
+];
+
 const CARD_TYPES = [
   {
     type: "reel",
@@ -1259,6 +1282,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [location, setLocation] = useLocation();
   const { toast } = useToast();
   const [mode, setMode] = useState<AuthMode>("login");
+  const [whatsappCountryCode, setWhatsappCountryCode] = useState("+91");
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const { user: authUser, isLoading: isAuthLoading } = useAuth();
   const [localUser, setLocalUser] = useState<any>(() => {
     const saved = localStorage.getItem("persona_user");
@@ -3362,11 +3387,66 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
                           WhatsApp
                         </label>
-                        <input
-                          {...form.register("whatsapp")}
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
-                          placeholder="Number"
-                        />
+                        <div className="relative">
+                          <div className="flex gap-2">
+                            <div className="relative">
+                              <button
+                                type="button"
+                                onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+                                className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white flex items-center gap-2 hover:bg-white/10 transition-colors"
+                              >
+                                {COUNTRY_CODES.find(c => c.code === whatsappCountryCode)?.flag}
+                                <span className="text-xs font-semibold">{whatsappCountryCode}</span>
+                                <ChevronDown className="w-3 h-3 text-white/40" />
+                              </button>
+                              {showCountryDropdown && (
+                                <motion.div
+                                  initial={{ opacity: 0, y: -4 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  className="absolute top-full mt-2 left-0 bg-black/95 border border-white/10 rounded-lg shadow-2xl z-20 max-h-48 overflow-y-auto w-48"
+                                >
+                                  {COUNTRY_CODES.map((country) => (
+                                    <button
+                                      key={country.code}
+                                      type="button"
+                                      onClick={() => {
+                                        setWhatsappCountryCode(country.code);
+                                        setShowCountryDropdown(false);
+                                      }}
+                                      className={clsx(
+                                        "w-full text-left px-4 py-2.5 text-xs flex items-center gap-2 transition-colors",
+                                        whatsappCountryCode === country.code
+                                          ? "bg-white/10 text-white"
+                                          : "text-white/70 hover:bg-white/5 hover:text-white"
+                                      )}
+                                    >
+                                      <span className="text-sm">{country.flag}</span>
+                                      <span className="font-semibold">{country.code}</span>
+                                      <span className="text-white/40 text-[10px]">{country.country}</span>
+                                    </button>
+                                  ))}
+                                </motion.div>
+                              )}
+                            </div>
+                            <input
+                              {...form.register("whatsapp")}
+                              className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30"
+                              placeholder={form.watch("whatsapp")?.toString().includes("http") ? "Paste community URL" : "Phone number"}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                const isUrl = value.includes("http") || value.includes("whatsapp");
+                                if (isUrl && showCountryDropdown) {
+                                  setShowCountryDropdown(false);
+                                }
+                              }}
+                            />
+                          </div>
+                          {form.watch("whatsapp") && !form.watch("whatsapp").toString().includes("http") && (
+                            <p className="text-[9px] text-emerald-400/70 mt-1 ml-1">
+                              Will direct to: wa.me/{whatsappCountryCode}{form.watch("whatsapp")?.toString().replace(/\D/g, '')}
+                            </p>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-1">
