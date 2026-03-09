@@ -1360,8 +1360,12 @@ export default function AuthPage({ slug }: { slug?: string }) {
     try {
       console.log("Submitting values:", values, "Mode:", mode);
       let result;
-      if (user?.id) {
-        // If logged in, overwrite data
+      const isRegistering = mode === "register";
+      const isCustomizing = mode === "customize";
+      const isUpdatingProfile = loggedInUser?.id && !slug;
+      
+      if (isUpdatingProfile) {
+        // If logged in and viewing own profile, update data
         const { id, password, createdAt, uniqueSlug, ...updateData } =
           values as any;
         const payload = {
@@ -1369,10 +1373,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
           cards: selectedCards,
         };
         result = await updateProfileMutation.mutateAsync(payload);
-        setMode("login");
       } else if (mode === "login") {
         result = await loginMutation.mutateAsync(values);
-      } else if (mode === "register" || mode === "customize") {
+      } else if (isRegistering || isCustomizing) {
         const payload = {
           ...values,
           cards: selectedCards,
@@ -1386,21 +1389,24 @@ export default function AuthPage({ slug }: { slug?: string }) {
         localStorage.setItem("persona_user", JSON.stringify(result));
         localStorage.setItem("persona_user_id", result.id);
 
-        // Ensure we stay on Persona tab after update
-        setMode("login");
-
-        // If it's a new registration or missing pin, show the QR/Pin flow
-        if (mode === "register" || !result.pin) {
+        // If it's a new registration or missing pin, show the PIN setup dialog
+        if (isRegistering || (isCustomizing && !result.pin)) {
           setShowHomeDialog(true);
-        } else if (result.uniqueSlug && mode === "customize") {
-          // If we were in customize mode and now have a pin, show QR
+          setMode("login");
+        } else if (result.uniqueSlug && isCustomizing && result.pin) {
+          // If we were in customize mode and have a pin, show QR
           setShowQRDialog(true);
+          setMode("login");
           // Also redirect to the profile after a short delay or when they close
           setTimeout(() => {
             setLocation(`/${result.uniqueSlug}`);
           }, 500);
-        } else if (result.uniqueSlug) {
-          setLocation(`/${result.uniqueSlug}`);
+        } else {
+          // For updates or login
+          setMode("login");
+          if (result.uniqueSlug && (isRegistering || isCustomizing)) {
+            setLocation(`/${result.uniqueSlug}`);
+          }
         }
       }
     } catch (err: any) {
