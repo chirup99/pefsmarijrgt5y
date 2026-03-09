@@ -3384,49 +3384,60 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         </label>
                         <div className="relative">
                           <div className="flex gap-2">
-                            <div className="relative">
-                              <button
-                                type="button"
-                                onClick={() => setShowCountryDropdown(!showCountryDropdown)}
-                                className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white flex items-center gap-2 hover:bg-white/10 transition-colors"
-                              >
-                                {COUNTRY_CODES.find(c => c.code === whatsappCountryCode)?.flag}
-                                <span className="text-xs font-semibold">{whatsappCountryCode}</span>
-                                <ChevronDown className="w-3 h-3 text-white/40" />
-                              </button>
-                              {showCountryDropdown && (
-                                <motion.div
-                                  initial={{ opacity: 0, y: -4 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  className="absolute top-full mt-2 left-0 bg-black/95 border border-white/10 rounded-lg shadow-2xl z-20 max-h-48 overflow-y-auto w-48"
-                                >
-                                  {COUNTRY_CODES.map((country) => (
-                                    <button
-                                      key={country.code}
-                                      type="button"
-                                      onClick={() => {
-                                        setWhatsappCountryCode(country.code);
-                                        setShowCountryDropdown(false);
-                                      }}
-                                      className={clsx(
-                                        "w-full text-left px-4 py-2.5 text-xs flex items-center gap-2 transition-colors",
-                                        whatsappCountryCode === country.code
-                                          ? "bg-white/10 text-white"
-                                          : "text-white/70 hover:bg-white/5 hover:text-white"
-                                      )}
+                            {(() => {
+                              const whatsappValue = form.watch("whatsapp")?.toString() || "";
+                              const isUrl = whatsappValue.includes("http") || whatsappValue.includes("whatsapp");
+                              // Only show country dropdown if it's NOT a URL AND (it's empty OR contains a number)
+                              const shouldShowCountry = !isUrl && (whatsappValue === "" || /\d/.test(whatsappValue));
+                              
+                              if (!shouldShowCountry) return null;
+                              
+                              return (
+                                <div className="relative">
+                                  <button
+                                    type="button"
+                                    onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+                                    className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white flex items-center gap-2 hover:bg-white/10 transition-colors"
+                                  >
+                                    {COUNTRY_CODES.find(c => c.code === whatsappCountryCode)?.flag}
+                                    <span className="text-xs font-semibold">{whatsappCountryCode}</span>
+                                    <ChevronDown className="w-3 h-3 text-white/40" />
+                                  </button>
+                                  {showCountryDropdown && (
+                                    <motion.div
+                                      initial={{ opacity: 0, y: -4 }}
+                                      animate={{ opacity: 1, y: 0 }}
+                                      className="absolute top-full mt-2 left-0 bg-black/95 border border-white/10 rounded-lg shadow-2xl z-20 max-h-48 overflow-y-auto w-48"
                                     >
-                                      <span className="text-sm">{country.flag}</span>
-                                      <span className="font-semibold">{country.code}</span>
-                                      <span className="text-white/40 text-[10px]">{country.country}</span>
-                                    </button>
-                                  ))}
-                                </motion.div>
-                              )}
-                            </div>
+                                      {COUNTRY_CODES.map((country) => (
+                                        <button
+                                          key={country.code}
+                                          type="button"
+                                          onClick={() => {
+                                            setWhatsappCountryCode(country.code);
+                                            setShowCountryDropdown(false);
+                                          }}
+                                          className={clsx(
+                                            "w-full text-left px-4 py-2.5 text-xs flex items-center gap-2 transition-colors",
+                                            whatsappCountryCode === country.code
+                                              ? "bg-white/10 text-white"
+                                              : "text-white/70 hover:bg-white/5 hover:text-white"
+                                          )}
+                                        >
+                                          <span className="text-sm">{country.flag}</span>
+                                          <span className="font-semibold">{country.code}</span>
+                                          <span className="text-white/40 text-[10px]">{country.country}</span>
+                                        </button>
+                                      ))}
+                                    </motion.div>
+                                  )}
+                                </div>
+                              );
+                            })()}
                             <input
                               {...form.register("whatsapp")}
                               className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30"
-                              placeholder={form.watch("whatsapp")?.toString().includes("http") ? "Paste community URL" : "Phone number"}
+                              placeholder="Phone number / WB community URL"
                               onChange={(e) => {
                                 const value = e.target.value;
                                 const isUrl = value.includes("http") || value.includes("whatsapp");
