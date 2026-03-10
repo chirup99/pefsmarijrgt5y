@@ -1704,6 +1704,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
     },
   });
 
+  const [displaySlug, setDisplaySlug] = useState<string>("");
+
   const updateSlugMutation = useMutation({
     mutationFn: async (newSlug: string) => {
       const res = await apiRequest("PATCH", "/api/user/slug", {
@@ -1715,6 +1717,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
     onSuccess: (updatedUser) => {
       queryClient.setQueryData(["/api/user"], updatedUser);
       setIsEditingSlug(false);
+      setDisplaySlug(updatedUser.uniqueSlug);
       toast({
         title: "Success",
         description: "Persona code updated successfully",
@@ -1746,6 +1749,13 @@ export default function AuthPage({ slug }: { slug?: string }) {
     { id: string; text: string; completed: boolean; expiresAt: string }[]
   >([]);
   const [newNote, setNewNote] = useState("");
+
+  // Sync displaySlug with user whenever user changes
+  useEffect(() => {
+    if (user?.uniqueSlug && !displaySlug) {
+      setDisplaySlug(user.uniqueSlug);
+    }
+  }, [user?.uniqueSlug, displaySlug]);
 
   // Sync notes from user object
   useEffect(() => {
@@ -4209,7 +4219,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
                           value={
                             window.location.origin +
                             "/" +
-                            (user?.uniqueSlug ||
+                            (displaySlug ||
+                              user?.uniqueSlug ||
                               window.location.pathname.split("/")[1] ||
                               "")
                           }
@@ -4226,7 +4237,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                           Scan to Connect
                         </p>
                         <p className="text-[10px] font-mono font-bold text-white/70 tracking-[0.2em] uppercase">
-                          Code: {user?.uniqueSlug}
+                          Code: {displaySlug || user?.uniqueSlug}
                         </p>
                       </div>
                     </div>
