@@ -2834,13 +2834,16 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       href="https://perala.in"
                       target="_blank"
                       rel="noreferrer"
-                      className="group cursor-pointer"
+                      className="group cursor-pointer bg-[#1a1a1a] hover:bg-[#252525] border border-white/5 rounded-2xl px-6 py-4 flex items-center gap-3 transition-all duration-300 shadow-xl"
                     >
                       <img
                         src={logoImg}
                         alt="Perala"
-                        className="w-32 h-32 object-contain group-hover:scale-110 transition-transform duration-300"
+                        className="w-8 h-8 object-contain group-hover:scale-110 transition-transform duration-300"
                       />
+                      <span className="text-white font-bold tracking-wider uppercase text-sm">
+                        My Persona
+                      </span>
                     </a>
                     <div className="text-center space-y-3">
                       <h3 className="text-xl font-bold text-white tracking-tight">
