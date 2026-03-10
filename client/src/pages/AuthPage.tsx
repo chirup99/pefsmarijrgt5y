@@ -915,16 +915,45 @@ const MiniCard = ({
                   onChange={async (e) => {
                     const file = e.target.files?.[0];
                     if (file) {
-                      const reader = new FileReader();
-                      reader.onloadend = () => {
+                      // Compress image before storing
+                      const canvas = document.createElement("canvas");
+                      const ctx = canvas.getContext("2d");
+                      const img = new Image();
+                      
+                      img.onload = () => {
+                        // Set max dimensions
+                        const maxWidth = 800;
+                        const maxHeight = 600;
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        if (width > height) {
+                          if (width > maxWidth) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                          }
+                        } else {
+                          if (height > maxHeight) {
+                            width = Math.round((width * maxHeight) / height);
+                            height = maxHeight;
+                          }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx?.drawImage(img, 0, 0, width, height);
+                        
+                        // Convert to WebP with quality 0.7 for better compression
+                        const compressedData = canvas.toDataURL("image/webp", 0.7);
                         onUpdate(
                           JSON.stringify({
                             ...card,
-                            imageUrl: reader.result as string,
+                            imageUrl: compressedData,
                           }),
                         );
                       };
-                      reader.readAsDataURL(file);
+                      
+                      img.src = URL.createObjectURL(file);
                     }
                   }}
                 />
