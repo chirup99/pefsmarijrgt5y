@@ -2834,7 +2834,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       href="https://perala.in"
                       target="_blank"
                       rel="noreferrer"
-                      className="group cursor-pointer bg-[#1a1a1a] hover:bg-[#252525] border border-white/5 rounded-2xl p-4 flex items-center justify-center transition-all duration-300 shadow-xl w-32 h-32"
+                      className="group cursor-pointer flex items-center justify-center transition-all duration-300 w-32 h-32"
                     >
                       <img
                         src={logoImg}
