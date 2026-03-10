@@ -1589,6 +1589,16 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [isTradersExpanded, setIsTradersExpanded] = useState(false);
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
   const [showTradersModal, setShowTradersModal] = useState(false);
+  const [isMobile, setIsMobile] = useState(typeof window !== "undefined" ? window.innerWidth < 768 : false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -2741,7 +2751,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
         </AnimatePresence>
 
         <AnimatePresence>
-          {isScrolledToBottom && (
+          {(!isMobile || isScrolledToBottom) && (
             <motion.div
               ref={tradersRef}
               initial={{ opacity: 0, scale: 0.5, x: -20 }}
