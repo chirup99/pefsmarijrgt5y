@@ -1526,7 +1526,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
       return res.json();
     },
     onSuccess: (updatedUser) => {
-      queryClient.setQueryData(["/api/user"], updatedUser);
+      queryClient.setQueryData(["/api/me"], updatedUser);
       toast({
         title: "Success",
         description: "PIN updated successfully",
@@ -1725,7 +1725,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
       return res.json();
     },
     onSuccess: (updatedUser) => {
-      queryClient.setQueryData(["/api/user"], updatedUser);
+      queryClient.setQueryData(["/api/me"], updatedUser);
       setIsEditingSlug(false);
       setDisplaySlug(updatedUser.uniqueSlug);
       toast({
