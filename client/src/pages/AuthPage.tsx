@@ -3725,52 +3725,71 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         ) : (
                           <div className="h-full border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center p-4">
                             <div className="grid grid-cols-2 gap-2 w-full">
-                              {CARD_TYPES.map((t) => (
-                                <button
-                                  key={t.type}
-                                  type="button"
-                                  onClick={() => {
-                                    const currentCards = [...selectedCards];
-                                    const newCard =
-                                      t.type === "reel"
-                                        ? {
-                                            type: "reel",
-                                            title: "New Reel",
-                                            url: "",
-                                          }
-                                        : t.type === "revenue"
+                              {CARD_TYPES.map((t) => {
+                                const productCount = selectedCards.filter((c) => {
+                                  try {
+                                    const parsed = JSON.parse(c);
+                                    return parsed.type === "product";
+                                  } catch {
+                                    return false;
+                                  }
+                                }).length;
+                                const isProductDisabled =
+                                  t.type === "product" && productCount >= 2;
+
+                                return (
+                                  <button
+                                    key={t.type}
+                                    type="button"
+                                    disabled={isProductDisabled}
+                                    onClick={() => {
+                                      const currentCards = [...selectedCards];
+                                      const newCard =
+                                        t.type === "reel"
                                           ? {
-                                              type: "revenue",
-                                              title: "Monthly Sales",
-                                              value: "$0",
-                                              revenue: "",
-                                              imageUrl: "",
+                                              type: "reel",
+                                              title: "New Reel",
+                                              url: "",
                                             }
-                                          : t.type === "traction"
+                                          : t.type === "revenue"
                                             ? {
-                                                type: "traction",
-                                                title: "Traction",
-                                                value: "0",
-                                                traction: "",
+                                                type: "revenue",
+                                                title: "Monthly Sales",
+                                                value: "$0",
+                                                revenue: "",
                                                 imageUrl: "",
                                               }
-                                            : {
-                                                type: "product",
-                                                title: "Product",
-                                                imageUrl: "",
-                                                traction: "",
-                                              };
-                                    currentCards[idx] = JSON.stringify(newCard);
-                                    setSelectedCards(currentCards);
-                                  }}
-                                  className="flex flex-col items-center gap-1 p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all"
-                                >
-                                  <t.icon className="w-5 h-5 text-white/60" />
-                                  <span className="text-[8px] text-white/40 uppercase font-bold">
-                                    {t.label}
-                                  </span>
-                                </button>
-                              ))}
+                                            : t.type === "traction"
+                                              ? {
+                                                  type: "traction",
+                                                  title: "Traction",
+                                                  value: "0",
+                                                  traction: "",
+                                                  imageUrl: "",
+                                                }
+                                              : {
+                                                  type: "product",
+                                                  title: "Product",
+                                                  imageUrl: "",
+                                                  traction: "",
+                                                };
+                                      currentCards[idx] = JSON.stringify(newCard);
+                                      setSelectedCards(currentCards);
+                                    }}
+                                    className={clsx(
+                                      "flex flex-col items-center gap-1 p-2 rounded-xl transition-all",
+                                      isProductDisabled
+                                        ? "bg-white/5 opacity-20 cursor-not-allowed"
+                                        : "bg-white/5 hover:bg-white/10",
+                                    )}
+                                  >
+                                    <t.icon className="w-5 h-5 text-white/60" />
+                                    <span className="text-[8px] text-white/40 uppercase font-bold">
+                                      {t.label}
+                                    </span>
+                                  </button>
+                                );
+                              })}
                             </div>
                           </div>
                         )}
