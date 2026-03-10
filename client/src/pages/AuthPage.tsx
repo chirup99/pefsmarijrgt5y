@@ -579,12 +579,24 @@ const SwipeCard = ({
             name = card.title || "Product";
           }
 
+          // Determine subname based on card type
+          let subname = "";
+          if (card.type === "reel") {
+            subname = card.url || "";
+          } else if (card.type === "revenue") {
+            subname = card.revenue || "Sales";
+          } else if (card.type === "traction") {
+            subname = card.traction || "Growth";
+          } else {
+            subname = card.url || "Persona";
+          }
+
           return {
             ...card,
             type: card.type,
             title: card.title || "Untitled",
             name: name,
-            subname: card.url || "Persona",
+            subname: subname,
             thumbnailUrl:
               card.type === "reel" ? getThumbnailUrl(card.url) : null,
             color: typeInfo?.color || "from-gray-700 to-gray-800",
