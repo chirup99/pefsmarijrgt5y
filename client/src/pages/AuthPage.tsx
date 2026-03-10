@@ -1300,11 +1300,32 @@ export default function AuthPage({ slug }: { slug?: string }) {
   const [publicUser, setPublicUser] = useState<any>(null);
   const [lastLoadedSlug, setLastLoadedSlug] = useState<string | null>(null);
 
+  // When viewing another persona, we want to make sure registration starts fresh
+  // unless we are explicitly trying to "claim" or "edit" that persona (which requires PIN)
   const user = slug ? publicUser : loggedInUser;
   const isOtherPersona =
     slug && loggedInUser && loggedInUser.uniqueSlug !== slug;
 
   useEffect(() => {
+    // If we are switching from viewing a persona to the root path,
+    // and we are NOT logged in, we should clear the public user and form
+    if (!slug && !authUser && publicUser) {
+      setPublicUser(null);
+      setLastLoadedSlug(null);
+      form.reset({
+        email: "",
+        name: "",
+        role: "founder",
+        bio: "",
+        instagram: "",
+        linkedin: "",
+        whatsapp: "",
+        website: "",
+        cards: [],
+      });
+      setSelectedCards([]);
+    }
+
     // Only fetch if the slug changed to a new slug we haven't loaded yet
     if (slug && lastLoadedSlug !== slug) {
       const isSelf = loggedInUser?.uniqueSlug === slug;
@@ -3682,6 +3703,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
                 onClick={() => {
                   if (mode === "login") {
                     setMode("register");
+                    setPublicUser(null);
+                    setLastLoadedSlug(null);
                     form.reset({
                       password: "",
                       name: "",
@@ -3695,6 +3718,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       email: "",
                     });
                     setSelectedCards([]);
+                    setLocation("/");
                   } else {
                     setMode("login");
                   }
