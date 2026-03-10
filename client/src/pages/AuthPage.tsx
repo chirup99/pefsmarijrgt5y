@@ -1387,9 +1387,9 @@ export default function AuthPage({ slug }: { slug?: string }) {
     try {
       console.log("Submitting values:", values, "Mode:", mode);
       let result;
-      const isRegistering = mode === "register";
+      const isRegistering = mode === "register" && !loggedInUser;
       const isCustomizing = mode === "customize";
-      const isUpdatingProfile = loggedInUser?.id && !slug;
+      const isUpdatingProfile = !!loggedInUser?.id;
 
       if (isUpdatingProfile) {
         // If logged in and viewing own profile, update data
@@ -1426,7 +1426,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
         if (isRegistering || (isCustomizing && !result.pin && !isUpdatingProfile)) {
           setShowHomeDialog(true);
           setMode("login");
-        } else if (result.uniqueSlug && isCustomizing && (result.pin || isUpdatingProfile)) {
+        } else if (result.uniqueSlug && (isCustomizing || isRegistering) && (result.pin || isUpdatingProfile)) {
           // If we were in customize mode and have a pin (or are updating an existing profile), show QR
           setShowQRDialog(true);
           setMode("login");
