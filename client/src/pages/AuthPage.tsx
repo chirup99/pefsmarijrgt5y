@@ -1380,7 +1380,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
           values as any;
         const payload = {
           ...updateData,
-          cards: selectedCards,
+          cards: selectedCards.filter((c): c is string => typeof c === 'string' && c !== 'null' && c !== ''),
         };
         result = await updateProfileMutation.mutateAsync(payload);
       } else if (mode === "login") {
@@ -1388,7 +1388,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
       } else if (isRegistering || isCustomizing) {
         const payload = {
           ...values,
-          cards: selectedCards,
+          cards: selectedCards.filter((c): c is string => typeof c === 'string' && c !== 'null' && c !== ''),
         };
         console.log("Registration payload:", payload);
         result = await registerMutation.mutateAsync(payload);
