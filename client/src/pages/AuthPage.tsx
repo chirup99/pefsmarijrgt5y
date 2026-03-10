@@ -1423,11 +1423,11 @@ export default function AuthPage({ slug }: { slug?: string }) {
         localStorage.setItem("persona_user_id", result.id);
 
         // If it's a new registration or missing pin, show the PIN setup dialog
-        if (isRegistering || (isCustomizing && !result.pin)) {
+        if (isRegistering || (isCustomizing && !result.pin && !isUpdatingProfile)) {
           setShowHomeDialog(true);
           setMode("login");
-        } else if (result.uniqueSlug && isCustomizing && result.pin) {
-          // If we were in customize mode and have a pin, show QR
+        } else if (result.uniqueSlug && isCustomizing && (result.pin || isUpdatingProfile)) {
+          // If we were in customize mode and have a pin (or are updating an existing profile), show QR
           setShowQRDialog(true);
           setMode("login");
           // Also redirect to the profile after a short delay or when they close
@@ -3184,6 +3184,33 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       </a>
                     );
                   })()}
+                  {loggedInUser && user && loggedInUser.id === user.id && mode === "login" && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMode("register");
+                        form.reset({
+                          password: "",
+                          name: user?.name || "",
+                          role: user?.role || "founder",
+                          bio: user?.bio || "",
+                          instagram: user?.instagram || "",
+                          linkedin: user?.linkedin || "",
+                          whatsapp: user?.whatsapp || "",
+                          website: user?.website || "",
+                          cards: user?.cards || [],
+                          email:
+                            user?.email && !user.email.endsWith("@persona.local")
+                              ? user.email
+                              : "",
+                        });
+                        setSelectedCards(user?.cards || []);
+                      }}
+                      className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg mb-4"
+                    >
+                      <Pencil className="w-4 h-4" /> Edit Persona
+                    </button>
+                  )}
                   {loggedInUser && user && loggedInUser.id === user.id && (
                     <div className="pt-4 border-t border-white/10">
                       {/* Tabs Navigation */}
@@ -3786,38 +3813,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
               >
                 Back to My Persona
               </button>
-            ) : (
-              loggedInUser &&
-              user &&
-              loggedInUser.id === user.id &&
-              mode === "login" && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMode("register");
-                    form.reset({
-                      password: "",
-                      name: user?.name || "",
-                      role: user?.role || "founder",
-                      bio: user?.bio || "",
-                      instagram: user?.instagram || "",
-                      linkedin: user?.linkedin || "",
-                      whatsapp: user?.whatsapp || "",
-                      website: user?.website || "",
-                      cards: user?.cards || [],
-                      email:
-                        user?.email && !user.email.endsWith("@persona.local")
-                          ? user.email
-                          : "",
-                    });
-                    setSelectedCards(user?.cards || []);
-                  }}
-                  className="w-full bg-white text-black hover:bg-white/90 rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg mt-2"
-                >
-                  <Pencil className="w-4 h-4" /> Edit Persona
-                </button>
-              )
-            )}
+            ) : null}
 
             {!loggedInUser && mode === "login" && (
               <button
