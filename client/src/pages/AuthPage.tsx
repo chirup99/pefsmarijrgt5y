@@ -1810,17 +1810,31 @@ export default function AuthPage({ slug }: { slug?: string }) {
           const ctrl = await codeReader.decodeFromVideoDevice(
             null,
             videoRef.current,
-            (result, err) => {
+            async (result, err) => {
               if (result && isMounted) {
                 const text = result.getText();
                 const slug = text.includes("/") ? text.split("/").pop() : text;
                 if (slug) {
-                  setLocation(`/${slug}`);
-                  setShowScannerDialog(false);
-                  toast({
-                    title: "QR Code Scanned",
-                    description: `Loading persona: ${slug}`,
-                  });
+                  // Verify if persona exists on backend before navigating
+                  try {
+                    const res = await fetch(`/api/user/slug/${slug}`);
+                    if (res.ok) {
+                      setLocation(`/${slug}`);
+                      setShowScannerDialog(false);
+                      toast({
+                        title: "QR Code Scanned",
+                        description: `Loading persona: ${slug}`,
+                      });
+                    } else {
+                      toast({
+                        title: "Not Found",
+                        description: "Scanned persona does not exist.",
+                        variant: "destructive",
+                      });
+                    }
+                  } catch (e) {
+                    console.error("Scan verification error:", e);
+                  }
                 }
               }
             },
@@ -1913,6 +1927,18 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
     setIsVerifying(true);
     try {
+      // First check if persona exists on backend
+      const checkRes = await fetch(`/api/user/slug/${personaSlug}`);
+      if (!checkRes.ok) {
+        toast({
+          title: "Not Found",
+          description: "This persona code does not exist.",
+          variant: "destructive",
+        });
+        setIsVerifying(false);
+        return;
+      }
+
       // If no pin is provided, we're just loading public data
       if (!personaPin) {
         setLocation(`/${personaSlug}`);
