@@ -270,206 +270,232 @@ const TrendLine = () => (
   </div>
 );
 
-const SwipeCardContent = forwardRef(({
-  card,
-  currentIndex,
-  onSwipeLeft,
-  onSwipeRight,
-}: SwipeCardProps, ref) => {
-  const x = useMotionValue(0);
-  const rotate = useTransform(x, [-200, 200], [-30, 30]);
-  const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
+const SwipeCardContent = forwardRef(
+  ({ card, currentIndex, onSwipeLeft, onSwipeRight }: SwipeCardProps, ref) => {
+    const x = useMotionValue(0);
+    const rotate = useTransform(x, [-200, 200], [-30, 30]);
+    const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [isSpeaking, setIsSpeaking] = useState(false);
 
-  const handleSpeak = async (text: string) => {
-    if (isSpeaking) {
-      const audio = document.getElementById("edge-tts-audio") as HTMLAudioElement;
-      if (audio) {
-        audio.pause();
-        audio.src = "";
-      }
-      setIsSpeaking(false);
-      return;
-    }
-
-    if (!text) return;
-
-    setIsSpeaking(true);
-    try {
-      // Prioritize Edge Neural voices if available in the browser
-      const voices = window.speechSynthesis.getVoices();
-      const edgeNaturalVoice = voices.find(v => v.name.includes("Natural") && v.name.includes("Microsoft") && v.lang.startsWith("en"));
-      
-      if (edgeNaturalVoice && !window.chrome) { // window.chrome check is a rough proxy for "might be in Edge/Chrome with online voices"
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.voice = edgeNaturalVoice;
-        utterance.pitch = 1;
-        utterance.rate = 1;
-        utterance.onend = () => setIsSpeaking(false);
-        utterance.onerror = () => setIsSpeaking(false);
-        window.speechSynthesis.speak(utterance);
-      } else {
-        // Fallback to a high-quality neural-like TTS proxy that uses Microsoft Edge voices
-        // This is a common public endpoint used for accessing Edge TTS without an API key
-        const voice = "en-US-AndrewNeural";
-        const url = `https://api.lowline.ai/v1/tts?text=${encodeURIComponent(text)}&voice=${voice}`;
-        
-        let audio = document.getElementById("edge-tts-audio") as HTMLAudioElement;
-        if (!audio) {
-          audio = document.createElement("audio");
-          audio.id = "edge-tts-audio";
-          audio.style.display = "none";
-          document.body.appendChild(audio);
+    const handleSpeak = async (text: string) => {
+      if (isSpeaking) {
+        const audio = document.getElementById(
+          "edge-tts-audio",
+        ) as HTMLAudioElement;
+        if (audio) {
+          audio.pause();
+          audio.src = "";
         }
-
-        audio.src = url;
-        audio.onended = () => setIsSpeaking(false);
-        audio.onerror = () => {
-          // Final fallback to Google TTS if the neural proxy fails
-          audio.src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(text)}`;
-          audio.play().catch(() => setIsSpeaking(false));
-        };
-        await audio.play();
+        setIsSpeaking(false);
+        return;
       }
-    } catch (error) {
-      console.error("TTS Error:", error);
-      setIsSpeaking(false);
-    }
-  };
 
-  const thumbnailUrl = useMemo(() => {
-    if (card.type !== "reel") return null;
-    const url = (card as any).url;
-    if (!url) return null;
-    const ytMatch = url.match(
-      /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/|reels\/))([\w-]{11})/,
-    );
-    if (ytMatch)
-      return `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`;
-    return null;
-  }, [card.type, (card as any).url]);
+      if (!text) return;
 
-  const embedUrl = useMemo(() => {
-    if (card.type !== "reel") return null;
-    const url = (card as any).url;
-    if (!url) return null;
-    const ytMatch = url.match(
-      /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/|reels\/))([\w-]{11})/,
-    );
-    if (ytMatch)
-      return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=0&loop=1&playlist=${ytMatch[1]}&modestbranding=1&rel=0`;
-    const igMatch = url.match(
-      /(?:instagram\.com\/(?:reels|reel|p|tv)\/)([\w-]+)/,
-    );
-    if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed/`;
-    return null;
-  }, [card.type, (card as any).url]);
+      setIsSpeaking(true);
+      try {
+        // Prioritize Edge Neural voices if available in the browser
+        const voices = window.speechSynthesis.getVoices();
+        const edgeNaturalVoice = voices.find(
+          (v) =>
+            v.name.includes("Natural") &&
+            v.name.includes("Microsoft") &&
+            v.lang.startsWith("en"),
+        );
 
-  return (
-    <motion.div
-      ref={ref}
-      key={currentIndex}
-      style={{ x, rotate, opacity }}
-      drag="x"
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.2}
-      onDragEnd={(_, info) => {
-        if (info.offset.x < -80) onSwipeLeft();
-        else if (info.offset.x > 80) onSwipeRight();
-      }}
-      className={clsx(
-        "absolute inset-0 bg-gradient-to-b rounded-[24px] p-4 shadow-2xl cursor-grab active:cursor-grabbing overflow-hidden group",
-        card.color,
-      )}
-    >
-      {isPlaying && card.type === "reel" ? (
-        <div className="absolute inset-0 z-50 bg-black">
-          {embedUrl ? (
-            <div className="w-full h-full overflow-hidden flex items-center justify-center">
-              <iframe
-                src={embedUrl}
-                className="w-full h-[calc(100%+80px)] -mt-[40px] border-0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-          ) : (
-            <div className="text-white text-xs p-4 text-center h-full flex items-center justify-center">
-              Invalid Video URL
-            </div>
-          )}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsPlaying(false);
-            }}
-            className="absolute top-4 right-4 p-2 bg-black/50 rounded-full text-white z-[60]"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      ) : (
-        <div className="flex flex-col h-full items-center justify-between relative z-10">
-          <div className="flex items-center gap-1.5">
-            <span className="text-white/90 text-[9px] font-bold tracking-[0.2em] uppercase">
-              {card.title}
-            </span>
-            {card.type !== "product" && (
-              <Mic className="w-3.5 h-3.5 text-white/90" />
+        if (edgeNaturalVoice && !window.chrome) {
+          // window.chrome check is a rough proxy for "might be in Edge/Chrome with online voices"
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.voice = edgeNaturalVoice;
+          utterance.pitch = 1;
+          utterance.rate = 1;
+          utterance.onend = () => setIsSpeaking(false);
+          utterance.onerror = () => setIsSpeaking(false);
+          window.speechSynthesis.speak(utterance);
+        } else {
+          // Fallback to a high-quality neural-like TTS proxy that uses Microsoft Edge voices
+          // This is a common public endpoint used for accessing Edge TTS without an API key
+          const voice = "en-US-AndrewNeural";
+          const url = `https://api.lowline.ai/v1/tts?text=${encodeURIComponent(text)}&voice=${voice}`;
+
+          let audio = document.getElementById(
+            "edge-tts-audio",
+          ) as HTMLAudioElement;
+          if (!audio) {
+            audio = document.createElement("audio");
+            audio.id = "edge-tts-audio";
+            audio.style.display = "none";
+            document.body.appendChild(audio);
+          }
+
+          audio.src = url;
+          audio.onended = () => setIsSpeaking(false);
+          audio.onerror = () => {
+            // Final fallback to Google TTS if the neural proxy fails
+            audio.src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(text)}`;
+            audio.play().catch(() => setIsSpeaking(false));
+          };
+          await audio.play();
+        }
+      } catch (error) {
+        console.error("TTS Error:", error);
+        setIsSpeaking(false);
+      }
+    };
+
+    const thumbnailUrl = useMemo(() => {
+      if (card.type !== "reel") return null;
+      const url = (card as any).url;
+      if (!url) return null;
+      const ytMatch = url.match(
+        /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/|reels\/))([\w-]{11})/,
+      );
+      if (ytMatch)
+        return `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`;
+      return null;
+    }, [card.type, (card as any).url]);
+
+    const embedUrl = useMemo(() => {
+      if (card.type !== "reel") return null;
+      const url = (card as any).url;
+      if (!url) return null;
+      const ytMatch = url.match(
+        /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|v\/|embed\/|reels\/))([\w-]{11})/,
+      );
+      if (ytMatch)
+        return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=0&loop=1&playlist=${ytMatch[1]}&modestbranding=1&rel=0`;
+      const igMatch = url.match(
+        /(?:instagram\.com\/(?:reels|reel|p|tv)\/)([\w-]+)/,
+      );
+      if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed/`;
+      return null;
+    }, [card.type, (card as any).url]);
+
+    return (
+      <motion.div
+        ref={ref}
+        key={currentIndex}
+        style={{ x, rotate, opacity }}
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.2}
+        onDragEnd={(_, info) => {
+          if (info.offset.x < -80) onSwipeLeft();
+          else if (info.offset.x > 80) onSwipeRight();
+        }}
+        className={clsx(
+          "absolute inset-0 bg-gradient-to-b rounded-[24px] p-4 shadow-2xl cursor-grab active:cursor-grabbing overflow-hidden group",
+          card.color,
+        )}
+      >
+        {isPlaying && card.type === "reel" ? (
+          <div className="absolute inset-0 z-50 bg-black">
+            {embedUrl ? (
+              <div className="w-full h-full overflow-hidden flex items-center justify-center">
+                <iframe
+                  src={embedUrl}
+                  className="w-full h-[calc(100%+80px)] -mt-[40px] border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <div className="text-white text-xs p-4 text-center h-full flex items-center justify-center">
+                Invalid Video URL
+              </div>
             )}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsPlaying(false);
+              }}
+              className="absolute top-4 right-4 p-2 bg-black/50 rounded-full text-white z-[60]"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
+        ) : (
+          <div className="flex flex-col h-full items-center justify-between relative z-10">
+            <div className="flex items-center gap-1.5">
+              <span className="text-white/90 text-[9px] font-bold tracking-[0.2em] uppercase">
+                {card.title}
+              </span>
+              {card.type !== "product" && (
+                <Mic className="w-3.5 h-3.5 text-white/90" />
+              )}
+            </div>
 
-          <div className="flex-1 flex flex-col items-center justify-center w-full space-y-3">
-            {card.type === "reel" ? (
-              thumbnailUrl ? (
-                <div
-                  className="w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-white/10 cursor-pointer group/thumb relative"
-                  onClick={() => setIsPlaying(true)}
-                >
-                  <img
-                    src={thumbnailUrl}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover/thumb:scale-110"
-                    alt="Thumbnail"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = thumbnailUrl.replace(
-                        "maxresdefault",
-                        "hqdefault",
-                      );
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                    <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                      <Play className="w-6 h-6 text-white fill-current" />
+            <div className="flex-1 flex flex-col items-center justify-center w-full space-y-3">
+              {card.type === "reel" ? (
+                thumbnailUrl ? (
+                  <div
+                    className="w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-white/10 cursor-pointer group/thumb relative"
+                    onClick={() => setIsPlaying(true)}
+                  >
+                    <img
+                      src={thumbnailUrl}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover/thumb:scale-110"
+                      alt="Thumbnail"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          thumbnailUrl.replace("maxresdefault", "hqdefault");
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                      <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                        <Play className="w-6 h-6 text-white fill-current" />
+                      </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <div
-                  className="flex flex-col items-center justify-center space-y-3 py-4 cursor-pointer"
-                  onClick={() => setIsPlaying(true)}
-                >
-                  <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
-                    <Video className="w-8 h-8 text-white" />
+                ) : (
+                  <div
+                    className="flex flex-col items-center justify-center space-y-3 py-4 cursor-pointer"
+                    onClick={() => setIsPlaying(true)}
+                  >
+                    <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
+                      <Video className="w-8 h-8 text-white" />
+                    </div>
+                    <div className="text-center">
+                      <h3 className="text-white text-xl font-bold">
+                        {card.name}
+                      </h3>
+                      <p className="text-white/60 text-[10px] uppercase tracking-widest font-bold">
+                        Watch Reel
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <h3 className="text-white text-xl font-bold">
+                )
+              ) : card.type === "product" ? (
+                (card as any).imageUrl ? (
+                  <div className="w-full aspect-square rounded-xl overflow-hidden shadow-lg border border-white/10 mb-4">
+                    <img
+                      src={(card as any).imageUrl}
+                      className="w-full h-full object-cover"
+                      alt={card.name}
+                    />
+                  </div>
+                ) : (
+                  <div className="text-center space-y-0.5">
+                    <h3 className="text-white text-2xl font-bold leading-tight">
                       {card.name}
                     </h3>
-                    <p className="text-white/60 text-[10px] uppercase tracking-widest font-bold">
-                      Watch Reel
-                    </p>
+                    <h3 className="text-white text-sm opacity-60 font-medium leading-tight line-clamp-2 px-2">
+                      {card.subname}
+                    </h3>
                   </div>
-                </div>
-              )
-            ) : card.type === "product" ? (
-              (card as any).imageUrl ? (
-                <div className="w-full aspect-square rounded-xl overflow-hidden shadow-lg border border-white/10 mb-4">
-                  <img
-                    src={(card as any).imageUrl}
-                    className="w-full h-full object-cover"
-                    alt={card.name}
-                  />
+                )
+              ) : card.type === "revenue" || card.type === "traction" ? (
+                <div className="w-full flex flex-col items-center">
+                  <div className="text-center space-y-0.5 mb-2">
+                    <h3 className="text-white text-3xl font-bold leading-tight">
+                      {card.name}
+                    </h3>
+                    <h3 className="text-white text-sm opacity-60 font-medium leading-tight uppercase tracking-wider">
+                      {card.subname}
+                    </h3>
+                  </div>
+                  <TrendLine />
                 </div>
               ) : (
                 <div className="text-center space-y-0.5">
@@ -479,71 +505,52 @@ const SwipeCardContent = forwardRef(({
                   <h3 className="text-white text-sm opacity-60 font-medium leading-tight line-clamp-2 px-2">
                     {card.subname}
                   </h3>
+                  {card.type === "pitch" && (card as any).content && (
+                    <p className="text-white/80 text-xs mt-2 px-4 line-clamp-3">
+                      {(card as any).content}
+                    </p>
+                  )}
                 </div>
-              )
-            ) : card.type === "revenue" || card.type === "traction" ? (
-              <div className="w-full flex flex-col items-center">
-                <div className="text-center space-y-0.5 mb-2">
-                  <h3 className="text-white text-3xl font-bold leading-tight">
-                    {card.name}
-                  </h3>
-                  <h3 className="text-white text-sm opacity-60 font-medium leading-tight uppercase tracking-wider">
-                    {card.subname}
-                  </h3>
-                </div>
-                <TrendLine />
-              </div>
-            ) : (
-              <div className="text-center space-y-0.5">
-                <h3 className="text-white text-2xl font-bold leading-tight">
-                  {card.name}
-                </h3>
-                <h3 className="text-white text-sm opacity-60 font-medium leading-tight line-clamp-2 px-2">
-                  {card.subname}
-                </h3>
-                {card.type === "pitch" && (card as any).content && (
-                  <p className="text-white/80 text-xs mt-2 px-4 line-clamp-3">
-                    {(card as any).content}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-
-          {card.type !== "product" && card.type !== "traction" && card.type !== "revenue" && (
-            <div className="w-full">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (card.type === "pitch" && (card as any).content) {
-                    handleSpeak((card as any).content);
-                  } else {
-                    setIsPlaying(true);
-                  }
-                }}
-                className="w-full bg-white text-black rounded-full py-3 flex items-center justify-center gap-2 font-bold shadow-xl hover:scale-105 transition-transform text-sm"
-              >
-                {isSpeaking ? (
-                  <>
-                    <Mic className="w-3.5 h-3.5 animate-pulse text-red-500" />
-                    Speaking...
-                  </>
-                ) : (
-                  <>
-                    <Play className="w-3.5 h-3.5 fill-current" />
-                    Play Now
-                  </>
-                )}
-              </button>
+              )}
             </div>
-          )}
-        </div>
-      )}
-      <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
-    </motion.div>
-  );
-});
+
+            {card.type !== "product" &&
+              card.type !== "traction" &&
+              card.type !== "revenue" && (
+                <div className="w-full">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (card.type === "pitch" && (card as any).content) {
+                        handleSpeak((card as any).content);
+                      } else {
+                        setIsPlaying(true);
+                      }
+                    }}
+                    className="w-full bg-white text-black rounded-full py-3 flex items-center justify-center gap-2 font-bold shadow-xl hover:scale-105 transition-transform text-sm"
+                  >
+                    {isSpeaking ? (
+                      <>
+                        <Mic className="w-3.5 h-3.5 animate-pulse text-red-500" />
+                        Speaking...
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-3.5 h-3.5 fill-current" />
+                        Play Now
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+          </div>
+        )}
+        <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+      </motion.div>
+    );
+  },
+);
 
 SwipeCardContent.displayName = "SwipeCardContent";
 
@@ -561,7 +568,7 @@ const SwipeCard = ({
           const card = JSON.parse(c);
           if (!card || !card.type) return CARDS[0];
           const typeInfo = CARD_TYPES.find((t) => t.type === card.type);
-          
+
           // Set name field based on card type
           let name = card.title || "Untitled";
           if (card.type === "revenue" || card.type === "traction") {
@@ -571,7 +578,7 @@ const SwipeCard = ({
           } else if (card.type === "product") {
             name = card.title || "Product";
           }
-          
+
           return {
             ...card,
             type: card.type,
@@ -647,32 +654,32 @@ const SwipeCard = ({
       {displayCards.length > 1 && (
         <>
           {/* Second card - furthest back */}
-          <div 
+          <div
             className={clsx(
               "absolute inset-0 rounded-[24px] pointer-events-none z-0 shadow-2xl bg-gradient-to-b",
-              nextNextCard?.color || "from-gray-700 to-gray-800"
+              nextNextCard?.color || "from-gray-700 to-gray-800",
             )}
             style={{
-              transform: 'translateY(24px) translateX(12px) scale(0.98)',
+              transform: "translateY(24px) translateX(12px) scale(0.98)",
             }}
           >
             <div className="absolute inset-0 bg-black/40 rounded-[24px]" />
           </div>
           {/* First card - middle layer */}
-          <div 
+          <div
             className={clsx(
               "absolute inset-0 rounded-[24px] pointer-events-none z-10 shadow-xl bg-gradient-to-b",
-              nextCard?.color || "from-gray-700 to-gray-800"
+              nextCard?.color || "from-gray-700 to-gray-800",
             )}
             style={{
-              transform: 'translateY(12px) translateX(6px) scale(0.99)',
+              transform: "translateY(12px) translateX(6px) scale(0.99)",
             }}
           >
             <div className="absolute inset-0 bg-black/25 rounded-[24px]" />
           </div>
         </>
       )}
-      
+
       {/* Main card - front */}
       <SwipeCardContent
         key={currentIndex}
@@ -747,7 +754,9 @@ const MiniCard = ({
 
   const handleSpeak = async (text: string) => {
     if (isSpeaking) {
-      const audio = document.getElementById("edge-tts-audio-mini") as HTMLAudioElement;
+      const audio = document.getElementById(
+        "edge-tts-audio-mini",
+      ) as HTMLAudioElement;
       if (audio) {
         audio.pause();
         audio.src = "";
@@ -761,7 +770,12 @@ const MiniCard = ({
     setIsSpeaking(true);
     try {
       const voices = window.speechSynthesis.getVoices();
-      const edgeNaturalVoice = voices.find(v => v.name.includes("Natural") && v.name.includes("Microsoft") && v.lang.startsWith("en"));
+      const edgeNaturalVoice = voices.find(
+        (v) =>
+          v.name.includes("Natural") &&
+          v.name.includes("Microsoft") &&
+          v.lang.startsWith("en"),
+      );
 
       if (edgeNaturalVoice) {
         const utterance = new SpeechSynthesisUtterance(text);
@@ -770,7 +784,9 @@ const MiniCard = ({
         utterance.onerror = () => setIsSpeaking(false);
         window.speechSynthesis.speak(utterance);
       } else {
-        let audio = document.getElementById("edge-tts-audio-mini") as HTMLAudioElement;
+        let audio = document.getElementById(
+          "edge-tts-audio-mini",
+        ) as HTMLAudioElement;
         if (!audio) {
           audio = document.createElement("audio");
           audio.id = "edge-tts-audio-mini";
@@ -1112,8 +1128,8 @@ const MiniCard = ({
               </motion.div>
             </div>
           </div>
-        ) : (card.type === "revenue" || card.type === "traction") ? (
-          <div 
+        ) : card.type === "revenue" || card.type === "traction" ? (
+          <div
             className="w-full h-full flex flex-col items-center justify-center p-4 cursor-pointer group/card-content"
             onClick={() => setIsEditing(true)}
           >
@@ -1122,7 +1138,8 @@ const MiniCard = ({
                 {card.type === "revenue" ? "Live Revenue" : "User Growth"}
               </div>
               <div className="text-white text-3xl font-bold tracking-tight">
-                {(card as any).value || (card.type === "revenue" ? "$1.2M" : "50k+")}
+                {(card as any).value ||
+                  (card.type === "revenue" ? "$1.2M" : "50k+")}
               </div>
             </div>
             <div className="w-full h-32 relative group/chart">
@@ -1373,14 +1390,17 @@ export default function AuthPage({ slug }: { slug?: string }) {
       const isRegistering = mode === "register";
       const isCustomizing = mode === "customize";
       const isUpdatingProfile = loggedInUser?.id && !slug;
-      
+
       if (isUpdatingProfile) {
         // If logged in and viewing own profile, update data
         const { id, password, createdAt, uniqueSlug, ...updateData } =
           values as any;
         const payload = {
           ...updateData,
-          cards: selectedCards.filter((c): c is string => typeof c === 'string' && c !== 'null' && c !== ''),
+          cards: selectedCards.filter(
+            (c): c is string =>
+              typeof c === "string" && c !== "null" && c !== "",
+          ),
         };
         result = await updateProfileMutation.mutateAsync(payload);
       } else if (mode === "login") {
@@ -1388,7 +1408,10 @@ export default function AuthPage({ slug }: { slug?: string }) {
       } else if (isRegistering || isCustomizing) {
         const payload = {
           ...values,
-          cards: selectedCards.filter((c): c is string => typeof c === 'string' && c !== 'null' && c !== ''),
+          cards: selectedCards.filter(
+            (c): c is string =>
+              typeof c === "string" && c !== "null" && c !== "",
+          ),
         };
         console.log("Registration payload:", payload);
         result = await registerMutation.mutateAsync(payload);
@@ -1533,7 +1556,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
       const documentHeight = document.documentElement.scrollHeight;
       const isAtBottom = documentHeight - currentScrollY - windowHeight < 100;
       const isScrollingDown = currentScrollY > lastScrollY;
-      
+
       setShowMobileNav(isAtBottom && showNavToggle);
       setIsScrolledToBottom(isAtBottom);
       setLastScrollY(currentScrollY);
@@ -1573,14 +1596,16 @@ export default function AuthPage({ slug }: { slug?: string }) {
 
     if (isTradersExpanded) {
       document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [isTradersExpanded]);
 
   useEffect(() => {
     const handleScroll = () => {
       if (personaCardRef.current) {
-        const { scrollTop, scrollHeight, clientHeight } = personaCardRef.current;
+        const { scrollTop, scrollHeight, clientHeight } =
+          personaCardRef.current;
         const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
         setShowNavToggle(isAtBottom);
       }
@@ -2737,8 +2762,12 @@ export default function AuthPage({ slug }: { slug?: string }) {
               >
                 <div className="flex items-center justify-between p-6 pb-4">
                   <div className="flex flex-col gap-1">
-                    <h3 className="text-lg font-bold text-white">Exclusive Traders Circle</h3>
-                    <p className="text-[10px] text-white/40 uppercase tracking-wider">Advanced Trading Analytics</p>
+                    <h3 className="text-lg font-bold text-white">
+                      Exclusive Traders Circle
+                    </h3>
+                    <p className="text-[10px] text-white/40 uppercase tracking-wider">
+                      Advanced Trading Analytics
+                    </p>
                   </div>
                   <button
                     onClick={() => setShowTradersModal(false)}
@@ -2755,28 +2784,32 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         title: "Visual Trade Tracking",
                         subtitle: "Track FOMO Mistakes on Calendar",
                         tag: "Advanced Line Point Tracking",
-                        image: "linear-gradient(135deg, #ec4899 0%, #f472b6 100%)",
+                        image:
+                          "linear-gradient(135deg, #ec4899 0%, #f472b6 100%)",
                         video: "/1.mp4",
                       },
                       {
                         title: "Your Advanced Trading Journal",
                         subtitle: "Daily Trade Tracking",
                         tag: "Performance Analysis",
-                        image: "linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)",
+                        image:
+                          "linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)",
                         video: "/2.mp4",
                       },
                       {
                         title: "Multi-Broker Integration",
                         subtitle: "Connect with 7+ brokers",
                         tag: "Avoid Mistakes",
-                        image: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
+                        image:
+                          "linear-gradient(135deg, #059669 0%, #10b981 100%)",
                         video: "/3.mp4",
                       },
                       {
                         title: "AI Performance Trend",
                         subtitle: "Smart Trading Intelligence",
                         tag: "Top Tag for Trading Success",
-                        image: "linear-gradient(135deg, #d97706 0%, #f59e0b 100%)",
+                        image:
+                          "linear-gradient(135deg, #d97706 0%, #f59e0b 100%)",
                         video: "/4.mp4",
                       },
                     ].map((card, idx) => (
@@ -2834,7 +2867,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       href="https://perala.in"
                       target="_blank"
                       rel="noreferrer"
-                      className="group cursor-pointer flex items-center justify-center transition-all duration-300 w-32 h-32"
+                      className="group cursor-pointer hover:bg-[#adb5bd] border border-white/5 rounded-2xl p-4 flex items-center justify-center transition-all duration-300 shadow-xl w-32 h-15 pt-[10px] pb-[10px] pl-[10px] pr-[10px] text-[#000000] bg-[#000000]"
                     >
                       <img
                         src={logoImg}
@@ -2847,7 +2880,8 @@ export default function AuthPage({ slug }: { slug?: string }) {
                         Get Early Access
                       </h3>
                       <p className="text-[12px] text-white/70 max-w-xs">
-                        Perala: Your Advanced Trading Journal & Performance Analysis Hub.
+                        Perala: Your Advanced Trading Journal & Performance
+                        Analysis Hub.
                       </p>
                       <div className="flex items-center justify-center gap-2 flex-wrap pt-2">
                         <span className="text-[10px] text-emerald-400 font-semibold bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/20">
@@ -2975,692 +3009,751 @@ export default function AuthPage({ slug }: { slug?: string }) {
                     <p className="text-white/40 text-[10px] italic">
                       {form.watch("bio") || ""}
                     </p>
-                      <div className="flex items-center justify-center gap-3 w-full pt-1">
-                        {(() => {
-                          const linkedin = form.watch("linkedin");
-                          const hasLinkedin = !!linkedin && linkedin.trim() !== "" && linkedin !== "#";
-                          return (
-                            <a
-                              href={hasLinkedin ? linkedin : undefined}
-                              target={hasLinkedin ? "_blank" : undefined}
-                              rel={hasLinkedin ? "noreferrer" : undefined}
-                              onClick={(e) => {
-                                if (!hasLinkedin) {
-                                  e.preventDefault();
-                                  return;
-                                }
-                                trackClick("linkedin");
-                              }}
-                              className={clsx(
-                                "p-2.5 rounded-lg transition-all",
-                                hasLinkedin 
-                                  ? "bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 shadow-[0_0_10px_rgba(59,130,246,0.2)]" 
-                                  : "bg-white/5 text-white/20 cursor-not-allowed"
-                              )}
-                              title={hasLinkedin ? "LinkedIn" : "LinkedIn (Not Available)"}
-                            >
-                              <Linkedin className="w-4 h-4" />
-                            </a>
-                          );
-                        })()}
-                        {(() => {
-                          const instagram = form.watch("instagram");
-                          const hasInstagram = !!instagram && instagram.trim() !== "" && instagram !== "#";
-                          return (
-                            <a
-                              href={hasInstagram ? instagram : undefined}
-                              target={hasInstagram ? "_blank" : undefined}
-                              rel={hasInstagram ? "noreferrer" : undefined}
-                              onClick={(e) => {
-                                if (!hasInstagram) {
-                                  e.preventDefault();
-                                  return;
-                                }
-                                trackClick("insta");
-                              }}
-                              className={clsx(
-                                "p-2.5 rounded-lg transition-all",
-                                hasInstagram 
-                                  ? "bg-pink-500/10 text-pink-400 hover:bg-pink-500/20 hover:text-pink-300 shadow-[0_0_10px_rgba(236,72,153,0.2)]" 
-                                  : "bg-white/5 text-white/20 cursor-not-allowed"
-                              )}
-                              title={hasInstagram ? "Instagram" : "Instagram (Not Available)"}
-                            >
-                              <SiInstagram className="w-4 h-4" />
-                            </a>
-                          );
-                        })()}
-                        {(() => {
-                          const whatsapp = form.watch("whatsapp");
-                          const hasWhatsapp = !!whatsapp && whatsapp.trim() !== "" && whatsapp !== "#";
-                          const whatsappUrl = hasWhatsapp 
-                            ? (whatsapp.includes("http") || whatsapp.includes("wa.me")
-                                ? whatsapp 
-                                : `https://wa.me/${whatsappCountryCode}${whatsapp.replace(/\D/g, "")}`)
-                            : undefined;
-                          return (
-                            <a
-                              href={whatsappUrl}
-                              target={hasWhatsapp ? "_blank" : undefined}
-                              rel={hasWhatsapp ? "noreferrer" : undefined}
-                              onClick={(e) => {
-                                if (!hasWhatsapp) {
-                                  e.preventDefault();
-                                  return;
-                                }
-                                trackClick("whatsapp");
-                              }}
-                              className={clsx(
-                                "p-2.5 rounded-lg transition-all",
-                                hasWhatsapp 
-                                  ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.2)]" 
-                                  : "bg-white/5 text-white/20 cursor-not-allowed"
-                              )}
-                              title={hasWhatsapp ? "WhatsApp" : "WhatsApp (Not Available)"}
-                            >
-                              <SiWhatsapp className="w-4 h-4" />
-                            </a>
-                          );
-                        })()}
-                        {(() => {
-                          const email = form.watch("email");
-                          const hasEmail = !!email && email.trim() !== "" && email !== "#";
-                          return (
-                            <a
-                              href={hasEmail ? `mailto:${email}` : undefined}
-                              target={hasEmail ? "_blank" : undefined}
-                              rel={hasEmail ? "noreferrer" : undefined}
-                              onClick={(e) => {
-                                if (!hasEmail) {
-                                  e.preventDefault();
-                                  return;
-                                }
-                              }}
-                              className={clsx(
-                                "p-2.5 rounded-lg transition-all",
-                                hasEmail 
-                                  ? "bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 hover:text-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.2)]" 
-                                  : "bg-white/5 text-white/20 cursor-not-allowed"
-                              )}
-                              title={hasEmail ? "Email" : "Email (Not Available)"}
-                            >
-                              <Mail className="w-4 h-4" />
-                            </a>
-                          );
-                        })()}
-                      </div>
-                    </div>
-                    {(() => {
-                      const websiteUrl = form.watch("website");
-                      const hasWebsite = !!websiteUrl && websiteUrl.trim() !== "" && websiteUrl !== "#";
-                      return (
-                        <a
-                          href={hasWebsite ? websiteUrl : undefined}
-                          target={hasWebsite ? "_blank" : undefined}
-                          rel={hasWebsite ? "noreferrer" : undefined}
-                          onClick={(e) => {
-                            if (!hasWebsite) {
-                              e.preventDefault();
-                              return;
+                    <div className="flex items-center justify-center gap-3 w-full pt-1">
+                      {(() => {
+                        const linkedin = form.watch("linkedin");
+                        const hasLinkedin =
+                          !!linkedin &&
+                          linkedin.trim() !== "" &&
+                          linkedin !== "#";
+                        return (
+                          <a
+                            href={hasLinkedin ? linkedin : undefined}
+                            target={hasLinkedin ? "_blank" : undefined}
+                            rel={hasLinkedin ? "noreferrer" : undefined}
+                            onClick={(e) => {
+                              if (!hasLinkedin) {
+                                e.preventDefault();
+                                return;
+                              }
+                              trackClick("linkedin");
+                            }}
+                            className={clsx(
+                              "p-2.5 rounded-lg transition-all",
+                              hasLinkedin
+                                ? "bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 shadow-[0_0_10px_rgba(59,130,246,0.2)]"
+                                : "bg-white/5 text-white/20 cursor-not-allowed",
+                            )}
+                            title={
+                              hasLinkedin
+                                ? "LinkedIn"
+                                : "LinkedIn (Not Available)"
                             }
-                            trackClick("website");
-                          }}
+                          >
+                            <Linkedin className="w-4 h-4" />
+                          </a>
+                        );
+                      })()}
+                      {(() => {
+                        const instagram = form.watch("instagram");
+                        const hasInstagram =
+                          !!instagram &&
+                          instagram.trim() !== "" &&
+                          instagram !== "#";
+                        return (
+                          <a
+                            href={hasInstagram ? instagram : undefined}
+                            target={hasInstagram ? "_blank" : undefined}
+                            rel={hasInstagram ? "noreferrer" : undefined}
+                            onClick={(e) => {
+                              if (!hasInstagram) {
+                                e.preventDefault();
+                                return;
+                              }
+                              trackClick("insta");
+                            }}
+                            className={clsx(
+                              "p-2.5 rounded-lg transition-all",
+                              hasInstagram
+                                ? "bg-pink-500/10 text-pink-400 hover:bg-pink-500/20 hover:text-pink-300 shadow-[0_0_10px_rgba(236,72,153,0.2)]"
+                                : "bg-white/5 text-white/20 cursor-not-allowed",
+                            )}
+                            title={
+                              hasInstagram
+                                ? "Instagram"
+                                : "Instagram (Not Available)"
+                            }
+                          >
+                            <SiInstagram className="w-4 h-4" />
+                          </a>
+                        );
+                      })()}
+                      {(() => {
+                        const whatsapp = form.watch("whatsapp");
+                        const hasWhatsapp =
+                          !!whatsapp &&
+                          whatsapp.trim() !== "" &&
+                          whatsapp !== "#";
+                        const whatsappUrl = hasWhatsapp
+                          ? whatsapp.includes("http") ||
+                            whatsapp.includes("wa.me")
+                            ? whatsapp
+                            : `https://wa.me/${whatsappCountryCode}${whatsapp.replace(/\D/g, "")}`
+                          : undefined;
+                        return (
+                          <a
+                            href={whatsappUrl}
+                            target={hasWhatsapp ? "_blank" : undefined}
+                            rel={hasWhatsapp ? "noreferrer" : undefined}
+                            onClick={(e) => {
+                              if (!hasWhatsapp) {
+                                e.preventDefault();
+                                return;
+                              }
+                              trackClick("whatsapp");
+                            }}
+                            className={clsx(
+                              "p-2.5 rounded-lg transition-all",
+                              hasWhatsapp
+                                ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.2)]"
+                                : "bg-white/5 text-white/20 cursor-not-allowed",
+                            )}
+                            title={
+                              hasWhatsapp
+                                ? "WhatsApp"
+                                : "WhatsApp (Not Available)"
+                            }
+                          >
+                            <SiWhatsapp className="w-4 h-4" />
+                          </a>
+                        );
+                      })()}
+                      {(() => {
+                        const email = form.watch("email");
+                        const hasEmail =
+                          !!email && email.trim() !== "" && email !== "#";
+                        return (
+                          <a
+                            href={hasEmail ? `mailto:${email}` : undefined}
+                            target={hasEmail ? "_blank" : undefined}
+                            rel={hasEmail ? "noreferrer" : undefined}
+                            onClick={(e) => {
+                              if (!hasEmail) {
+                                e.preventDefault();
+                                return;
+                              }
+                            }}
+                            className={clsx(
+                              "p-2.5 rounded-lg transition-all",
+                              hasEmail
+                                ? "bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 hover:text-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.2)]"
+                                : "bg-white/5 text-white/20 cursor-not-allowed",
+                            )}
+                            title={hasEmail ? "Email" : "Email (Not Available)"}
+                          >
+                            <Mail className="w-4 h-4" />
+                          </a>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                  {(() => {
+                    const websiteUrl = form.watch("website");
+                    const hasWebsite =
+                      !!websiteUrl &&
+                      websiteUrl.trim() !== "" &&
+                      websiteUrl !== "#";
+                    return (
+                      <a
+                        href={hasWebsite ? websiteUrl : undefined}
+                        target={hasWebsite ? "_blank" : undefined}
+                        rel={hasWebsite ? "noreferrer" : undefined}
+                        onClick={(e) => {
+                          if (!hasWebsite) {
+                            e.preventDefault();
+                            return;
+                          }
+                          trackClick("website");
+                        }}
+                        className={clsx(
+                          "w-full rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 group no-underline transition-all",
+                          hasWebsite
+                            ? "bg-primary text-white hover:opacity-90 shadow-lg cursor-pointer"
+                            : "bg-white/5 text-white/20 cursor-not-allowed border border-white/5",
+                        )}
+                      >
+                        {hasWebsite ? "View Website" : "No Website Available"}
+                        <ArrowRight
                           className={clsx(
-                            "w-full rounded-lg py-3 font-semibold text-sm flex items-center justify-center gap-2 group no-underline transition-all",
-                            hasWebsite 
-                              ? "bg-primary text-white hover:opacity-90 shadow-lg cursor-pointer" 
-                              : "bg-white/5 text-white/20 cursor-not-allowed border border-white/5"
+                            "w-3.5 h-3.5 transition-transform",
+                            hasWebsite
+                              ? "group-hover:translate-x-1"
+                              : "opacity-0",
+                          )}
+                        />
+                      </a>
+                    );
+                  })()}
+                  {loggedInUser && user && loggedInUser.id === user.id && (
+                    <div className="pt-4 border-t border-white/10">
+                      {/* Tabs Navigation */}
+                      <div className="flex p-1 bg-white/5 border border-white/10 rounded-xl mb-4">
+                        <button
+                          type="button"
+                          onClick={() => setActiveTab("notes")}
+                          className={clsx(
+                            "flex-1 py-2 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider",
+                            activeTab === "notes"
+                              ? "bg-white/10 text-white shadow-lg"
+                              : "text-white/40 hover:text-white/60",
                           )}
                         >
-                          {hasWebsite ? "View Website" : "No Website Available"}
-                          <ArrowRight className={clsx(
-                            "w-3.5 h-3.5 transition-transform",
-                            hasWebsite ? "group-hover:translate-x-1" : "opacity-0"
-                          )} />
-                        </a>
-                      );
-                    })()}
-                    {loggedInUser && user && loggedInUser.id === user.id && (
-                      <div className="pt-4 border-t border-white/10">
-                        {/* Tabs Navigation */}
-                        <div className="flex p-1 bg-white/5 border border-white/10 rounded-xl mb-4">
-                          <button
-                            type="button"
-                            onClick={() => setActiveTab("notes")}
-                            className={clsx(
-                              "flex-1 py-2 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider",
-                              activeTab === "notes"
-                                ? "bg-white/10 text-white shadow-lg"
-                                : "text-white/40 hover:text-white/60",
-                            )}
-                          >
-                            Notes
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setActiveTab("events")}
-                            className={clsx(
-                              "flex-1 py-2 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider",
-                              activeTab === "events"
-                                ? "bg-white/10 text-white shadow-lg"
-                                : "text-white/40 hover:text-white/60",
-                            )}
-                          >
-                            Upcoming Events
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setActiveTab("connect")}
-                            className={clsx(
-                              "flex-1 py-2 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider flex items-center justify-center gap-1.5",
-                              activeTab === "connect"
-                                ? "bg-white/10 text-white shadow-lg"
-                                : "text-white/40 hover:text-white/60",
-                            )}
-                          >
-                            <div className="w-3 h-3 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/40">
-                              <div className="w-1 h-1 rounded-full bg-blue-400 shadow-[0_0_4px_#60a5fa]" />
-                            </div>
-                            Connect
-                          </button>
-                        </div>
+                          Notes
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setActiveTab("events")}
+                          className={clsx(
+                            "flex-1 py-2 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider",
+                            activeTab === "events"
+                              ? "bg-white/10 text-white shadow-lg"
+                              : "text-white/40 hover:text-white/60",
+                          )}
+                        >
+                          Upcoming Events
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setActiveTab("connect")}
+                          className={clsx(
+                            "flex-1 py-2 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider flex items-center justify-center gap-1.5",
+                            activeTab === "connect"
+                              ? "bg-white/10 text-white shadow-lg"
+                              : "text-white/40 hover:text-white/60",
+                          )}
+                        >
+                          <div className="w-3 h-3 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/40">
+                            <div className="w-1 h-1 rounded-full bg-blue-400 shadow-[0_0_4px_#60a5fa]" />
+                          </div>
+                          Connect
+                        </button>
+                      </div>
 
-                        {/* Tab Content */}
-                        <AnimatePresence mode="wait">
-                          {activeTab === "notes" ? (
-                            <motion.div
-                              key="notes"
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -10 }}
-                              className="space-y-3"
-                            >
-                              <div className="flex gap-2">
-                                <input
-                                  type="text"
-                                  value={newNote}
-                                  onChange={(e) => setNewNote(e.target.value)}
-                                  onKeyPress={(e) =>
-                                    e.key === "Enter" && addNote()
-                                  }
-                                  placeholder={
-                                    notes.length >= 5
-                                      ? "Limit of 5 notes reached"
-                                      : "Add a quick note..."
-                                  }
-                                  disabled={notes.length >= 5}
-                                  className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
-                                />
+                      {/* Tab Content */}
+                      <AnimatePresence mode="wait">
+                        {activeTab === "notes" ? (
+                          <motion.div
+                            key="notes"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="space-y-3"
+                          >
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={newNote}
+                                onChange={(e) => setNewNote(e.target.value)}
+                                onKeyPress={(e) =>
+                                  e.key === "Enter" && addNote()
+                                }
+                                placeholder={
+                                  notes.length >= 5
+                                    ? "Limit of 5 notes reached"
+                                    : "Add a quick note..."
+                                }
+                                disabled={notes.length >= 5}
+                                className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                              />
+                              <button
+                                type="button"
+                                onClick={addNote}
+                                disabled={notes.length >= 5}
+                                className="bg-white/10 hover:bg-white/20 text-white p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                <Plus className="w-4 h-4" />
+                              </button>
+                            </div>
+                            <div className="space-y-2">
+                              {notes.map((note) => (
+                                <div
+                                  key={note.id}
+                                  className="flex items-center gap-3 group"
+                                >
+                                  <button
+                                    type="button"
+                                    onClick={() => toggleNote(note.id)}
+                                    className={clsx(
+                                      "w-4 h-4 rounded-full border transition-all flex items-center justify-center",
+                                      note.completed
+                                        ? "bg-purple-500 border-purple-500"
+                                        : "border-white/20 hover:border-white/40",
+                                    )}
+                                  >
+                                    {note.completed && (
+                                      <Check className="w-2.5 h-2.5 text-white" />
+                                    )}
+                                  </button>
+                                  <div className="flex flex-col flex-1">
+                                    <span
+                                      className={clsx(
+                                        "text-xs transition-all",
+                                        note.completed
+                                          ? "text-white/20 line-through"
+                                          : "text-white/70",
+                                      )}
+                                    >
+                                      {note.text}
+                                    </span>
+                                    <span
+                                      className={clsx(
+                                        "text-[8px] uppercase tracking-tighter",
+                                        getTimerColor(note.expiresAt),
+                                      )}
+                                    >
+                                      Expires in{" "}
+                                      {formatTimeLeft(note.expiresAt)}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                              {notes.length === 0 && (
+                                <p className="text-[10px] text-white/20 uppercase tracking-widest text-center py-4">
+                                  No notes yet
+                                </p>
+                              )}
+                            </div>
+                          </motion.div>
+                        ) : activeTab === "events" ? (
+                          <motion.div
+                            key="events"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="h-[120px] flex items-center justify-center border border-dashed border-white/10 rounded-2xl"
+                          >
+                            <div className="text-center space-y-2">
+                              <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">
+                                Upcoming Events
+                              </p>
+                              <p className="text-xs text-white/20 font-medium">
+                                Coming Soon
+                              </p>
+                            </div>
+                          </motion.div>
+                        ) : (
+                          <motion.div
+                            key="connect"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="space-y-3"
+                          >
+                            <div className="space-y-2">
+                              {connections.map((conn, idx) => (
+                                <div
+                                  key={idx}
+                                  onClick={() => setLocation(`/${conn.slug}`)}
+                                  className="flex items-center justify-between p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all cursor-pointer group"
+                                >
+                                  <div className="flex flex-col">
+                                    <span className="text-xs font-bold text-white group-hover:text-blue-400 transition-colors">
+                                      {conn.name}
+                                    </span>
+                                    <span className="text-[8px] uppercase tracking-widest text-white/40">
+                                      {conn.industry}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-[10px] font-bold text-blue-400/80 bg-blue-400/10 px-1.5 py-0.5 rounded border border-blue-400/20">
+                                      {getRemainingTime(conn.expiresAt)}
+                                    </span>
+                                    <ArrowRight className="w-3 h-3 text-white/20 group-hover:text-white/60 group-hover:translate-x-0.5 transition-all" />
+                                  </div>
+                                </div>
+                              ))}
+                              {connections.length === 0 && (
+                                <div className="h-[100px] flex items-center justify-center border border-dashed border-white/10 rounded-2xl bg-gradient-to-tr from-blue-500/5 to-purple-500/5">
+                                  <div className="text-center space-y-2">
+                                    <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">
+                                      Exclusive Connect
+                                    </p>
+                                    <p className="text-xs text-white/20 font-medium">
+                                      No connections yet
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
+                </form>
+              ) : mode === "register" ? (
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-3 pr-2"
+                >
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                      Name
+                    </label>
+                    <input
+                      {...form.register("name")}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50"
+                      placeholder="Your Name"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                      Role
+                    </label>
+                    <div className="relative">
+                      <select
+                        {...form.register("role")}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white appearance-none"
+                      >
+                        {ROLES.map((r) => (
+                          <option
+                            key={r.value}
+                            value={r.value}
+                            className="bg-[#1a1a1a]"
+                          >
+                            {r.label}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                      Industry
+                    </label>
+                    <div className="relative">
+                      <select
+                        {...form.register("industry")}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white appearance-none"
+                      >
+                        <option value="" className="bg-[#1a1a1a]">
+                          Select Industry
+                        </option>
+                        {[
+                          "Fintech",
+                          "Healthtech",
+                          "Edtech",
+                          "Ecommerce & Retail",
+                          "Agritech",
+                          "SaaS",
+                          "Cleantech & Greentech",
+                          "Logistics",
+                          "🌱 Sustainability & Energy (EVs)",
+                          "DeepTech",
+                          "Spacetech",
+                          "Robotics & Automation",
+                          "Cybersecurity",
+                          "AR/VR",
+                          "Media & Entertainment",
+                        ].map((industry) => (
+                          <option
+                            key={industry}
+                            value={industry}
+                            className="bg-[#1a1a1a]"
+                          >
+                            {industry}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                      Bio
+                    </label>
+                    <input
+                      {...form.register("bio")}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
+                      placeholder="Startup / Business"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                        Instagram
+                      </label>
+                      <input
+                        {...form.register("instagram")}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+                        placeholder="URL"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                        LinkedIn
+                      </label>
+                      <input
+                        {...form.register("linkedin")}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+                        placeholder="URL"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                        WhatsApp
+                      </label>
+                      <div className="relative">
+                        <div className="flex gap-2">
+                          {(() => {
+                            const whatsappValue =
+                              form.watch("whatsapp")?.toString() || "";
+                            const isUrl =
+                              whatsappValue.includes("http") ||
+                              whatsappValue.includes("whatsapp");
+                            // Only show country dropdown if it's NOT a URL AND (it's empty OR contains a number)
+                            const shouldShowCountry =
+                              !isUrl &&
+                              (whatsappValue === "" ||
+                                /\d/.test(whatsappValue));
+
+                            if (!shouldShowCountry) return null;
+
+                            return (
+                              <div className="relative">
                                 <button
                                   type="button"
-                                  onClick={addNote}
-                                  disabled={notes.length >= 5}
-                                  className="bg-white/10 hover:bg-white/20 text-white p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                  onClick={() =>
+                                    setShowCountryDropdown(!showCountryDropdown)
+                                  }
+                                  className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white flex items-center gap-2 hover:bg-white/10 transition-colors"
                                 >
-                                  <Plus className="w-4 h-4" />
+                                  {
+                                    COUNTRY_CODES.find(
+                                      (c) => c.code === whatsappCountryCode,
+                                    )?.flag
+                                  }
+                                  <span className="text-xs font-semibold">
+                                    {whatsappCountryCode}
+                                  </span>
+                                  <ChevronDown className="w-3 h-3 text-white/40" />
                                 </button>
-                              </div>
-                              <div className="space-y-2">
-                                {notes.map((note) => (
-                                  <div
-                                    key={note.id}
-                                    className="flex items-center gap-3 group"
+                                {showCountryDropdown && (
+                                  <motion.div
+                                    initial={{ opacity: 0, y: -4 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="absolute top-full mt-2 left-0 bg-black/95 border border-white/10 rounded-lg shadow-2xl z-20 max-h-48 overflow-y-auto w-48"
                                   >
-                                    <button
-                                      type="button"
-                                      onClick={() => toggleNote(note.id)}
-                                      className={clsx(
-                                        "w-4 h-4 rounded-full border transition-all flex items-center justify-center",
-                                        note.completed
-                                          ? "bg-purple-500 border-purple-500"
-                                          : "border-white/20 hover:border-white/40",
-                                      )}
-                                    >
-                                      {note.completed && (
-                                        <Check className="w-2.5 h-2.5 text-white" />
-                                      )}
-                                    </button>
-                                    <div className="flex flex-col flex-1">
-                                      <span
+                                    {COUNTRY_CODES.map((country) => (
+                                      <button
+                                        key={country.code}
+                                        type="button"
+                                        onClick={() => {
+                                          setWhatsappCountryCode(country.code);
+                                          setShowCountryDropdown(false);
+                                        }}
                                         className={clsx(
-                                          "text-xs transition-all",
-                                          note.completed
-                                            ? "text-white/20 line-through"
-                                            : "text-white/70",
+                                          "w-full text-left px-4 py-2.5 text-xs flex items-center gap-2 transition-colors",
+                                          whatsappCountryCode === country.code
+                                            ? "bg-white/10 text-white"
+                                            : "text-white/70 hover:bg-white/5 hover:text-white",
                                         )}
                                       >
-                                        {note.text}
-                                      </span>
-                                      <span
-                                        className={clsx(
-                                          "text-[8px] uppercase tracking-tighter",
-                                          getTimerColor(note.expiresAt),
-                                        )}
-                                      >
-                                        Expires in{" "}
-                                        {formatTimeLeft(note.expiresAt)}
-                                      </span>
-                                    </div>
-                                  </div>
-                                ))}
-                                {notes.length === 0 && (
-                                  <p className="text-[10px] text-white/20 uppercase tracking-widest text-center py-4">
-                                    No notes yet
-                                  </p>
+                                        <span className="text-sm">
+                                          {country.flag}
+                                        </span>
+                                        <span className="font-semibold">
+                                          {country.code}
+                                        </span>
+                                        <span className="text-white/40 text-[10px]">
+                                          {country.country}
+                                        </span>
+                                      </button>
+                                    ))}
+                                  </motion.div>
                                 )}
                               </div>
-                            </motion.div>
-                          ) : activeTab === "events" ? (
-                            <motion.div
-                              key="events"
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -10 }}
-                              className="h-[120px] flex items-center justify-center border border-dashed border-white/10 rounded-2xl"
-                            >
-                              <div className="text-center space-y-2">
-                                <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">
-                                  Upcoming Events
-                                </p>
-                                <p className="text-xs text-white/20 font-medium">
-                                  Coming Soon
-                                </p>
-                              </div>
-                            </motion.div>
-                          ) : (
-                            <motion.div
-                              key="connect"
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -10 }}
-                              className="space-y-3"
-                            >
-                              <div className="space-y-2">
-                                {connections.map((conn, idx) => (
-                                  <div
-                                    key={idx}
-                                    onClick={() => setLocation(`/${conn.slug}`)}
-                                    className="flex items-center justify-between p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all cursor-pointer group"
-                                  >
-                                    <div className="flex flex-col">
-                                      <span className="text-xs font-bold text-white group-hover:text-blue-400 transition-colors">
-                                        {conn.name}
-                                      </span>
-                                      <span className="text-[8px] uppercase tracking-widest text-white/40">
-                                        {conn.industry}
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                      <span className="text-[10px] font-bold text-blue-400/80 bg-blue-400/10 px-1.5 py-0.5 rounded border border-blue-400/20">
-                                        {getRemainingTime(conn.expiresAt)}
-                                      </span>
-                                      <ArrowRight className="w-3 h-3 text-white/20 group-hover:text-white/60 group-hover:translate-x-0.5 transition-all" />
-                                    </div>
-                                  </div>
-                                ))}
-                                {connections.length === 0 && (
-                                  <div className="h-[100px] flex items-center justify-center border border-dashed border-white/10 rounded-2xl bg-gradient-to-tr from-blue-500/5 to-purple-500/5">
-                                    <div className="text-center space-y-2">
-                                      <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">
-                                        Exclusive Connect
-                                      </p>
-                                      <p className="text-xs text-white/20 font-medium">
-                                        No connections yet
-                                      </p>
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    )}
-                  </form>
-                ) : mode === "register" ? (
-                  <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-3 pr-2"
-                  >
-                    <div className="space-y-1">
-                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
-                        Name
-                      </label>
-                      <input
-                        {...form.register("name")}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50"
-                        placeholder="Your Name"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
-                        Role
-                      </label>
-                      <div className="relative">
-                        <select
-                          {...form.register("role")}
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white appearance-none"
-                        >
-                          {ROLES.map((r) => (
-                            <option
-                              key={r.value}
-                              value={r.value}
-                              className="bg-[#1a1a1a]"
-                            >
-                              {r.label}
-                            </option>
-                          ))}
-                        </select>
-                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
-                        Industry
-                      </label>
-                      <div className="relative">
-                        <select
-                          {...form.register("industry")}
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white appearance-none"
-                        >
-                          <option value="" className="bg-[#1a1a1a]">
-                            Select Industry
-                          </option>
-                          {[
-                            "Fintech",
-                            "Healthtech",
-                            "Edtech",
-                            "Ecommerce & Retail",
-                            "Agritech",
-                            "SaaS",
-                            "Cleantech & Greentech",
-                            "Logistics",
-                            "🌱 Sustainability & Energy (EVs)",
-                            "DeepTech",
-                            "Spacetech",
-                            "Robotics & Automation",
-                            "Cybersecurity",
-                            "AR/VR",
-                            "Media & Entertainment",
-                          ].map((industry) => (
-                            <option
-                              key={industry}
-                              value={industry}
-                              className="bg-[#1a1a1a]"
-                            >
-                              {industry}
-                            </option>
-                          ))}
-                        </select>
-                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
-                        Bio
-                      </label>
-                      <input
-                        {...form.register("bio")}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
-                        placeholder="Startup / Business"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
-                          Instagram
-                        </label>
-                        <input
-                          {...form.register("instagram")}
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
-                          placeholder="URL"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
-                          LinkedIn
-                        </label>
-                        <input
-                          {...form.register("linkedin")}
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
-                          placeholder="URL"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
-                          WhatsApp
-                        </label>
-                        <div className="relative">
-                          <div className="flex gap-2">
-                            {(() => {
-                              const whatsappValue = form.watch("whatsapp")?.toString() || "";
-                              const isUrl = whatsappValue.includes("http") || whatsappValue.includes("whatsapp");
-                              // Only show country dropdown if it's NOT a URL AND (it's empty OR contains a number)
-                              const shouldShowCountry = !isUrl && (whatsappValue === "" || /\d/.test(whatsappValue));
-                              
-                              if (!shouldShowCountry) return null;
-                              
-                              return (
-                                <div className="relative">
-                                  <button
-                                    type="button"
-                                    onClick={() => setShowCountryDropdown(!showCountryDropdown)}
-                                    className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white flex items-center gap-2 hover:bg-white/10 transition-colors"
-                                  >
-                                    {COUNTRY_CODES.find(c => c.code === whatsappCountryCode)?.flag}
-                                    <span className="text-xs font-semibold">{whatsappCountryCode}</span>
-                                    <ChevronDown className="w-3 h-3 text-white/40" />
-                                  </button>
-                                  {showCountryDropdown && (
-                                    <motion.div
-                                      initial={{ opacity: 0, y: -4 }}
-                                      animate={{ opacity: 1, y: 0 }}
-                                      className="absolute top-full mt-2 left-0 bg-black/95 border border-white/10 rounded-lg shadow-2xl z-20 max-h-48 overflow-y-auto w-48"
-                                    >
-                                      {COUNTRY_CODES.map((country) => (
-                                        <button
-                                          key={country.code}
-                                          type="button"
-                                          onClick={() => {
-                                            setWhatsappCountryCode(country.code);
-                                            setShowCountryDropdown(false);
-                                          }}
-                                          className={clsx(
-                                            "w-full text-left px-4 py-2.5 text-xs flex items-center gap-2 transition-colors",
-                                            whatsappCountryCode === country.code
-                                              ? "bg-white/10 text-white"
-                                              : "text-white/70 hover:bg-white/5 hover:text-white"
-                                          )}
-                                        >
-                                          <span className="text-sm">{country.flag}</span>
-                                          <span className="font-semibold">{country.code}</span>
-                                          <span className="text-white/40 text-[10px]">{country.country}</span>
-                                        </button>
-                                      ))}
-                                    </motion.div>
-                                  )}
-                                </div>
-                              );
-                            })()}
-                            <input
-                              {...form.register("whatsapp")}
-                              className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30"
-                              placeholder="Phone number / WB community URL"
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                const isUrl = value.includes("http") || value.includes("whatsapp");
-                                if (isUrl && showCountryDropdown) {
-                                  setShowCountryDropdown(false);
-                                }
-                              }}
-                            />
-                          </div>
-                          {form.watch("whatsapp") && !form.watch("whatsapp").toString().includes("http") && (
+                            );
+                          })()}
+                          <input
+                            {...form.register("whatsapp")}
+                            className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30"
+                            placeholder="Phone number / WB community URL"
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              const isUrl =
+                                value.includes("http") ||
+                                value.includes("whatsapp");
+                              if (isUrl && showCountryDropdown) {
+                                setShowCountryDropdown(false);
+                              }
+                            }}
+                          />
+                        </div>
+                        {form.watch("whatsapp") &&
+                          !form
+                            .watch("whatsapp")
+                            .toString()
+                            .includes("http") && (
                             <p className="text-[9px] text-emerald-400/70 mt-1 ml-1">
-                              Will direct to: wa.me/{whatsappCountryCode}{form.watch("whatsapp")?.toString().replace(/\D/g, '')}
+                              Will direct to: wa.me/{whatsappCountryCode}
+                              {form
+                                .watch("whatsapp")
+                                ?.toString()
+                                .replace(/\D/g, "")}
                             </p>
                           )}
-                        </div>
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
-                          Email
-                        </label>
-                        <input
-                          {...form.register("email")}
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
-                          placeholder="Email"
-                        />
                       </div>
                     </div>
                     <div className="space-y-1">
                       <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
-                        Website URL
+                        Email
                       </label>
                       <input
-                        {...form.register("website")}
+                        {...form.register("email")}
                         className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
-                        placeholder="https://your-website.com"
+                        placeholder="Email"
                       />
                     </div>
-                    <div className="flex gap-2 mt-4">
-                      <button
-                        type="button"
-                        disabled={!form.watch("name") || !form.watch("role")}
-                        onClick={() => setMode("customize")}
-                        className="flex-1 bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Next <ArrowRight className="w-4 h-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          form.reset({
-                            password: "",
-                            name: "",
-                            role: "founder",
-                            bio: "",
-                            instagram: "",
-                            linkedin: "",
-                            whatsapp: "",
-                            website: "",
-                            cards: [],
-                            email: "",
-                          });
-                          setSelectedCards([]);
-                          setMode("login");
-                        }}
-                        className="bg-white/10 hover:bg-white/20 text-white rounded-lg py-3 px-3 font-bold text-sm flex items-center justify-center transition-all border border-white/20"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </form>
-                ) : mode === "customize" ? (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-                        Your Mini-Cards ({selectedCards.length}
-                        /4)
-                      </h4>
-                    </div>
-                    <div className="flex gap-4 overflow-x-auto pb-4 px-1 custom-scrollbar snap-x">
-                      {[0, 1, 2, 3].map((idx) => (
-                        <div
-                          key={idx}
-                          className="min-w-[220px] aspect-[3/4] snap-center"
-                        >
-                          {selectedCards[idx] ? (
-                            <MiniCard
-                              idx={idx}
-                              cardJson={selectedCards[idx]}
-                              onUpdate={(newJson) => {
-                                const currentCards = [...selectedCards];
-                                currentCards[idx] = newJson;
-                                setSelectedCards(currentCards);
-                              }}
-                              onDelete={() => {
-                                const currentCards = [...selectedCards];
-                                currentCards.splice(idx, 1);
-                                setSelectedCards(currentCards);
-                              }}
-                            />
-                          ) : (
-                            <div className="h-full border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center p-4">
-                              <div className="grid grid-cols-2 gap-2 w-full">
-                                {CARD_TYPES.map((t) => (
-                                  <button
-                                    key={t.type}
-                                    type="button"
-                                    onClick={() => {
-                                      const currentCards = [...selectedCards];
-                                      const newCard =
-                                        t.type === "reel"
-                                          ? {
-                                              type: "reel",
-                                              title: "New Reel",
-                                              url: "",
-                                            }
-                                          : t.type === "revenue"
-                                            ? {
-                                                type: "revenue",
-                                                title: "Monthly Sales",
-                                                value: "$0",
-                                                revenue: "",
-                                                imageUrl: "",
-                                              }
-                                            : t.type === "traction"
-                                              ? {
-                                                  type: "traction",
-                                                  title: "Traction",
-                                                  value: "0",
-                                                  traction: "",
-                                                  imageUrl: "",
-                                                }
-                                              : {
-                                                  type: "product",
-                                                  title: "Product",
-                                                  imageUrl: "",
-                                                  traction: "",
-                                                };
-                                      currentCards[idx] =
-                                        JSON.stringify(newCard);
-                                      setSelectedCards(currentCards);
-                                    }}
-                                    className="flex flex-col items-center gap-1 p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all"
-                                  >
-                                    <t.icon className="w-5 h-5 text-white/60" />
-                                    <span className="text-[8px] text-white/40 uppercase font-bold">
-                                      {t.label}
-                                    </span>
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                      Website URL
+                    </label>
+                    <input
+                      {...form.register("website")}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
+                      placeholder="https://your-website.com"
+                    />
+                  </div>
+                  <div className="flex gap-2 mt-4">
                     <button
                       type="button"
-                      disabled={updateProfileMutation.isPending}
-                      onClick={() => form.handleSubmit(onSubmit)()}
-                      className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all"
+                      disabled={!form.watch("name") || !form.watch("role")}
+                      onClick={() => setMode("customize")}
+                      className="flex-1 bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {updateProfileMutation.isPending ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        "Save All"
-                      )}
+                      Next <ArrowRight className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        form.reset({
+                          password: "",
+                          name: "",
+                          role: "founder",
+                          bio: "",
+                          instagram: "",
+                          linkedin: "",
+                          whatsapp: "",
+                          website: "",
+                          cards: [],
+                          email: "",
+                        });
+                        setSelectedCards([]);
+                        setMode("login");
+                      }}
+                      className="bg-white/10 hover:bg-white/20 text-white rounded-lg py-3 px-3 font-bold text-sm flex items-center justify-center transition-all border border-white/20"
+                    >
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
-                ) : (
-                  <div className="py-2">
-                    <SwipeCard cards={selectedCards} user={user} />
+                </form>
+              ) : mode === "customize" ? (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                      Your Mini-Cards ({selectedCards.length}
+                      /4)
+                    </h4>
                   </div>
-                )}
+                  <div className="flex gap-4 overflow-x-auto pb-4 px-1 custom-scrollbar snap-x">
+                    {[0, 1, 2, 3].map((idx) => (
+                      <div
+                        key={idx}
+                        className="min-w-[220px] aspect-[3/4] snap-center"
+                      >
+                        {selectedCards[idx] ? (
+                          <MiniCard
+                            idx={idx}
+                            cardJson={selectedCards[idx]}
+                            onUpdate={(newJson) => {
+                              const currentCards = [...selectedCards];
+                              currentCards[idx] = newJson;
+                              setSelectedCards(currentCards);
+                            }}
+                            onDelete={() => {
+                              const currentCards = [...selectedCards];
+                              currentCards.splice(idx, 1);
+                              setSelectedCards(currentCards);
+                            }}
+                          />
+                        ) : (
+                          <div className="h-full border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center p-4">
+                            <div className="grid grid-cols-2 gap-2 w-full">
+                              {CARD_TYPES.map((t) => (
+                                <button
+                                  key={t.type}
+                                  type="button"
+                                  onClick={() => {
+                                    const currentCards = [...selectedCards];
+                                    const newCard =
+                                      t.type === "reel"
+                                        ? {
+                                            type: "reel",
+                                            title: "New Reel",
+                                            url: "",
+                                          }
+                                        : t.type === "revenue"
+                                          ? {
+                                              type: "revenue",
+                                              title: "Monthly Sales",
+                                              value: "$0",
+                                              revenue: "",
+                                              imageUrl: "",
+                                            }
+                                          : t.type === "traction"
+                                            ? {
+                                                type: "traction",
+                                                title: "Traction",
+                                                value: "0",
+                                                traction: "",
+                                                imageUrl: "",
+                                              }
+                                            : {
+                                                type: "product",
+                                                title: "Product",
+                                                imageUrl: "",
+                                                traction: "",
+                                              };
+                                    currentCards[idx] = JSON.stringify(newCard);
+                                    setSelectedCards(currentCards);
+                                  }}
+                                  className="flex flex-col items-center gap-1 p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all"
+                                >
+                                  <t.icon className="w-5 h-5 text-white/60" />
+                                  <span className="text-[8px] text-white/40 uppercase font-bold">
+                                    {t.label}
+                                  </span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    disabled={updateProfileMutation.isPending}
+                    onClick={() => form.handleSubmit(onSubmit)()}
+                    className="w-full bg-white text-black rounded-lg py-3 font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all"
+                  >
+                    {updateProfileMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      "Save All"
+                    )}
+                  </button>
+                </div>
+              ) : (
+                <div className="py-2">
+                  <SwipeCard cards={selectedCards} user={user} />
+                </div>
+              )}
             </motion.div>
 
             <div className="relative py-2">
