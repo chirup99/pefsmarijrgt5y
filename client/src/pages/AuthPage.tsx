@@ -1411,8 +1411,11 @@ export default function AuthPage({ slug }: { slug?: string }) {
           setTimeout(() => {
             setLocation(`/${result.uniqueSlug}`);
           }, 500);
+        } else if (isUpdatingProfile) {
+          // For profile updates of logged in users, just stay on login/dashboard view
+          setMode("login");
         } else {
-          // For updates or login
+          // For other cases (like login)
           setMode("login");
           if (result.uniqueSlug && (isRegistering || isCustomizing)) {
             setLocation(`/${result.uniqueSlug}`);
