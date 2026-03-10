@@ -2827,7 +2827,7 @@ export default function AuthPage({ slug }: { slug?: string }) {
                             loop
                             muted
                             playsInline
-                            preload="metadata"
+                            preload="auto"
                             poster={card.image}
                             style={{ background: card.image }}
                           >
@@ -2854,6 +2854,20 @@ export default function AuthPage({ slug }: { slug?: string }) {
                       </motion.div>
                     ))}
                   </div>
+                </div>
+
+                {/* Preload container for videos - hidden from view */}
+                <div className="fixed opacity-0 pointer-events-none -z-50 overflow-hidden w-0 h-0">
+                  {[
+                    "/1.mp4",
+                    "/2.mp4",
+                    "/3.mp4",
+                    "/4.mp4"
+                  ].map((video) => (
+                    <video key={video} preload="auto" muted>
+                      <source src={video} type="video/mp4" />
+                    </video>
+                  ))}
                 </div>
 
                 <div className="px-6 pb-8 border-t border-white/10">
